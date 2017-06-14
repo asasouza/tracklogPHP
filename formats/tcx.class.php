@@ -15,7 +15,6 @@ class TCX extends Tracklog{
 
 			$i++;
 		}
-
 		return $this;
 	}
 }

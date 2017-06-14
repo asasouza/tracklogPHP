@@ -23,6 +23,9 @@ abstract class Tracklog{
 			case 'json':
 				return json_encode($this->trackData);
 			break;
+			default:
+			throw new Exception("Output format not recognized", 1);			
+			break;
 		}
 	}
 
@@ -50,6 +53,7 @@ abstract class Tracklog{
 		return $elevations;
 	}
 
+	//Não suportado por KML
 	public function getTime(){
 		$time;
 		foreach ($this->trackData as $point) {
@@ -64,14 +68,16 @@ abstract class Tracklog{
 	public function getMaxHeight(){
 	}
 
+	//Não suportado por KML
 	public function getPace(){
 	}
 
+	//Não suportado por KML
 	public function getTotalTime(){}
 
 	public function getMarkers(){}
 
-	public function convert($file, $output){}
+	public function convert($output){}
 }
 
 ?>

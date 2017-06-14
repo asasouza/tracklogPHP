@@ -1,17 +1,19 @@
 <?php
 require("autoloader.php");
 
-$file = 'test.kml';
-
+//KML tests
+$file = 'test_files/test.kml';
 $kml = new KML($file);
-
-echo count($kml->getPoints());
-
-echo '<br>';
-
-foreach ($kml->getPoints() as $key => $points) {
-	echo $points['lat'];
-}
+$kml->getEles();
+$kml->getLons();
+$kml->getLats();
 
 
+//TCX tests
+$file = 'test_files/test.tcx';
+$tcx = new TCX($file);
+$tcx->getEles();
+$tcx->getLons();
+$tcx->getLats();
+$tcx->getTime();
 ?>

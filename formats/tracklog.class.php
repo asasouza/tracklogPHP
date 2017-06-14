@@ -1,34 +1,70 @@
 <?php
-
 abstract class Tracklog{
+	//Array com todos os dados disponiveis no arquivo de log
+	//lat - latitude
+	//log - longitude
+	//ele - altura/elevação
+	//time - tempo/horario
+	//dstc - distancia
+	protected $trackData;
 
-	public $content;
+	//A classe nunca é criada diretamente, ficando a cargo da classe filha;
+	//No metodo construtor a classe filha captura os dados de acordo com sua estrutura xml e popula o vetor $trackData;
+	protected abstract function __construct($file);
 
-	protected function __construct($file){
-		$this->content = simplexml_load_file($file);
+
+	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
+	//disponiveis para cada tipo de arquivo;
+	public function getPoints(){
+		return $this->trackData;
 	}
 
-	public abstract function getPoints();
+	public function getLats(){
+		$latitudes;
+		foreach ($this->trackData as $point) {
+			$latitudes[] = $point['lat'];
+		}
+		return $latitudes;
+	}
 
-	// public abstract function getLat();
+	public function getLons(){
+		$longitudes;
+		foreach ($this->trackData as $point) {
+			$longitudes[] = $point['lon'];
+		}
+		return $longitudes;
+	}
 
-	// public abstract function getLong();
+	public function getEles(){
+		$elevations;
+		foreach ($this->trackData as $point) {
+			$elevations[] = $point['ele'];
+		}
+		return $elevations;
+	}
 
-	// public abstract function getTime();
+	public function getTime(){
+		$time;
+		foreach ($this->trackData as $point) {
+			$time[] = $point['time'];
+		}
+		return $time;
+	}
 
-	// public abstract function getHeight();
+	public function getTotalDistance(){
+	}
 
-	// public abstract function getTotalDistance();
+	public function getMaxHeight(){
+	}
 
-	// public abstract function getMaxHeight();
+	public function getPace(){
+	}
 
-	// public abstract function getPace();
+	public function getTotalTime(){}
 
-	// public abstract function getTotalTime();
+	public function getMarkers(){}
 
-	// public abstract function getMarkers();
-
-	// public abstract function convert($file, $output);
+	public function convert($file, $output){}
 }
 
 ?>

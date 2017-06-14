@@ -11,7 +11,7 @@ class TCX extends Tracklog{
 			$this->trackData[$i]['lon'] = (float) $trackpoint->Position->LongitudeDegrees;;
 			$this->trackData[$i]['ele'] = (float) $trackpoint->AltitudeMeters;
 			$this->trackData[$i]['dstc'] = (float) $trackpoint->DistanceMeters;
-			$this->trackData[$i]['time'] = (float) $trackpoint->Time;
+			$this->trackData[$i]['time'] = (string) $trackpoint->Time;
 
 			$i++;
 		}

@@ -15,8 +15,15 @@ abstract class Tracklog{
 
 	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
 	//disponiveis para cada tipo de arquivo;
-	public function getPoints(){
-		return $this->trackData;
+	public function getPoints($output = "array"){
+		switch ($output) {
+			case 'array':
+				return $this->trackData;
+			break;
+			case 'json':
+				return json_encode($this->trackData);
+			break;
+		}
 	}
 
 	public function getLats(){

@@ -4,6 +4,7 @@ require("autoloader.php");
 //KML tests
 $file = 'test_files/test.kml';
 $kml = new KML($file);
+$kml->getPoints();
 $kml->getEles();
 $kml->getLons();
 $kml->getLats();
@@ -12,6 +13,7 @@ $kml->getLats();
 //TCX tests
 $file = 'test_files/test.tcx';
 $tcx = new TCX($file);
+print_r($tcx->getPoints('json'));
 $tcx->getEles();
 $tcx->getLons();
 $tcx->getLats();

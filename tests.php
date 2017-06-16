@@ -8,14 +8,18 @@ $kml->getPoints();
 $kml->getEles();
 $kml->getLons();
 $kml->getLats();
+$kml->getTotalDistance('miles');
 
+print("<br>");
 
 //TCX tests
 $file = 'test_files/test.tcx';
 $tcx = new TCX($file);
-print_r($tcx->getPoints('json'));
+$tcx->getPoints();
 $tcx->getEles();
 $tcx->getLons();
 $tcx->getLats();
 $tcx->getTime();
+$tcx->getTotalDistance('kilometers');
+
 ?>

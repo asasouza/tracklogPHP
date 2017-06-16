@@ -18,10 +18,10 @@ abstract class Tracklog{
 	public function getPoints($output = "array"){
 		switch ($output) {
 			case 'array':
-				return $this->trackData;
+			return $this->trackData;
 			break;
 			case 'json':
-				return json_encode($this->trackData);
+			return json_encode($this->trackData);
 			break;
 			default:
 			throw new Exception("Output format not recognized", 1);			
@@ -62,7 +62,38 @@ abstract class Tracklog{
 		return $time;
 	}
 
-	public function getTotalDistance(){
+	public function getTotalDistance($unit = "meters"){
+		$totalDistance = 0;
+		$earthRadius = 6371000;
+		for ($i=0; $i < count($this->trackData)-1; $i++) { 
+			//begging parameters
+			$latB = deg2rad($this->trackData[$i]['lat']);
+			$lonB = deg2rad($this->trackData[$i]['lon']);
+			//ending parameters
+			$latE = deg2rad($this->trackData[$i+1]['lat']);
+			$lonE = deg2rad($this->trackData[$i+1]['lon']);
+
+			$latDelta = $latE - $latB;
+			$lonDelta = $lonE - $lonB;
+
+			$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+				cos($latB) * cos($latE) * pow(sin($lonDelta / 2), 2)));
+			$totalDistance += $angle * $earthRadius;
+		}
+		switch ($unit) {
+			case 'meters':
+				return number_format($totalDistance, 2);
+			break;
+			case 'kilometers':
+				return number_format($totalDistance/1000, 2);
+			break;
+			case 'miles':
+				return number_format($totalDistance/1609.34, 2);
+			break;
+			default:
+				throw new Exception("Unit format not recognized", 1);			
+			break;
+		}		
 	}
 
 	public function getMaxHeight(){

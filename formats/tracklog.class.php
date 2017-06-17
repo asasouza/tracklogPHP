@@ -82,29 +82,47 @@ abstract class Tracklog{
 		}
 		switch ($unit) {
 			case 'meters':
-				return number_format($totalDistance, 2);
+			return number_format($totalDistance, 2);
 			break;
 			case 'kilometers':
-				return number_format($totalDistance/1000, 2);
+			return number_format($totalDistance/1000, 2);
 			break;
 			case 'miles':
-				return number_format($totalDistance/1609.34, 2);
+			return number_format($totalDistance/1609.34, 2);
 			break;
 			default:
-				throw new Exception("Unit format not recognized", 1);			
+			throw new Exception("Unit format not recognized", 1);			
 			break;
 		}		
 	}
 
 	public function getMaxHeight(){
+		return max($this->getEles());
 	}
 
 	//Não suportado por KML
 	public function getPace(){
+		$time = new DateTime($this->getTotalTime());
+		$hour = $time->format('H') / 60;
+		$minute = $time->format('i');
+		$second = $time->format('s') / 100;
+		$totalTime = $hour + $minute + $second;
+		$pace = $totalTime / $this->getTotalDistance('miles');
+		$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
+		return number_format($pace, 2);
 	}
 
 	//Não suportado por KML
-	public function getTotalTime(){}
+	public function getTotalTime(){
+		$dateDiff = new DateTime('0000-00-00 00:00:00');
+		for ($i=0; $i < count($this->trackData)-1; $i++) { 
+			$dateB = new DateTime($this->trackData[$i]['time']);
+			$dateE = new DateTime($this->trackData[$i+1]['time']);
+			$difference = $dateB->diff($dateE);	
+			$dateDiff->add($difference);
+		}
+		return $dateDiff->format('H:i:s');
+	}
 
 	public function getMarkers(){}
 

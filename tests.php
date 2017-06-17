@@ -9,6 +9,7 @@ $kml->getEles();
 $kml->getLons();
 $kml->getLats();
 $kml->getTotalDistance('miles');
+$kml->getMaxHeight();
 
 print("<br>");
 
@@ -21,5 +22,7 @@ $tcx->getLons();
 $tcx->getLats();
 $tcx->getTime();
 $tcx->getTotalDistance('kilometers');
-
+$tcx->getTotalTime();
+$tcx->getPace();
+$tcx->getMaxHeight();
 ?>

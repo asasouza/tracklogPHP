@@ -12,9 +12,9 @@ class KML extends Tracklog{
 
 		$y = 0;
 		for ($i=0; $i < count($coordinates);) {			
-			$this->trackData[$y]['lon'] = $coordinates[$i];
-			$this->trackData[$y]['lat'] = $coordinates[$i+1];
-			$this->trackData[$y]['ele'] = $coordinates[$i+2];
+			$this->trackData[$y]['lon'] = (float) $coordinates[$i];
+			$this->trackData[$y]['lat'] = (float) $coordinates[$i+1];
+			$this->trackData[$y]['ele'] = (float) $coordinates[$i+2];
 			$i = $i+3;
 			$y++;
 		}

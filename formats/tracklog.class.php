@@ -103,11 +103,13 @@ abstract class Tracklog{
 	//Não suportado por KML
 	public function getPace(){
 		$time = new DateTime($this->getTotalTime());
-		$hour = $time->format('H') / 60;
+		//multiplicar horas para transformar em minutos;
+		$hour = $time->format('H') * 60;
 		$minute = $time->format('i');
-		$second = $time->format('s') / 100;
+		//dividir segundos para transformar em frações de minutos;
+		$second = $time->format('s') / 60;
 		$totalTime = $hour + $minute + $second;
-		$pace = $totalTime / $this->getTotalDistance('miles');
+		$pace = $totalTime / $this->getTotalDistance('kilometers');
 		$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
 		return number_format($pace, 2);
 	}

@@ -34,7 +34,22 @@ class KML extends Tracklog{
 	}
 
 	public function write(){
-		echo "Taran";
+		$xml_header = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd"><Document>';
+  		$xml_body = '<Placemark>';
+
+  		if (isset($this->trackData["meta_data"])) {
+  			//será utilizado para pegar os dados de name, alguns markers, etc.
+  		}
+
+  		// $xml_body += isset($this->trackData['meta_data']['name']) ? '<name>'.$this->trackData['meta_data']['name'].'</name>' : '';
+  		$xml_body += '<LineString><extrude>true</extrude><tessellate>true</tessellate><coordinates>';
+  		foreach ($this->trackData as $coordinates) {
+  			// $xml_body;
+  		}
+
+  		$xml_footer = '</LineString></Placemark></Document></kml>';
+  		var_dump($xml_body);
+  		// return $xml_header . $xml_body . $xml_footer;
 	}
 }
 ?>

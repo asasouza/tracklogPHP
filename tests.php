@@ -10,7 +10,7 @@ $kml = new KML($file);
 // $kml->getLats();
 // $kml->getTotalDistance('miles');
 // $kml->getMaxHeight();
-$kml->write('kml');
+echo $kml->write('kml');
 
 print("<br>");
 

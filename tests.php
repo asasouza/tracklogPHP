@@ -2,16 +2,17 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/test.kml';
-// $kml = new KML($file);
+$file = 'test_files/test.kml';
+$kml = new KML($file);
 // $kml->getPoints();
 // $kml->getEles();
 // $kml->getLons();
 // $kml->getLats();
 // $kml->getTotalDistance('miles');
 // $kml->getMaxHeight();
+$kml->write('kml');
 
-// print("<br>");
+print("<br>");
 
 // //TCX tests
 // $file = 'test_files/test.tcx';
@@ -26,7 +27,7 @@ require("autoloader.php");
 // $tcx->getPace();
 // $tcx->getMaxHeight();
 
-// print("<br>");
+print("<br>");
 
 // //GPX tests
 // $file = 'test_files/test.gpx';
@@ -64,5 +65,7 @@ print("<br>");
 //$csv->getLats();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
+
+
 
 ?>

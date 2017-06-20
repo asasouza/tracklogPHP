@@ -131,7 +131,9 @@ abstract class Tracklog{
 
 	public function getMarkers(){}
 
-	public function write($output){
+	abstract function write();
+
+	public function out($output){
 		switch ($output) {
 			case 'kml':
 				return KML::write();

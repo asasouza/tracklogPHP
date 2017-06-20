@@ -32,5 +32,9 @@ class KML extends Tracklog{
 	public function getTotalTime(){
 		throw new Exception("KML files don't support time manipulations", 1);
 	}
+
+	public function write(){
+		echo "Taran";
+	}
 }
 ?>

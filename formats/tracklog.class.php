@@ -54,6 +54,7 @@ abstract class Tracklog{
 	}
 
 	//Não suportado por KML
+	//Não suportado por GeoJson
 	public function getTime(){
 		$time;
 		foreach ($this->trackData as $point) {
@@ -101,6 +102,7 @@ abstract class Tracklog{
 	}
 
 	//Não suportado por KML
+	//Não suportado por GeoJson
 	public function getPace(){
 		$time = new DateTime($this->getTotalTime());
 		//multiplicar horas para transformar em minutos;
@@ -115,6 +117,7 @@ abstract class Tracklog{
 	}
 
 	//Não suportado por KML
+	//Não suportado por GeoJson
 	public function getTotalTime(){
 		$dateDiff = new DateTime('0000-00-00 00:00:00');
 		for ($i=0; $i < count($this->trackData)-1; $i++) { 
@@ -128,7 +131,28 @@ abstract class Tracklog{
 
 	public function getMarkers(){}
 
-	public function convert($output){}
+	public function write($output){
+		switch ($output) {
+			case 'kml':
+				return KML::write();
+			break;
+			case 'gpx':
+				return GPX::write();
+			break;
+			case 'tcx':
+				return TCX::write();
+			break;
+			case 'geoJson':
+				return GeoJson::write();
+			break;
+			case 'csv':
+				return CSV::write();
+			break;
+			default:
+				throw new Exception("Output type invalid!", 1);				
+			break;
+		}
+	}
 }
 
 ?>

@@ -98,7 +98,7 @@ abstract class Tracklog{
 	}
 
 	public function getMaxHeight(){
-		return max($this->getEles());
+		return number_format(max($this->getEles()), 2);
 	}
 
 	//Não suportado por KML
@@ -131,24 +131,24 @@ abstract class Tracklog{
 
 	public function getMarkers(){}
 
-	abstract function write();
+	protected abstract function write();
 
-	public function out($output){
+	public function out($output, $path_folder = null){
 		switch ($output) {
 			case 'kml':
-				return KML::write();
+				return KML::write($path_folder);
 			break;
 			case 'gpx':
-				return GPX::write();
+				return GPX::write($path_folder);
 			break;
 			case 'tcx':
-				return TCX::write();
+				return TCX::write($path_folder);
 			break;
 			case 'geoJson':
-				return GeoJson::write();
+				return GeoJson::write($path_folder);
 			break;
 			case 'csv':
-				return CSV::write();
+				return CSV::write($path_folder);
 			break;
 			default:
 				throw new Exception("Output type invalid!", 1);				

@@ -4,13 +4,14 @@ require("autoloader.php");
 // //KML tests
 $file = 'test_files/test.kml';
 $kml = new KML($file);
-// $kml->getPoints();
-// $kml->getEles();
-// $kml->getLons();
-// $kml->getLats();
-// $kml->getTotalDistance('miles');
-// $kml->getMaxHeight();
-echo $kml->write('kml');
+// print_r($kml->getPoints());
+// print_r($kml->getEles());
+// print_r($kml->getLons());
+// print_r($kml->getLats());
+// echo $kml->getTotalDistance('kilometers');
+// echo $kml->getMaxHeight();
+// echo $kml->write('kml');
+echo htmlentities($kml->out('kml', 'converted_files/test.kml'));
 
 print("<br>");
 

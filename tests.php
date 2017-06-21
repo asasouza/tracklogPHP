@@ -27,7 +27,7 @@ print("<br>");
 // $tcx->getTotalTime();
 // $tcx->getPace();
 // $tcx->getMaxHeight();
-echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
+// echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
 
 print("<br>");
 

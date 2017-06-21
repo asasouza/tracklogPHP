@@ -11,6 +11,10 @@ class GeoJson extends Tracklog{
 			$this->trackData[$i]['lon'] = $object[$i]->lon;
 			$this->trackData[$i]['ele'] = $object[$i]->ele;
 		}
+
+		$this->populateDistance();
+
+		return $this;
 	}
 
 	public function getTime(){

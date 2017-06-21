@@ -18,6 +18,9 @@ class KML extends Tracklog{
 			$i = $i+3;
 			$y++;
 		}
+
+		$this->populateDistance();
+
 		return $this;
 	}
 
@@ -33,7 +36,7 @@ class KML extends Tracklog{
 		throw new Exception("KML files don't support time manipulations", 1);
 	}
 
-	protected function write($path_folder = null){
+	protected function write($file_path = null){
 		$xml = new SimpleXMLElement('<xml version="1.0" encoding="UTF-8"/>');
 		$kml = $xml->addChild('kml');
 			$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
@@ -61,8 +64,8 @@ class KML extends Tracklog{
 		$dom_xml = dom_import_simplexml($xml);
 		$dom_xml = $dom->importNode($dom_xml, true);
 		$dom_xml = $dom->appendChild($dom_xml);
-		if (!is_null($path_folder)) {
-			$dom->save($path_folder);
+		if (!is_null($file_path)) {
+			$dom->save($file_path);
 		}
 		return $dom->saveXML();
 	}

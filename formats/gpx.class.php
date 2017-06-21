@@ -14,8 +14,10 @@ class GPX extends Tracklog{
 
 			$i++;
 		}
-		return $this;
 
+		$this->populateDistance();
+
+		return $this;		
 	}
 }
 

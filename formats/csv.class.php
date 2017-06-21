@@ -11,6 +11,10 @@ class CSV extends Tracklog{
 			$this->trackData[$i]['lon'] = $coordinates[1];
 			$this->trackData[$i]['ele'] = $coordinates[2];
 		}
+
+		$this->populateDistance();
+
+		return $this;
 	}
 
 	public function getTime(){

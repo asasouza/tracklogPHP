@@ -8,11 +8,11 @@ $kml = new KML($file);
 // print_r($kml->getEles());
 // print_r($kml->getLons());
 // print_r($kml->getLats());
-// echo $kml->getTotalDistance('kilometers');
+// echo $kml->getTotalDistance('meters');
 // echo $kml->getMaxHeight();
 // echo $kml->write('kml');
-echo htmlentities($kml->out('kml', 'converted_files/test.kml'));
-
+// echo htmlentities($kml->out('kml'));
+// print_r($kml->getDistances());
 print("<br>");
 
 // //TCX tests
@@ -27,6 +27,7 @@ print("<br>");
 // $tcx->getTotalTime();
 // $tcx->getPace();
 // $tcx->getMaxHeight();
+echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
 
 print("<br>");
 

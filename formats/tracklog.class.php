@@ -1,4 +1,6 @@
 <?php
+//TO DO 'getTotalTime': precisa formatar o horário para retornar tempo total em minutos, horas, segundos e tempo formatado
+
 abstract class Tracklog{
 	//Array com todos os dados disponiveis no arquivo de log
 	//lat - latitude
@@ -12,6 +14,40 @@ abstract class Tracklog{
 	//No metodo construtor a classe filha captura os dados de acordo com sua estrutura xml e popula o vetor $trackData;
 	protected abstract function __construct($file);
 
+	//Função de escrita de xml pela classe filha
+	protected abstract function write();
+
+	//Função para popular o vetor TrackData com a variavel distancia [dstc] para os arquivos 
+	//que não possuem tal informação (KML, GPX, GeoJson);
+	protected function populateDistance(){
+		$distance = number_format(0.000, 3, '.', '');
+		$this->trackData[0]['dstc'] = $distance;
+		for ($i=0; $i < count($this->trackData)-1; $i++) { 
+			$distance += $this->haversineFormula($this->trackData[$i]['lat'], 
+				$this->trackData[$i]['lon'], 
+				$this->trackData[$i+1]['lat'], 
+				$this->trackData[$i+1]['lon']);
+			$this->trackData[$i+1]['dstc'] = number_format($distance, 3, '.', '');
+		}
+	}
+
+	//Função para calculo de distancia entre duas lat/lon (utilizado em populateDistance);
+	protected function haversineFormula($latB, $lonB, $latE, $lonE){
+		$earthRadius = 6371000;
+		//begging parameters
+		$latB = deg2rad($latB);
+		$lonB = deg2rad($lonB);
+			//ending parameters
+		$latE = deg2rad($latE);
+		$lonE = deg2rad($lonE);
+			//deltas
+		$latDelta = $latE - $latB;
+		$lonDelta = $lonE - $lonB;
+
+		$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+			cos($latB) * cos($latE) * pow(sin($lonDelta / 2), 2)));
+		return $angle * $earthRadius;
+	}
 
 	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
 	//disponiveis para cada tipo de arquivo;
@@ -63,38 +99,30 @@ abstract class Tracklog{
 		return $time;
 	}
 
-	public function getTotalDistance($unit = "meters"){
-		$totalDistance = 0;
-		$earthRadius = 6371000;
-		for ($i=0; $i < count($this->trackData)-1; $i++) { 
-			//begging parameters
-			$latB = deg2rad($this->trackData[$i]['lat']);
-			$lonB = deg2rad($this->trackData[$i]['lon']);
-			//ending parameters
-			$latE = deg2rad($this->trackData[$i+1]['lat']);
-			$lonE = deg2rad($this->trackData[$i+1]['lon']);
-
-			$latDelta = $latE - $latB;
-			$lonDelta = $lonE - $lonB;
-
-			$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-				cos($latB) * cos($latE) * pow(sin($lonDelta / 2), 2)));
-			$totalDistance += $angle * $earthRadius;
+	public function getDistances(){
+		$distances;
+		foreach ($this->trackData as $point) {
+			$distances[] = $point['dstc'];
 		}
+		return $distances;
+	}
+
+	public function getTotalDistance($unit = "meters"){
+		$totalDistance = $this->trackData[count($this->trackData)-1]['dstc'];
 		switch ($unit) {
 			case 'meters':
-			return number_format($totalDistance, 2);
+			return number_format($totalDistance, 2, '.', '');
 			break;
 			case 'kilometers':
-			return number_format($totalDistance/1000, 2);
+			return number_format($totalDistance/1000, 2, '.', '');
 			break;
 			case 'miles':
-			return number_format($totalDistance/1609.34, 2);
+			return number_format($totalDistance/1609.34, 2, '.', '');
 			break;
 			default:
 			throw new Exception("Unit format not recognized", 1);			
 			break;
-		}		
+		}
 	}
 
 	public function getMaxHeight(){
@@ -129,29 +157,27 @@ abstract class Tracklog{
 		return $dateDiff->format('H:i:s');
 	}
 
-	public function getMarkers(){}
+	public function getMarkers(){}	
 
-	protected abstract function write();
-
-	public function out($output, $path_folder = null){
+	public function out($output, $file_path = null){
 		switch ($output) {
 			case 'kml':
-				return KML::write($path_folder);
+			return KML::write($file_path);
 			break;
 			case 'gpx':
-				return GPX::write($path_folder);
+			return GPX::write($file_path);
 			break;
 			case 'tcx':
-				return TCX::write($path_folder);
+			return TCX::write($file_path);
 			break;
 			case 'geoJson':
-				return GeoJson::write($path_folder);
+			return GeoJson::write($file_path);
 			break;
 			case 'csv':
-				return CSV::write($path_folder);
+			return CSV::write($file_path);
 			break;
 			default:
-				throw new Exception("Output type invalid!", 1);				
+			throw new Exception("Output type invalid!", 1);				
 			break;
 		}
 	}

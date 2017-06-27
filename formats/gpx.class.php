@@ -29,7 +29,7 @@ class GPX extends Tracklog{
 		$gpx->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		$gpx->addAttribute('xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd');
 			$metadata = $gpx->addChild('metadata');
-				$time = $metadata->addChild('time', $this->getTime()[0]); // vai dar erro;
+				$time = $metadata->addChild('time', $this->getTime()[0]);
 			$trk = $gpx->addChild('trk');
 				if (isset($this->trackData['meta_tag']['name'])) {
 					$trk->addChild('name', $this->trackData['meta_tag']['name']);

@@ -15,6 +15,8 @@ abstract class Tracklog{
 	//Função de escrita de xml pela classe filha
 	protected abstract function write();
 
+	protected abstract function validate($file);
+
 	//Função para popular o vetor TrackData com a variavel distancia [dstc] para os arquivos 
 	//que não possuem tal informação (KML, GPX, GeoJson);
 	protected function populateDistance(){

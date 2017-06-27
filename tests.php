@@ -14,6 +14,7 @@ $kml = new KML($file);
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
 // echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
+// echo $kml->validate($file);
 print("<br>");
 
 // //TCX tests
@@ -28,13 +29,14 @@ $tcx = new TCX($file);
 // echo $tcx->getTotalTime();
 // $tcx->getPace();
 // $tcx->getMaxHeight();
+// echo $tcx->validate($file);
 // echo htmlentities($tcx->out('tcx', 'converted_files/test.tcx'));
 
 print("<br>");
 
 // //GPX tests
-// $file = 'test_files/test.gpx';
-// $gpx = new GPX($file);
+$file = 'test_files/test.gpx';
+$gpx = new GPX($file);
 // $gpx->getPoints();
 // $gpx->getEles();
 // $gpx->getLons();
@@ -44,6 +46,7 @@ print("<br>");
 // $gpx->getTotalTime();
 // $gpx->getPace();
 // $gpx->getMaxHeight();
+// echo $gpx->validate($file);
 // echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
 
 print("<br>");
@@ -70,7 +73,6 @@ print("<br>");
 //$csv->getLats();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
-echo $tcx->out('csv', 'converted_files/test.csv');
-
+// echo $tcx->out('csv');
 
 ?>

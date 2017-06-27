@@ -3,20 +3,23 @@
 class TCX extends Tracklog{
 	
 	public function __construct($file){
-		$xml = simplexml_load_file($file) or die ("File not found!");
-		$xml->registerXPathNamespace('tcx', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
-		$content = $xml->xpath('//tcx:Track');
-		$i = 0;		
-		foreach ($content[0] as $trackpoint) {
-			$this->trackData[$i]['lat'] = (float) $trackpoint->Position->LatitudeDegrees;
-			$this->trackData[$i]['lon'] = (float) $trackpoint->Position->LongitudeDegrees;;
-			$this->trackData[$i]['ele'] = (float) $trackpoint->AltitudeMeters;
-			$this->trackData[$i]['dstc'] = (float) $trackpoint->DistanceMeters;
-			$this->trackData[$i]['time'] = (string) $trackpoint->Time;
-
-			$i++;
-		}
-		return $this;
+		if ($this->validate($file)) {
+			$xml = simplexml_load_file($file) or die ("File not found!");
+			$xml->registerXPathNamespace('tcx', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
+			$content = $xml->xpath('//tcx:Track');
+			$i = 0;		
+			foreach ($content[0] as $trackpoint) {
+				$this->trackData[$i]['lat'] = (float) $trackpoint->Position->LatitudeDegrees;
+				$this->trackData[$i]['lon'] = (float) $trackpoint->Position->LongitudeDegrees;;
+				$this->trackData[$i]['ele'] = (float) $trackpoint->AltitudeMeters;
+				$this->trackData[$i]['dstc'] = (float) $trackpoint->DistanceMeters;
+				$this->trackData[$i]['time'] = (string) $trackpoint->Time;
+				$i++;
+			}
+			return $this;	
+		}else{
+			throw new Exception("Invalid TCX file", 1);			
+		}	
 	}
 
 	protected function write($file_path = null){
@@ -61,6 +64,16 @@ class TCX extends Tracklog{
 			$dom->save($file_path);
 		}
 		return $dom->saveXML();
+	}
+
+	protected function validate($file){
+		$dom = new DOMDocument;
+		$dom->load($file);
+		if ($dom->schemaValidate('xsd_files/tcx.xsd')) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
 ?>

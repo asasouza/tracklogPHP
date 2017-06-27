@@ -2,26 +2,28 @@
 class KML extends Tracklog{
 
 	public function __construct($file){
-		$xml = simplexml_load_file($file) or die ("File not found!");
+		if ($this->validate($file)) {
+			$xml = simplexml_load_file($file) or die ("File not found!");
 
-		$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
+			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 
-		$content = $xml->xpath('//kml:coordinates');
-		$content = preg_replace('/\s+/', ',', $content);
-		$coordinates = explode(',', $content[0]);
+			$content = $xml->xpath('//kml:coordinates');
+			$content = preg_replace('/\s+/', ',', $content);
+			$coordinates = explode(',', $content[0]);
 
-		$y = 0;
-		for ($i=0; $i < count($coordinates);) {			
-			$this->trackData[$y]['lon'] = number_format((float) $coordinates[$i], 7);
-			$this->trackData[$y]['lat'] = number_format((float) $coordinates[$i+1], 7);
-			$this->trackData[$y]['ele'] = number_format((float) $coordinates[$i+2], 6);
-			$i = $i+3;
-			$y++;
-		}
-
-		$this->populateDistance();
-
-		return $this;
+			$y = 0;
+			for ($i=0; $i < count($coordinates);) {			
+				$this->trackData[$y]['lon'] = number_format((float) $coordinates[$i], 7);
+				$this->trackData[$y]['lat'] = number_format((float) $coordinates[$i+1], 7);
+				$this->trackData[$y]['ele'] = number_format((float) $coordinates[$i+2], 6);
+				$i = $i+3;
+				$y++;
+			}
+			$this->populateDistance();
+			return $this;			
+		}else{
+			throw new Exception("Invalid KML file", 1);			
+		}		
 	}
 
 	public function getTime(){
@@ -67,6 +69,16 @@ class KML extends Tracklog{
 			$dom->save($file_path);
 		}
 		return $dom->saveXML();
+	}
+
+	protected function validate($file){
+		$dom = new DOMDocument;
+		$dom->load($file);
+		if ($dom->schemaValidate('xsd_files/kml.xsd')) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
 ?>

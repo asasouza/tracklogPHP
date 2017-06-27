@@ -37,31 +37,30 @@ class KML extends Tracklog{
 	}
 
 	protected function write($file_path = null){
-		$xml = new SimpleXMLElement('<xml version="1.0" encoding="UTF-8"/>');
-		$kml = $xml->addChild('kml');
-			$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
-			$kml->addAttribute('xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
-			$kml->addAttribute('xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd');
-				$document = $kml->addChild('Document');
-					$placemark = $document->addChild('Placemark');
-						if (isset($this->trackData['meta_tag']['name'])) {
-							$placemark->addChild('name', $this->trackData['meta_tag']['name']);
+		$kml = new SimpleXMLElement('<kml/>');	
+		$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
+		$kml->addAttribute('xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
+		$kml->addAttribute('xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd');
+			$document = $kml->addChild('Document');
+				$placemark = $document->addChild('Placemark');
+					if (isset($this->trackData['meta_tag']['name'])) {
+						$placemark->addChild('name', $this->trackData['meta_tag']['name']);
+					}
+					$placemark->addChild('visibility', 1);
+					$placemark->addChild('open', 1);
+					$linestring = $placemark->addChild('LineString');
+						$linestring->addChild('extrude', 'true');
+						$linestring->addChild('tessellate', 'true');						
+						$trackData = '';
+						foreach ($this->trackData as $coordinates) {
+							$trackData = $trackData . $coordinates['lon'].','.$coordinates['lat'].','.$coordinates['ele']. '&#10;';
 						}
-						$placemark->addChild('visibility', 1);
-						$placemark->addChild('open', 1);
-						$linestring = $placemark->addChild('LineString');
-							$linestring->addChild('extrude', 'true');
-							$linestring->addChild('tessellate', 'true');						
-							$trackData = '';
-							foreach ($this->trackData as $coordinates) {
-								$trackData = $trackData . $coordinates['lon'].','.$coordinates['lat'].','.$coordinates['ele']. '&#10;';
-							}
-							$coordinates = $linestring->addChild('coordinates', $trackData);							
+						$coordinates = $linestring->addChild('coordinates', $trackData);							
 
-		$dom = new DOMDocument('1.0');
+		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;
-		$dom_xml = dom_import_simplexml($xml);
+		$dom_xml = dom_import_simplexml($kml);
 		$dom_xml = $dom->importNode($dom_xml, true);
 		$dom_xml = $dom->appendChild($dom_xml);
 		if (!is_null($file_path)) {

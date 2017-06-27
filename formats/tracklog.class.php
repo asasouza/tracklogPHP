@@ -1,6 +1,4 @@
 <?php
-//TO DO 'getTotalTime': precisa formatar o horário para retornar tempo total em minutos, horas, segundos e tempo formatado
-
 abstract class Tracklog{
 	//Array com todos os dados disponiveis no arquivo de log
 	//lat - latitude
@@ -146,7 +144,7 @@ abstract class Tracklog{
 
 	//Não suportado por KML
 	//Não suportado por GeoJson
-	public function getTotalTime(){
+	public function getTotalTime($format = null){
 		$dateDiff = new DateTime('0000-00-00 00:00:00');
 		for ($i=0; $i < count($this->trackData)-1; $i++) { 
 			$dateB = new DateTime($this->trackData[$i]['time']);
@@ -154,7 +152,24 @@ abstract class Tracklog{
 			$difference = $dateB->diff($dateE);	
 			$dateDiff->add($difference);
 		}
-		return $dateDiff->format('H:i:s');
+		$hours = $dateDiff->format('H');
+		$minutes = $dateDiff->format('i');
+		$seconds = $dateDiff->format('s');
+		//retorn o tempo em 'porcentagem' de hora, 0.5 significa 30 segundos, não 50.
+		switch ($format) {
+			case 'seconds':
+			return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1);
+			break;
+			case 'minutes':
+			return number_format($minutes = $minutes + ($hours*60) + ($seconds/60), 1);
+			break;
+			case 'hours':
+			return number_format($hours = $hours + ($minutes/60), 1);
+			break;
+			default:
+			return $dateDiff->format('H:i:s');
+			break;
+		}		
 	}
 
 	public function getMarkers(){}	

@@ -2,8 +2,8 @@
 require("autoloader.php");
 
 // //KML tests
-$file = 'test_files/test.kml';
-$kml = new KML($file);
+// $file = 'test_files/test.kml';
+// $kml = new KML($file);
 // print_r($kml->getPoints());
 // print_r($kml->getEles());
 // print_r($kml->getLons());
@@ -13,21 +13,22 @@ $kml = new KML($file);
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
+// echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
 print("<br>");
 
 // //TCX tests
-// $file = 'test_files/test.tcx';
-// $tcx = new TCX($file);
+$file = 'test_files/test.tcx';
+$tcx = new TCX($file);
 // $tcx->getPoints();
 // $tcx->getEles();
 // $tcx->getLons();
 // $tcx->getLats();
 // $tcx->getTime();
 // $tcx->getTotalDistance('kilometers');
-// $tcx->getTotalTime();
+// echo $tcx->getTotalTime();
 // $tcx->getPace();
 // $tcx->getMaxHeight();
-// echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
+// echo htmlentities($tcx->out('tcx', 'converted_files/test.tcx'));
 
 print("<br>");
 

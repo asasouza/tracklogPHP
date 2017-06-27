@@ -19,7 +19,7 @@ $kml = new KML($file);
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
-// echo htmlentities($kml->out('tcx', 'converted_files/test.tcx'));
+echo htmlentities($kml->out('kml', 'converted_files/test2.tcx'));
 // echo $kml->validate($file);
 print("<br>");
 

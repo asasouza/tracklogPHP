@@ -47,7 +47,7 @@ class KML extends Tracklog{
 	}
 
 	public function getTime(){
-		if (!empty($this->trackData[0]['time'])) {
+		if ($this->hasTime()) {
 			return parent::getTime();
 		}else{
 			throw new Exception("This KML file don't support time manipulations", 1);	
@@ -55,7 +55,7 @@ class KML extends Tracklog{
 	}
 
 	public function getPace(){
-		if (!empty($this->trackData[0]['time'])) {
+		if ($this->hasTime()) {
 			return parent::getPace();
 		}else{
 			throw new Exception("This KML file don't support time manipulations", 1);	
@@ -63,7 +63,7 @@ class KML extends Tracklog{
 	}
 
 	public function getTotalTime($format = null){
-		if (!empty($this->trackData[0]['time'])) {
+		if ($this->hasTime()) {
 			return parent::getTotalTime($format);
 		}else{
 			throw new Exception("This KML file don't support time manipulations", 1);	
@@ -73,9 +73,24 @@ class KML extends Tracklog{
 	protected function write($file_path = null){
 		$kml = new SimpleXMLElement('<kml/>');	
 		$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
-		$kml->addAttribute('xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
-		$kml->addAttribute('xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd">');
+		$kml->addAttribute('xmlns:xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
+		$kml->addAttribute('xsi:xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd">');
 			$document = $kml->addChild('Document');
+				if ($this->hasTime()) {
+				$folder = $document->addChild('Folder');
+					if (isset($this->trackData['meta_tag']['name'])) {
+					$folder->addChild('name', $this->trackData['meta_tag']['name']);
+					}
+					$folder->addChild('open', 1);
+						$placemark = $folder->addChild('Placemark');
+							$gxtrack = $placemark->addChild('gx:gx:Track');
+								foreach ($this->trackData as $time) {
+									$gxtrack->addChild('when', $time['time']);
+								}
+								foreach ($this->trackData as $coordinate) {
+									$gxtrack->addChild('gx:gx:coord', $coordinate['lon'].' '.$coordinate['lat'].' '.$coordinate['ele']);
+								}
+				}else{
 				$placemark = $document->addChild('Placemark');
 					if (isset($this->trackData['meta_tag']['name'])) {
 						$placemark->addChild('name', $this->trackData['meta_tag']['name']);
@@ -90,6 +105,7 @@ class KML extends Tracklog{
 							$trackData = $trackData . $coordinates['lon'].','.$coordinates['lat'].','.$coordinates['ele']. '&#10;';
 						}
 						$coordinates = $linestring->addChild('coordinates', $trackData);							
+				}
 
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
@@ -112,6 +128,10 @@ class KML extends Tracklog{
 		}else{
 			return false;
 		}
+	}
+
+	private function hasTime(){
+		return !empty($this->trackData[0]['time']);
 	}
 }
 ?>

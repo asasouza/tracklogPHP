@@ -25,8 +25,8 @@ class TCX extends Tracklog{
 	protected function write($file_path = null){
 		$tcx = new SimpleXMLElement('<TrainingCenterDatabase/>');
 		$tcx->addAttribute('xmlns', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
-		$tcx->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-		$tcx->addAttribute('xsi:schemaLocation', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd');
+		$tcx->addAttribute('xmlns:xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+		$tcx->addAttribute('xsi:xsi:schemaLocation', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd');
 		$courses = $tcx->addChild('Courses');
 			$course = $courses->addChild('Course');
 				if (isset($this->trackData['meta_tag']['name'])) {

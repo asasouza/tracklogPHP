@@ -44,6 +44,7 @@ print("<br>");
 // $gpx->getTotalTime();
 // $gpx->getPace();
 // $gpx->getMaxHeight();
+echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
 
 print("<br>");
 

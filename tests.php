@@ -2,8 +2,8 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/test.kml';
-// $kml = new KML($file);
+$file = 'test_files/test.kml';
+$kml = new KML($file);
 // print_r($kml->getPoints());
 // print_r($kml->getEles());
 // print_r($kml->getLons());
@@ -19,7 +19,7 @@ print("<br>");
 // //TCX tests
 $file = 'test_files/test.tcx';
 $tcx = new TCX($file);
-// $tcx->getPoints();
+// print_r($tcx->getPoints());
 // $tcx->getEles();
 // $tcx->getLons();
 // $tcx->getLats();
@@ -44,7 +44,7 @@ print("<br>");
 // $gpx->getTotalTime();
 // $gpx->getPace();
 // $gpx->getMaxHeight();
-echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
+// echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
 
 print("<br>");
 
@@ -57,6 +57,7 @@ print("<br>");
 // $json->getLats();
 // $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
+echo $tcx->out('geoJson', 'converted_files/test.js');
 
 print("<br>");
 

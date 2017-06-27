@@ -28,5 +28,23 @@ class GeoJson extends Tracklog{
 	public function getTotalTime(){
 		throw new Exception("GeoJson files don't support time manipulations", 1);
 	}
+
+	protected function write($file_path = null){
+		$trackData;
+		foreach ($this->trackData as $key => $point) {			
+			$trackData[$key]['lon'] = $point['lon'];
+			$trackData[$key]['lat'] = $point['lat'];
+			$trackData[$key]['ele'] = $point['ele'];
+		}
+		$trackData = ['trackData' => [$trackData]];
+		$data = ['data' => $trackData];
+		$json = json_encode($data);
+
+		if (!is_null($file_path)) {
+			file_put_contents($file_path, $json);
+		}
+
+		return $json;
+	}
 }
 ?>

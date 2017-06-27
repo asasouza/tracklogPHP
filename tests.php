@@ -57,7 +57,7 @@ print("<br>");
 // $json->getLats();
 // $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
-echo $tcx->out('geoJson', 'converted_files/test.js');
+// echo $tcx->out('geoJson', 'converted_files/test.js');
 
 print("<br>");
 
@@ -70,7 +70,7 @@ print("<br>");
 //$csv->getLats();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
-
+echo $tcx->out('csv', 'converted_files/test.csv');
 
 
 ?>

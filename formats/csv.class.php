@@ -28,5 +28,24 @@ class CSV extends Tracklog{
 	public function getTotalTime(){
 		throw new Exception("CSV files don't support time manipulations", 1);
 	}
+
+	protected function write($file_path = null){
+		$trackData = 'Latitude,Longitude,Elevation ';
+		foreach ($this->trackData as $trackdata) {
+			$trackData = $trackData.$trackdata['lat'].','.$trackdata['lon'].','.$trackdata['ele'].' ';
+		}
+
+		if (!empty($file_path)) {
+			$content = preg_split('/\s+/', $trackData);
+			$file = fopen($file_path, 'w');
+			foreach ($content as $value) {
+				fputcsv($file, explode(',', $value));	
+			}
+			fclose($file);
+		}
+
+		return $trackData;
+
+	}
 }
 ?>

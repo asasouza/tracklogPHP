@@ -47,7 +47,7 @@ class TCX extends Tracklog{
 				$track = $course->addChild('Track');
 				foreach ($this->trackData as $trackdata) {
 					$trackpoint = $track->addChild('Trackpoint');
-						if ((get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson') {
+						if ($this->hasTime()) {
 							$trackpoint->addChild('Time', $trackdata['time']);
 						}else{
 							$trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));

@@ -19,13 +19,13 @@ $kml = new KML($file);
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
-htmlentities($kml->out('tcx', 'converted_files/test2.tcx'));
+htmlentities($kml->out('gpx', 'converted_files/test2.gpx'));
 // echo $kml->validate($file);
 print("<br>");
 
-// //TCX tests
-$file = 'converted_files/test2.tcx';
-$tcx = new TCX($file);
+// TCX tests
+// $file = 'converted_files/test2.tcx';
+// $tcx = new TCX($file);
 // print_r($tcx->getPoints());
 // $tcx->getEles();
 // $tcx->getLons();
@@ -36,13 +36,13 @@ $tcx = new TCX($file);
 // echo $tcx->getPace();
 // $tcx->getMaxHeight();
 // echo $tcx->validate($file);
-htmlentities($tcx->out('kml', 'converted_files/test.kml'));
+// htmlentities($tcx->out('kml', 'converted_files/test.kml'));
 
 print("<br>");
 
 // //GPX tests
-// $file = 'converted_files/test2.gpx';
-// $gpx = new GPX($file);
+$file = 'converted_files/test2.gpx';
+$gpx = new GPX($file);
 // $gpx->getPoints();
 // $gpx->getEles();
 // $gpx->getLons();

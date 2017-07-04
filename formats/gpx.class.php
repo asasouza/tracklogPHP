@@ -34,7 +34,9 @@ class GPX extends Tracklog{
 		$gpx->addAttribute('xmlns:xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		$gpx->addAttribute('xsi:xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd');
 			$metadata = $gpx->addChild('metadata');
-				$time = $metadata->addChild('time', $this->getTime()[0]);
+				if ($this->hasTime()) {
+					$time = $metadata->addChild('time', $this->getTimes()[0]);
+				}				
 			$trk = $gpx->addChild('trk');
 				if (isset($this->trackData['meta_tag']['name'])) {
 					$trk->addChild('name', $this->trackData['meta_tag']['name']);
@@ -45,7 +47,7 @@ class GPX extends Tracklog{
 					$trkpt->addAttribute('lat', $trackdata['lat']);
 					$trkpt->addAttribute('lon', $trackdata['lon']);
 						$ele = $trkpt->addChild('ele', $trackdata['ele']);
-						if ((get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson') {
+						if ($this->hasTime()) {
 							$trkpt->addChild('time', $trackdata['time']);
 						}
 				}

@@ -51,6 +51,10 @@ abstract class Tracklog{
 		return $angle * $earthRadius;
 	}
 
+	//verifica se o arquivo utilizado possui variaveis de tempo;
+		return !empty($this->trackData[0]['time']);
+	}
+
 	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
 	//disponiveis para cada tipo de arquivo;
 	public function getPoints($output = "array"){

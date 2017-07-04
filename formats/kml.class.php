@@ -130,9 +130,5 @@ class KML extends Tracklog{
 			return false;
 		}
 	}
-
-	public function hasTime(){
-		return !empty($this->trackData[0]['time']);
-	}
 }
 ?>

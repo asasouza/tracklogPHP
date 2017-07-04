@@ -35,7 +35,7 @@ class TCX extends Tracklog{
 			$course = $courses->addChild('Course');
 				$course->addChild('Name', isset($this->trackData['meta_tag']['name']) ? $this->trackData['meta_tag']['name'] : 'TrackLogPHPConv');
 				$lap = $course->addChild('Lap');
-					$lap->addChild('TotalTimeSeconds', $this->getTotalTime('seconds'));
+					$lap->addChild('TotalTimeSeconds', (get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson' ? $this->getTotalTime('seconds') : 0.0);
 						$lap->addChild('DistanceMeters', $this->getTotalDistance('meters'));
 						$begginPosition = $lap->addChild('BeginPosition');
 							$begginPosition->addChild('LatitudeDegrees', $this->trackData[0]['lat']);
@@ -49,6 +49,8 @@ class TCX extends Tracklog{
 					$trackpoint = $track->addChild('Trackpoint');
 						if ((get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson') {
 							$trackpoint->addChild('Time', $trackdata['time']);
+						}else{
+							$trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
 						}
 						$position = $trackpoint->addChild('Position');
 							$position->addChild('LatitudeDegrees', $trackdata['lat']);

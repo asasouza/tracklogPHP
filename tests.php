@@ -2,8 +2,8 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/test.kml';
-// $kml = new KML($file);
+$file = 'test_files/test.kml';
+$kml = new KML($file);
 
 // $file = 'test_files/test2.kml';
 // $kml = new KML($file);
@@ -12,14 +12,14 @@ require("autoloader.php");
 // print_r($kml->getLons());
 // print_r($kml->getLats());
 // print_r($kml->getTime());
-// echo ($kml->getPace());
+// $kml->getPace();
 // echo ($kml->getTotalTime());
 // echo $kml->getTotalDistance('meters');
 // echo $kml->getMaxHeight();
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
-// htmlentities($kml->out('tcx', 'converted_files/test2.tcx'));
+htmlentities($kml->out('tcx', 'converted_files/test2.tcx'));
 // echo $kml->validate($file);
 print("<br>");
 
@@ -31,9 +31,9 @@ $tcx = new TCX($file);
 // $tcx->getLons();
 // $tcx->getLats();
 // print_r($tcx->getTimes());
-// $tcx->getTotalDistance('kilometers');
+// echo $tcx->getTotalDistance('kilometers');
 // echo $tcx->getTotalTime();
-// $tcx->getPace();
+// echo $tcx->getPace();
 // $tcx->getMaxHeight();
 // echo $tcx->validate($file);
 htmlentities($tcx->out('kml', 'converted_files/test.kml'));

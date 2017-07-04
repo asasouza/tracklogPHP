@@ -52,6 +52,7 @@ abstract class Tracklog{
 	}
 
 	//verifica se o arquivo utilizado possui variaveis de tempo;
+	protected function hasTime(){
 		return !empty($this->trackData[0]['time']);
 	}
 

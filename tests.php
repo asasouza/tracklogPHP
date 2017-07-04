@@ -2,11 +2,11 @@
 require("autoloader.php");
 
 // //KML tests
-$file = 'test_files/test.kml';
-$kml = new KML($file);
+// $file = 'test_files/test.kml';
+// $kml = new KML($file);
 
-$file = 'test_files/test2.kml';
-$kml = new KML($file);
+// $file = 'test_files/test2.kml';
+// $kml = new KML($file);
 // print_r($kml->getPoints());
 // print_r($kml->getEles());
 // print_r($kml->getLons());
@@ -19,38 +19,38 @@ $kml = new KML($file);
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
-echo htmlentities($kml->out('kml', 'converted_files/test2.tcx'));
+// htmlentities($kml->out('tcx', 'converted_files/test2.tcx'));
 // echo $kml->validate($file);
 print("<br>");
 
 // //TCX tests
-$file = 'test_files/test.tcx';
+$file = 'converted_files/test2.tcx';
 $tcx = new TCX($file);
 // print_r($tcx->getPoints());
 // $tcx->getEles();
 // $tcx->getLons();
 // $tcx->getLats();
-// $tcx->getTime();
+// print_r($tcx->getTimes());
 // $tcx->getTotalDistance('kilometers');
 // echo $tcx->getTotalTime();
 // $tcx->getPace();
 // $tcx->getMaxHeight();
 // echo $tcx->validate($file);
-// echo htmlentities($tcx->out('tcx', 'converted_files/test.tcx'));
+htmlentities($tcx->out('kml', 'converted_files/test.kml'));
 
 print("<br>");
 
 // //GPX tests
-$file = 'test_files/test.gpx';
-$gpx = new GPX($file);
+// $file = 'converted_files/test2.gpx';
+// $gpx = new GPX($file);
 // $gpx->getPoints();
 // $gpx->getEles();
 // $gpx->getLons();
 // $gpx->getLats();
 // $gpx->getTime();
-// $gpx->getTotalDistance('kilometers');
-// $gpx->getTotalTime();
-// $gpx->getPace();
+// echo $gpx->getTotalDistance('kilometers');
+// echo $gpx->getTotalTime();
+// echo $gpx->getPace();
 // $gpx->getMaxHeight();
 // echo $gpx->validate($file);
 // echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));

@@ -18,12 +18,17 @@ class GPX extends Tracklog{
 			$this->populateDistance();
 			return $this;
 		}else{
-			throw new Exception("Invalid GPX file", 1);
+			$erros = libxml_get_errors();
+			foreach ($erros as $erro) {
+				print_r($erro);
+				echo '<br>';
+			}
 		}
 	}
 
 	protected function write($file_path = null){
 		$gpx = new SimpleXMLElement('<gpx />');
+		$gpx->addAttribute('creator', 'TracklogPHP');
 		$gpx->addAttribute('version', '1.1');
 		$gpx->addAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
 		$gpx->addAttribute('xmlns:xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
@@ -40,7 +45,7 @@ class GPX extends Tracklog{
 					$trkpt->addAttribute('lat', $trackdata['lat']);
 					$trkpt->addAttribute('lon', $trackdata['lon']);
 						$ele = $trkpt->addChild('ele', $trackdata['ele']);
-						if (get_class($this) != 'KML' && get_class($this) != 'GeoJson') { //mudar posteriormente
+						if ((get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson') {
 							$trkpt->addChild('time', $trackdata['time']);
 						}
 				}

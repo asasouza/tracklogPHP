@@ -18,7 +18,11 @@ class TCX extends Tracklog{
 			}
 			return $this;	
 		}else{
-			throw new Exception("Invalid TCX file", 1);			
+			$erros = libxml_get_errors();
+			foreach ($erros as $erro) {
+				print_r($erro);
+				echo '<br>';
+			}
 		}	
 	}
 
@@ -29,13 +33,11 @@ class TCX extends Tracklog{
 		$tcx->addAttribute('xsi:xsi:schemaLocation', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd');
 		$courses = $tcx->addChild('Courses');
 			$course = $courses->addChild('Course');
-				if (isset($this->trackData['meta_tag']['name'])) {
-					$course->addChild('Name', $this->trackData['meta_tag']['name']);
-				}
+				$course->addChild('Name', isset($this->trackData['meta_tag']['name']) ? $this->trackData['meta_tag']['name'] : 'TrackLogPHPConv');
 				$lap = $course->addChild('Lap');
-					$lap->addChild('TotalTimeSeconds', 'TEMPO EM SEGUNDOS');
+					$lap->addChild('TotalTimeSeconds', $this->getTotalTime('seconds'));
 						$lap->addChild('DistanceMeters', $this->getTotalDistance('meters'));
-						$begginPosition = $lap->addChild('BegginPosition');
+						$begginPosition = $lap->addChild('BeginPosition');
 							$begginPosition->addChild('LatitudeDegrees', $this->trackData[0]['lat']);
 							$begginPosition->addChild('LongitudeDegrees', $this->trackData[0]['lon']);
 						$endPosition = $lap->addChild('EndPosition');
@@ -45,7 +47,7 @@ class TCX extends Tracklog{
 				$track = $course->addChild('Track');
 				foreach ($this->trackData as $trackdata) {
 					$trackpoint = $track->addChild('Trackpoint');
-						if (get_class($this) != 'KML' && get_class($this) != 'GeoJson') { //mudar posteriormente
+						if ((get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson') {
 							$trackpoint->addChild('Time', $trackdata['time']);
 						}
 						$position = $trackpoint->addChild('Position');

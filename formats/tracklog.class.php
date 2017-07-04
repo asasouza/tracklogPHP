@@ -1,4 +1,6 @@
 <?php
+// TO DO: fazer metodo de verificação de aruqivos CSV e geoJson;
+// TO DO: na captura da meta tag 'name', deixar o tamanho maximo de 15 caracteres; Para conversão em arquivos TCX
 abstract class Tracklog{
 	//Array com todos os dados disponiveis no arquivo de log
 	//lat - latitude
@@ -65,7 +67,7 @@ abstract class Tracklog{
 		}
 	}
 
-	public function getLats(){
+	public function getLatitudes(){
 		$latitudes;
 		foreach ($this->trackData as $point) {
 			$latitudes[] = $point['lat'];
@@ -73,7 +75,7 @@ abstract class Tracklog{
 		return $latitudes;
 	}
 
-	public function getLons(){
+	public function getLongitudes(){
 		$longitudes;
 		foreach ($this->trackData as $point) {
 			$longitudes[] = $point['lon'];
@@ -81,7 +83,7 @@ abstract class Tracklog{
 		return $longitudes;
 	}
 
-	public function getEles(){
+	public function getElevations(){
 		$elevations;
 		foreach ($this->trackData as $point) {
 			$elevations[] = $point['ele'];
@@ -91,7 +93,7 @@ abstract class Tracklog{
 
 	//Não suportado por KML
 	//Não suportado por GeoJson
-	public function getTime(){
+	public function getTimes(){
 		$time;
 		foreach ($this->trackData as $point) {
 			$time[] = $point['time'];
@@ -129,7 +131,7 @@ abstract class Tracklog{
 		return number_format(max($this->getEles()), 2);
 	}
 
-	//Não suportado por KML
+	//Retorna o tempo para percorrer cada quilometro.
 	//Não suportado por GeoJson
 	public function getPace(){
 		$time = new DateTime($this->getTotalTime());
@@ -141,7 +143,7 @@ abstract class Tracklog{
 		$totalTime = $hour + $minute + $second;
 		$pace = $totalTime / $this->getTotalDistance('kilometers');
 		$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
-		return number_format($pace, 2);
+		return number_format($pace, 2, ":", "");
 	}
 
 	//Não suportado por KML
@@ -160,7 +162,7 @@ abstract class Tracklog{
 		//retorn o tempo em 'porcentagem' de hora, 0.5 significa 30 segundos, não 50.
 		switch ($format) {
 			case 'seconds':
-			return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1);
+			return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');
 			break;
 			case 'minutes':
 			return number_format($minutes = $minutes + ($hours*60) + ($seconds/60), 1);

@@ -2,14 +2,13 @@
 class KML extends Tracklog{
 
 	public function __construct($file){
-		if ($this->validate($file)) {
-			$xml = simplexml_load_file($file) or die ("File not found!");
-
+		try {
+			parent::validate($file);
+			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
-			$content = $xml->xpath('//kml:coordinates');
-			if (!empty($content)) {
+			if (!empty($content = $xml->xpath('//kml:coordinates'))) {
 				$content = preg_replace('/\s+/', ',', $content);
 				$coordinates = explode(',', $content[0]);
 				$y = 0;
@@ -20,11 +19,7 @@ class KML extends Tracklog{
 					$i = $i+3;
 					$y++;
 				}
-				$this->populateDistance();
-				return $this;
-			}else{
-				$times = $xml->xpath('//gx:Track/kml:when');				
-				$coordinates = $xml->xpath('//gx:Track/gx:coord');				
+			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($coordinates = $xml->xpath('//gx:Track/gx:coord'))){
 				foreach ($coordinates as $i => $coordinate) {
 					$coordinate = explode(' ', $coordinate);
 					$this->trackData[$i]['lon'] = number_format((float) $coordinate[0], 7);
@@ -32,18 +27,16 @@ class KML extends Tracklog{
 					$this->trackData[$i]['ele'] = number_format((float) $coordinate[2], 6);
 					$this->trackData[$i]['time'] = (string) $times[$i];
 				}
-				$this->populateDistance();
-				return $this;
+			}else{
+				throw new Exception("This file doesn't appear to have any tracklog data.", 1);
 			}
 
-			
-		}else{
-			$erros = libxml_get_errors();
-			foreach ($erros as $erro) {
-				print_r($erro);
-				echo '<br>';
-			}
-		}		
+			$this->populateDistance();
+			return $this;
+
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 
 	public function getTime(){
@@ -77,7 +70,7 @@ class KML extends Tracklog{
 		$kml->addAttribute('xmlns:xmlns:gx','http://www.google.com/kml/ext/2.2');
 		$kml->addAttribute('xsi:xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd">');
 			$document = $kml->addChild('Document');
-				if (KML::hasTime()) {
+				if ($this->hasTime()) {
 				$folder = $document->addChild('Folder');
 					if (isset($this->trackData['meta_tag']['name'])) {
 					$folder->addChild('name', $this->trackData['meta_tag']['name']);
@@ -118,17 +111,6 @@ class KML extends Tracklog{
 			$dom->save($file_path);
 		}
 		return $dom->saveXML();
-	}
-
-	protected function validate($file){
-		libxml_use_internal_errors(true);
-		$dom = new DOMDocument;
-		$dom->load($file);
-		if ($dom->schemaValidate('xsd_files/kml.xsd')) {
-			return true;
-		}else{
-			return false;
-		}
 	}
 }
 ?>

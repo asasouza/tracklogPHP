@@ -2,28 +2,29 @@
 class GPX extends Tracklog{
 
 	public function __construct($file){
-		if ($this->validate($file)) {
-			$xml = simplexml_load_file($file) or die ("File not found!");
+		try {
+			parent::validate($file);
+			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('gpx', 'http://www.topografix.com/GPX/1/1');
-			$content = $xml->xpath('//gpx:trkseg');
-			$i = 0;
-			foreach ($content[0] as $trackpoint) {
-				$this->trackData[$i]['lat'] = (float) $trackpoint['lat'];
-				$this->trackData[$i]['lon'] = (float) $trackpoint['lon'];
-				$this->trackData[$i]['ele'] = (float) $trackpoint->ele;
-				$this->trackData[$i]['time'] = (string) $trackpoint->time;
+			if(!empty($content = $xml->xpath('//gpx:trkseg'))){
+				$i = 0;
+				foreach ($content[0] as $trackpoint) {
+					$this->trackData[$i]['lat'] = (float) $trackpoint['lat'];
+					$this->trackData[$i]['lon'] = (float) $trackpoint['lon'];
+					$this->trackData[$i]['ele'] = (float) $trackpoint->ele;
+					$this->trackData[$i]['time'] = (string) $trackpoint->time;
 
-				$i++;
-			}
-			$this->populateDistance();
-			return $this;
-		}else{
-			$erros = libxml_get_errors();
-			foreach ($erros as $erro) {
-				print_r($erro);
-				echo '<br>';
-			}
-		}
+					$i++;
+				}
+				$this->populateDistance();
+				return $this;
+
+			}else{
+				throw new Exception("This file doesn't appear to have any tracklog data.");			
+			}			
+		} catch (Exception $e) {
+			throw $e;			
+		}		
 	}
 
 	protected function write($file_path = null){
@@ -62,16 +63,6 @@ class GPX extends Tracklog{
 			$dom->save($file_path);
 		}
 		return $dom->saveXML();
-		}	
-
-	protected function validate($file){
-		$dom = new DOMDocument;
-		$dom->load($file);
-		if ($dom->schemaValidate('xsd_files/gpx.xsd')) {
-			return true;
-		}else{
-			return false;
-		}
 	}
 }
 ?>

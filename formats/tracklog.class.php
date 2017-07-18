@@ -1,6 +1,10 @@
 <?php
+// TO DO: mudar metodos de validação e leitura dos arquivos para retornarem exceções no caso de erros.
 // TO DO: fazer metodo de verificação de aruqivos CSV e geoJson;
+// TO DO: modificar arquivo xsd do kml para realizar validação dos campos de latitude e long, não esta fazendo.
 // TO DO: na captura da meta tag 'name', deixar o tamanho maximo de 15 caracteres; Para conversão em arquivos TCX
+// TO DO: colocar retorno json em todos metodos que retornam arrays (arquivado por enquanto/fora do escopo da biblioteca);
+// TO DO: Documentação!!!!!!!!!!!!!!!
 abstract class Tracklog{
 	//Array com todos os dados disponiveis no arquivo de log
 	//lat - latitude
@@ -17,7 +21,14 @@ abstract class Tracklog{
 	//Função de escrita de xml pela classe filha
 	protected abstract function write();
 
-	protected abstract function validate($file);
+	protected function validate($file){
+		$dom = new DOMDocument;
+		$dom->load($file);
+		if(!$dom->schemaValidate("xsd_files/". get_class($this) .".xsd")){
+			throw new Exception("This isn't a valid " . get_class($this) . " file.", 1);
+		}
+		return true;
+	}
 
 	//Função para popular o vetor TrackData com a variavel distancia [dstc] para os arquivos 
 	//que não possuem tal informação (KML, GPX, GeoJson);
@@ -34,7 +45,7 @@ abstract class Tracklog{
 	}
 
 	//Função para calculo de distancia entre duas lat/lon (utilizado em populateDistance);
-	protected function haversineFormula($latB, $lonB, $latE, $lonE){
+	private function haversineFormula($latB, $lonB, $latE, $lonE){
 		$earthRadius = 6371000;
 		//begging parameters
 		$latB = deg2rad($latB);
@@ -58,18 +69,8 @@ abstract class Tracklog{
 
 	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
 	//disponiveis para cada tipo de arquivo;
-	public function getPoints($output = "array"){
-		switch ($output) {
-			case 'array':
-			return $this->trackData;
-			break;
-			case 'json':
-			return json_encode($this->trackData);
-			break;
-			default:
-			throw new Exception("Output format not recognized", 1);			
-			break;
-		}
+	public function getPoints(){		
+		return $this->trackData;
 	}
 
 	public function getLatitudes(){
@@ -96,7 +97,7 @@ abstract class Tracklog{
 		return $elevations;
 	}
 
-	//Não suportado por KML
+	//Não suportado por KML simples
 	//Não suportado por GeoJson
 	public function getTimes(){
 		$time;
@@ -133,7 +134,7 @@ abstract class Tracklog{
 	}
 
 	public function getMaxHeight(){
-		return number_format(max($this->getEles()), 2);
+		return number_format(max($this->getElevations()), 2);
 	}
 
 	//Retorna o tempo para percorrer cada quilometro.
@@ -151,7 +152,7 @@ abstract class Tracklog{
 		return number_format($pace, 2, ":", "");
 	}
 
-	//Não suportado por KML
+	//Não suportado por KML simples
 	//Não suportado por GeoJson
 	public function getTotalTime($format = null){
 		$dateDiff = new DateTime('0000-00-00 00:00:00');

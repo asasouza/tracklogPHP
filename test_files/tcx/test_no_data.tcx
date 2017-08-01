@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
+  <Folders>
+    <Courses>
+      <CourseFolder Name="GPSies">
+        <CourseNameRef>
+          <Id>Topo_rdp_topo</Id>
+        </CourseNameRef>
+      </CourseFolder>
+    </Courses>
+  </Folders>
+  <Courses>
+    <Course>
+      <Name>Topo_rdp_topo</Name>
+      <Lap>
+        <TotalTimeSeconds>2485.0</TotalTimeSeconds>
+        <DistanceMeters>6010.699324769126</DistanceMeters>
+        <BeginPosition>
+          <LatitudeDegrees>-23.8097560</LatitudeDegrees>
+          <LongitudeDegrees>-45.4189910</LongitudeDegrees>
+        </BeginPosition>
+        <EndPosition>
+          <LatitudeDegrees>-23.8097780</LatitudeDegrees>
+          <LongitudeDegrees>-45.4190450</LongitudeDegrees>
+        </EndPosition>
+        <Intensity>Active</Intensity>
+      </Lap>
+      <Track>
+      </Track>
+    </Course>
+  </Courses>
+</TrainingCenterDatabase>
+

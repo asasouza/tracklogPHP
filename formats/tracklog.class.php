@@ -5,6 +5,7 @@
 // TO DO: na captura da meta tag 'name', deixar o tamanho maximo de 15 caracteres; Para conversão em arquivos TCX
 // TO DO: colocar retorno json em todos metodos que retornam arrays (arquivado por enquanto/fora do escopo da biblioteca);
 // TO DO: Documentação!!!!!!!!!!!!!!!
+// TO DO: obter marcadores nos arquivos.
 abstract class Tracklog{
 	//Array com todos os dados disponiveis no arquivo de log
 	//lat - latitude
@@ -24,10 +25,12 @@ abstract class Tracklog{
 	protected function validate($file){
 		$dom = new DOMDocument;
 		$dom->load($file);
-		if(!$dom->schemaValidate("xsd_files/". get_class($this) .".xsd")){
+		try {
+			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
+			return true;
+		} catch (Exception $e) {
 			throw new Exception("This isn't a valid " . get_class($this) . " file.", 1);
-		}
-		return true;
+		}	
 	}
 
 	//Função para popular o vetor TrackData com a variavel distancia [dstc] para os arquivos 

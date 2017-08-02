@@ -136,7 +136,7 @@ abstract class Tracklog{
 		}
 	}
 
-	public function getMaxHeight(){
+	public function getMaxElevation(){
 		return number_format(max($this->getElevations()), 2);
 	}
 

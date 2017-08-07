@@ -7,7 +7,6 @@ class TCX extends Tracklog{
 			parent::validate($file);
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('tcx', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
-
 			if (!empty($content = $xml->xpath('//tcx:Track'))) {
 				$i = 0;		
 				foreach ($content[0] as $trackpoint) {
@@ -20,9 +19,9 @@ class TCX extends Tracklog{
 				}
 				return $this;
 			}else{
-				throw new Exception("This file doesn't appear to have any tracklog data.");	
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");	
 			}
-		} catch (Exception $e) {
+		} catch (TracklogPhpException $e) {
 			throw $e;
 		}
 	}

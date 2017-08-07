@@ -20,9 +20,9 @@ class GPX extends Tracklog{
 				return $this;
 
 			}else{
-				throw new Exception("This file doesn't appear to have any tracklog data.");			
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");			
 			}			
-		} catch (Exception $e) {
+		} catch (TracklogPhpException $e) {
 			throw $e;			
 		}		
 	}

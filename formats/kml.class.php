@@ -28,13 +28,13 @@ class KML extends Tracklog{
 					$this->trackData[$i]['time'] = (string) $times[$i];
 				}
 			}else{
-				throw new Exception("This file doesn't appear to have any tracklog data.", 1);
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.", 1);
 			}
 
 			$this->populateDistance();
 			return $this;
 
-		} catch (Exception $e) {
+		} catch (TracklogPhpException $e) {
 			throw $e;
 		}
 	}
@@ -43,7 +43,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getTime();
 		}else{
-			throw new Exception("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
 		}
 	}
 
@@ -51,7 +51,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getPace();
 		}else{
-			throw new Exception("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
 		}
 	}
 
@@ -59,7 +59,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getTotalTime($format);
 		}else{
-			throw new Exception("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
 		}
 	}
 

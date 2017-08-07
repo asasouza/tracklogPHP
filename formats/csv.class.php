@@ -18,15 +18,15 @@ class CSV extends Tracklog{
 	}
 
 	public function getTime(){
-		throw new Exception("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
 	}
 
 	public function getPace(){
-		throw new Exception("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
 	}
 
 	public function getTotalTime(){
-		throw new Exception("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
 	}
 
 	protected function write($file_path = null){

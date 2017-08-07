@@ -24,16 +24,16 @@ require("autoloader.php");
 print("<br>");
 
 // TCX tests
-$file = 'test_files/tcx/test_correct.tcx';
-$tcx = new TCX($file);
+// $file = 'test_files/tcx/test_correct.tcx';
+// $tcx = new TCX($file);
 // print_r($tcx->getPoints());
 // $tcx->getElevations();
 // $tcx->getLongitudes();
 // $tcx->getLatitudes();
 // print_r($tcx->getTimes());
 // echo $tcx->getTotalDistance('miles');
-// echo $tcx->getTotalTime('hours');
-echo $tcx->getPace();
+// echo $tcx->getTotalTime();
+// echo $tcx->getPace();
 // $tcx->getMaxHeight();
 // echo $tcx->validate($file);
 // htmlentities($tcx->out('kml', 'converted_files/test.kml'));
@@ -41,17 +41,17 @@ echo $tcx->getPace();
 print("<br>");
 
 // //GPX tests
-// $file = 'converted_files/test2.gpx';
+// $file = "C:\Users\Alex Sandro A. Sozua\Downloads\Topo_Pontal_Topo.gpx";
 // $gpx = new GPX($file);
-// print_r($gpx->getPoints());
+// print(count($gpx->getPoints())); echo '<br>';
 // $gpx->getElevations();
 // $gpx->getLongitudes();
 // $gpx->getLatitudes();
 // $gpx->getTimes();
-// echo $gpx->getTotalDistance('kilometers');
-// echo $gpx->getTotalTime();
-// echo $gpx->getPace();
-// $gpx->getMaxHeight();
+// echo $gpx->getTotalDistance('kilometers'); echo '<br>';
+// echo $gpx->getTotalTime(); echo '<br>';
+// echo $gpx->getPace(); echo '<br>';
+// echo $gpx->getMaxElevation(); echo '<br>';
 // echo $gpx->validate($file);
 // echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
 

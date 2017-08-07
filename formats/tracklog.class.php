@@ -24,12 +24,15 @@ abstract class Tracklog{
 
 	protected function validate($file){
 		$dom = new DOMDocument;
+		if (!file_exists($file)) {
+			throw new Exception('Failed to load external entity "' . $file . '"');
+		}
 		$dom->load($file);
-		try {
+		try {			
 			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
 			return true;
-		} catch (Exception $e) {
-			throw new Exception("This isn't a valid " . get_class($this) . " file.", 1);
+		} catch (TracklogPhpException $e) {
+			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.", 1);
 		}	
 	}
 
@@ -131,7 +134,7 @@ abstract class Tracklog{
 			return number_format($totalDistance/1609.34, 2, '.', '');
 			break;
 			default:
-			throw new Exception("Unit format not recognized", 1);			
+			throw new TracklogPhpException("Unit format not recognized", 1);			
 			break;
 		}
 	}
@@ -205,9 +208,13 @@ abstract class Tracklog{
 			return CSV::write($file_path);
 			break;
 			default:
-			throw new Exception("Output type invalid!", 1);				
+			throw new TracklogPhpException("Output type invalid!", 1);				
 			break;
 		}
+	}
+
+	public function getTrackName(){
+		return 0;
 	}
 }
 

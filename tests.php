@@ -24,9 +24,9 @@ require("autoloader.php");
 print("<br>");
 
 // TCX tests
-// $file = 'test_files/tcx/test_correct.tcx';
-// $tcx = new TCX($file);
-// print_r($tcx->getPoints());
+$file = 'test_files/tcx/test_invalid.tcx';
+$tcx = new TCX($file);
+print_r($tcx->getPoints());
 // $tcx->getElevations();
 // $tcx->getLongitudes();
 // $tcx->getLatitudes();

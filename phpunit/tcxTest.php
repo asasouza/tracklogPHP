@@ -30,7 +30,7 @@ final class TCXTeste extends TestCase{
 	}
 
 	public function testNoExistingFile(){
-		$this->expectException(TracklogPhpException::class);
+		$this->expectException(Exception::class);
 		new TCX('test_files/tcx/test_no_existing.tcx');
 	}
 

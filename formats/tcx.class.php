@@ -21,7 +21,7 @@ class TCX extends Tracklog{
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");	
 			}
-		} catch (TracklogPhpException $e) {
+		} catch (Exception $e) {
 			throw $e;
 		}
 	}

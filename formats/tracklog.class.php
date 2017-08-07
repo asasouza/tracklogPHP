@@ -26,13 +26,13 @@ abstract class Tracklog{
 		$dom = new DOMDocument;
 		if (!file_exists($file)) {
 			throw new Exception('Failed to load external entity "' . $file . '"');
-		}
-		$dom->load($file);
+		}else{
+			$dom->load($file);	
+		}		
 		try {			
 			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
-			return true;
-		} catch (TracklogPhpException $e) {
-			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.", 1);
+		} catch (Exception $e) {
+			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
 		}	
 	}
 

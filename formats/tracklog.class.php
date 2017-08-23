@@ -1,7 +1,7 @@
 <?php
 abstract class Tracklog {
 
-	protected $trackData;	
+	protected $trackData = array();
 
 	protected abstract function __construct($file);
 

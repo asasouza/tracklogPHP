@@ -33,21 +33,21 @@ class CSV extends Tracklog{
 			$this->populateDistance();
 			return $this;	
 
-		} catch (Exception $e) {
+		} catch (TracklogPhpException $e) {
 			throw new TracklogPhpException("Invalid CSV file.");
 		}	
 	}
 
 	public function getTime(){
-		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations");
 	}
 
 	public function getPace(){
-		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations");
 	}
 
 	public function getTotalTime(){
-		throw new TracklogPhpException("CSV files don't support time manipulations", 1);
+		throw new TracklogPhpException("CSV files don't support time manipulations");
 	}
 
 	protected function write($file_path = null){

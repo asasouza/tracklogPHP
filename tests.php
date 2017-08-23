@@ -73,7 +73,6 @@ print("<br>");
 //CSV Tests
 $file = 'test_files/csv/test_correct.csv';
 $csv = new CSV($file);
-print_r($csv->Teste());
 // print_r($csv->getPoints());
 //$csv->getElevations();
 //$csv->getLongitudes();

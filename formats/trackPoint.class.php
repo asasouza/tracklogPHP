@@ -23,23 +23,46 @@ class TrackPoint{
 	}
 	
 	public function setLatitude($latitude){
-		$this->latitude = $latitude;
+		$latitude = number_format((float) $latitude, 7);
+		if(is_float($latitude) && $latitude >= -90 && $latitude <= 90 ){
+			$this->latitude = $latitude;
+		}else{
+			throw new TracklogPhpException("Invalid latitude point.");
+		}
 	}
 
 	public function setLongitude($longitude){
-		$this->longitude = $longitude;
+		$longitude = number_format((float) $longitude, 7);
+		if (is_float($longitude) && $longitude >= -180 && $longitude <= 180) {
+			$this->longitude = $longitude;
+		}else{
+			throw new TracklogPhpException("Invalid longitude point.");
+		}
 	}
 
 	public function setElevation($elevation){
-		$this->elevation = $elevation;
+		$elevation = number_format((float) $elevation, 6);
+		if (is_float($elevation)) {
+			$this->elevation = $elevation;
+		}else{
+			throw new TracklogPhpException("Invalid elevation point.");
+		}		
 	}
 
 	public function setTime($time){
-		$this->time = $time;
+		if (preg_match(pattern, $time)) {
+			$this->time = $time;
+		}else{
+			throw new TracklogPhpException("Invalid time point");			
+		}		
 	}
 
 	public function setDistance($distance){
-		$this->distance = $distance;
+		if (is_float($distance)) {
+			$this->distance = $distance;
+		}else{
+			throw new TracklogPhpException("Invalid distance point");			
+		}		
 	}
 }
 ?>

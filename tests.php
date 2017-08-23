@@ -24,9 +24,9 @@ require("autoloader.php");
 print("<br>");
 
 // TCX tests
-$file = 'test_files/tcx/test_invalid.tcx';
-$tcx = new TCX($file);
-print_r($tcx->getPoints());
+// $file = 'test_files/tcx/test_no_data.tcx';
+// $tcx = new TCX($file);
+// print_r($tcx->getPoints());
 // $tcx->getElevations();
 // $tcx->getLongitudes();
 // $tcx->getLatitudes();
@@ -71,14 +71,17 @@ print("<br>");
 print("<br>");
 
 //CSV Tests
-// $file = 'test_files/test.csv';
-// $csv = new CSV($file);
-//$csv->getPoints();
+$file = 'test_files/csv/test_correct.csv';
+$csv = new CSV($file);
+print_r($csv->Teste());
+// print_r($csv->getPoints());
 //$csv->getElevations();
 //$csv->getLongitudes();
 //$csv->getLatitudes();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
 // echo $tcx->out('csv');
+
+
 
 ?>

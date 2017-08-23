@@ -28,7 +28,7 @@ class KML extends Tracklog{
 					$this->trackData[$i]['time'] = (string) $times[$i];
 				}
 			}else{
-				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.", 1);
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 			}
 
 			$this->populateDistance();
@@ -43,7 +43,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getTime();
 		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations");	
 		}
 	}
 
@@ -51,7 +51,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getPace();
 		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations");	
 		}
 	}
 
@@ -59,7 +59,7 @@ class KML extends Tracklog{
 		if ($this->hasTime()) {
 			return parent::getTotalTime($format);
 		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations", 1);	
+			throw new TracklogPhpException("This KML file don't support time manipulations");	
 		}
 	}
 
@@ -111,6 +111,21 @@ class KML extends Tracklog{
 			$dom->save($file_path);
 		}
 		return $dom->saveXML();
+	}
+
+	protected function validate($file){
+		set_error_handler(array('Tracklog', 'error_handler'));
+		$dom = new DOMDocument;
+		if (!file_exists($file)) {
+			throw new Exception('Failed to load external entity "' . $file . '"');
+		}else{
+			$dom->load($file);	
+		}		
+		try {			
+			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
+		} catch (Exception $e) {
+			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+		}	
 	}
 }
 ?>

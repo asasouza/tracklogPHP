@@ -46,5 +46,7 @@ class GeoJson extends Tracklog{
 
 		return $json;
 	}
+
+	protected function validate($file){}
 }
 ?>

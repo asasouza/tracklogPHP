@@ -1,43 +1,21 @@
 <?php
-// TO DO: mudar metodos de validação e leitura dos arquivos para retornarem exceções no caso de erros.
-// TO DO: fazer metodo de verificação de aruqivos CSV e geoJson;
-// TO DO: modificar arquivo xsd do kml para realizar validação dos campos de latitude e long, não esta fazendo.
-// TO DO: na captura da meta tag 'name', deixar o tamanho maximo de 15 caracteres; Para conversão em arquivos TCX
-// TO DO: colocar retorno json em todos metodos que retornam arrays (arquivado por enquanto/fora do escopo da biblioteca);
-// TO DO: Documentação!!!!!!!!!!!!!!!
-// TO DO: obter marcadores nos arquivos.
-abstract class Tracklog{
-	//Array com todos os dados disponiveis no arquivo de log
-	//lat - latitude
-	//log - longitude
-	//ele - altura/elevação
-	//time - tempo/horario
-	//dstc - distancia
-	protected $trackData;
+abstract class Tracklog {
 
-	//A classe nunca é criada diretamente, ficando a cargo da classe filha;
-	//No metodo construtor a classe filha captura os dados de acordo com sua estrutura xml e popula o vetor $trackData;
+	protected $trackData;	
+
 	protected abstract function __construct($file);
 
-	//Função de escrita de xml pela classe filha
 	protected abstract function write();
 
-	protected function validate($file){
-		$dom = new DOMDocument;
-		if (!file_exists($file)) {
-			throw new Exception('Failed to load external entity "' . $file . '"');
-		}else{
-			$dom->load($file);	
-		}		
-		try {			
-			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
-		} catch (Exception $e) {
-			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
-		}	
+	protected abstract function validate($file);
+
+	public function error_handler($errno, $message){
+		if (!(error_reporting() & $errno)) {
+			return;
+		}
+		throw new TracklogPhpException("");
 	}
 
-	//Função para popular o vetor TrackData com a variavel distancia [dstc] para os arquivos 
-	//que não possuem tal informação (KML, GPX, GeoJson);
 	protected function populateDistance(){
 		$distance = number_format(0.000, 3, '.', '');
 		$this->trackData[0]['dstc'] = $distance;
@@ -50,31 +28,23 @@ abstract class Tracklog{
 		}
 	}
 
-	//Função para calculo de distancia entre duas lat/lon (utilizado em populateDistance);
 	private function haversineFormula($latB, $lonB, $latE, $lonE){
 		$earthRadius = 6371000;
-		//begging parameters
 		$latB = deg2rad($latB);
 		$lonB = deg2rad($lonB);
-			//ending parameters
 		$latE = deg2rad($latE);
 		$lonE = deg2rad($lonE);
-			//deltas
 		$latDelta = $latE - $latB;
 		$lonDelta = $lonE - $lonB;
-
 		$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
 			cos($latB) * cos($latE) * pow(sin($lonDelta / 2), 2)));
 		return $angle * $earthRadius;
 	}
 
-	//verifica se o arquivo utilizado possui variaveis de tempo;
 	protected function hasTime(){
 		return !empty($this->trackData[0]['time']);
 	}
 
-	//Os métodos abaixo são comuns a todos os tipos de formato, sofrendo variancia de acordo com as informações
-	//disponiveis para cada tipo de arquivo;
 	public function getPoints(){		
 		return $this->trackData;
 	}
@@ -103,8 +73,6 @@ abstract class Tracklog{
 		return $elevations;
 	}
 
-	//Não suportado por KML simples
-	//Não suportado por GeoJson
 	public function getTimes(){
 		$time;
 		foreach ($this->trackData as $point) {
@@ -143,14 +111,10 @@ abstract class Tracklog{
 		return number_format(max($this->getElevations()), 2);
 	}
 
-	//Retorna o tempo para percorrer cada quilometro.
-	//Não suportado por GeoJson
 	public function getPace(){
 		$time = new DateTime($this->getTotalTime());
-		//multiplicar horas para transformar em minutos;
 		$hour = $time->format('H') * 60;
 		$minute = $time->format('i');
-		//dividir segundos para transformar em frações de minutos;
 		$second = $time->format('s') / 60;
 		$totalTime = $hour + $minute + $second;
 		$pace = $totalTime / $this->getTotalDistance('kilometers');
@@ -158,8 +122,6 @@ abstract class Tracklog{
 		return number_format($pace, 2, ":", "");
 	}
 
-	//Não suportado por KML simples
-	//Não suportado por GeoJson
 	public function getTotalTime($format = null){
 		$dateDiff = new DateTime('0000-00-00 00:00:00');
 		for ($i=0; $i < count($this->trackData)-1; $i++) { 
@@ -171,7 +133,6 @@ abstract class Tracklog{
 		$hours = $dateDiff->format('H');
 		$minutes = $dateDiff->format('i');
 		$seconds = $dateDiff->format('s');
-		//retorn o tempo em 'porcentagem' de hora, 0.5 significa 30 segundos, não 50.
 		switch ($format) {
 			case 'seconds':
 			return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');

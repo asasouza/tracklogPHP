@@ -2,17 +2,14 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/kml/test.kml';
-// $kml = new KML($file);
-
-// $file = 'test_files/kml/test2.kml';
-// $kml = new KML($file);
-// print_r($kml->getPoints());
+$file = 'test_files/kml/test_correct_time.kml';
+$kml = new KML($file);
+print_r($kml->getPoints());
 // print_r($kml->getElevations());
 // print_r($kml->getLongitudes());
 // print_r($kml->getLatitudes());
 // print_r($kml->getTimes());
-// echo $kml->getPace();
+echo $kml->getPace();
 // echo ($kml->getTotalTime());
 // echo $kml->getTotalDistance('kilometers');
 // echo $kml->getMaxHeight();
@@ -24,36 +21,42 @@ require("autoloader.php");
 print("<br>");
 
 // TCX tests
-// $file = 'test_files/tcx/test_no_data.tcx';
+// $file = 'test_files/tcx/test_correct_no_elevation.tcx';
 // $tcx = new TCX($file);
 // print_r($tcx->getPoints());
 // $tcx->getElevations();
 // $tcx->getLongitudes();
 // $tcx->getLatitudes();
 // print_r($tcx->getTimes());
-// echo $tcx->getTotalDistance('miles');
+// echo $tcx->getTotalDistance('kilometers');
 // echo $tcx->getTotalTime();
 // echo $tcx->getPace();
 // $tcx->getMaxHeight();
 // echo $tcx->validate($file);
-// htmlentities($tcx->out('kml', 'converted_files/test.kml'));
+// htmlentities($tcx->out('tcx', 'converted_files/test.tcx'));
+// $file = 'converted_files/test.tcx';
+// $tcx = new TCX($file);
+// print_r($tcx->getPoints());
 
 print("<br>");
 
 // //GPX tests
-// $file = "C:\Users\Alex Sandro A. Sozua\Downloads\Topo_Pontal_Topo.gpx";
+// $file = "test_files/gpx/test_correct.gpx";
 // $gpx = new GPX($file);
-// print(count($gpx->getPoints())); echo '<br>';
-// $gpx->getElevations();
-// $gpx->getLongitudes();
-// $gpx->getLatitudes();
-// $gpx->getTimes();
+// print_r($gpx->getPoints());
+// print_r($gpx->getElevations());
+// print_r($gpx->getLongitudes());
+// print_r($gpx->getLatitudes());
+// print_r($gpx->getTimes());
 // echo $gpx->getTotalDistance('kilometers'); echo '<br>';
 // echo $gpx->getTotalTime(); echo '<br>';
 // echo $gpx->getPace(); echo '<br>';
 // echo $gpx->getMaxElevation(); echo '<br>';
 // echo $gpx->validate($file);
-// echo htmlentities($tcx->out('gpx', 'converted_files/test.gpx'));
+// htmlentities($gpx->out('gpx', 'converted_files/test.gpx'));
+// $file = 'converted_files/test.gpx';
+// $gpx = new GPX($file);
+// print_r($gpx->getPoints());
 
 print("<br>");
 
@@ -71,8 +74,8 @@ print("<br>");
 print("<br>");
 
 //CSV Tests
-$file = 'test_files/csv/test_correct.csv';
-$csv = new CSV($file);
+// $file = 'test_files/csv/test_correct.csv';
+// $csv = new CSV($file);
 // print_r($csv->getPoints());
 //$csv->getElevations();
 //$csv->getLongitudes();

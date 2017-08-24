@@ -3,6 +3,8 @@ abstract class Tracklog {
 
 	protected $trackData = array();
 
+	protected $trackName;
+
 	protected abstract function __construct($file);
 
 	protected abstract function write();
@@ -13,18 +15,21 @@ abstract class Tracklog {
 		if (!(error_reporting() & $errno)) {
 			return;
 		}
-		throw new TracklogPhpException("");
+		echo $message;
+		throw new TracklogPhpException();
 	}
 
 	protected function populateDistance(){
-		$distance = number_format(0.000, 3, '.', '');
-		$this->trackData[0]['dstc'] = $distance;
+		$distance = 0;
+		$this->trackData[0]->setDistance($distance);
 		for ($i=0; $i < count($this->trackData)-1; $i++) { 
-			$distance += $this->haversineFormula($this->trackData[$i]['lat'], 
-				$this->trackData[$i]['lon'], 
-				$this->trackData[$i+1]['lat'], 
-				$this->trackData[$i+1]['lon']);
-			$this->trackData[$i+1]['dstc'] = number_format($distance, 3, '.', '');
+			
+			$distance += $this->haversineFormula($this->trackData[$i]->getLatitude(), 
+				$this->trackData[$i]->getLongitude(), 
+				$this->trackData[$i+1]->getLatitude(), 
+				$this->trackData[$i+1]->getLongitude());
+			
+			$this->trackData[$i+1]->setDistance((string) $distance);
 		}
 	}
 
@@ -42,55 +47,79 @@ abstract class Tracklog {
 	}
 
 	protected function hasTime(){
-		return !empty($this->trackData[0]['time']);
+		return !is_null($this->trackData[0]->getTime());
 	}
 
-	public function getPoints(){		
-		return $this->trackData;
+	protected function hasElevation(){
+		return !is_null($this->trackData[0]->getElevation());
+	}
+
+	protected function hasDistance(){
+		return !is_null($this->trackData[0]->getDistance());
+	}
+
+	public function getPoints(){
+		$points;
+		foreach ($this->trackData as $key => $trackPoint) {
+			$points[$key]['latitude'] = $trackPoint->getLatitude();
+			$points[$key]['longitude'] = $trackPoint->getLongitude();
+			$points[$key]['elevation'] = $trackPoint->getElevation();
+			$points[$key]['time'] = $trackPoint->getTime();
+			$points[$key]['distance'] = $trackPoint->getDistance();
+		}
+		return $points;
 	}
 
 	public function getLatitudes(){
 		$latitudes;
-		foreach ($this->trackData as $point) {
-			$latitudes[] = $point['lat'];
+		foreach ($this->trackData as $trackPoint) {
+			$latitudes[] = $trackPoint->getLatitude();
 		}
 		return $latitudes;
 	}
 
 	public function getLongitudes(){
 		$longitudes;
-		foreach ($this->trackData as $point) {
-			$longitudes[] = $point['lon'];
+		foreach ($this->trackData as $trackPoint) {
+			$longitudes[] = $trackPoint->getLongitude();
 		}
 		return $longitudes;
 	}
 
 	public function getElevations(){
-		$elevations;
-		foreach ($this->trackData as $point) {
-			$elevations[] = $point['ele'];
+		if($this->hasElevation()){
+			$elevations;
+			foreach ($this->trackData as $trackPoint) {
+				$elevations[] = $trackPoint->getElevation();
+			}
+			return $elevations;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data");
 		}
-		return $elevations;
 	}
 
 	public function getTimes(){
-		$time;
-		foreach ($this->trackData as $point) {
-			$time[] = $point['time'];
-		}
-		return $time;
+		if ($this->hasTime()) {
+			$time;
+			foreach ($this->trackData as $trackPoint) {
+				$time[] = $trackPoint->getTime();
+			}
+			return $time;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}		
 	}
 
 	public function getDistances(){
 		$distances;
-		foreach ($this->trackData as $point) {
-			$distances[] = $point['dstc'];
+		foreach ($this->trackData as $trackPoint) {
+			$distances[] = $trackPoint->getDistance();
 		}
 		return $distances;
 	}
 
 	public function getTotalDistance($unit = "meters"){
-		$totalDistance = $this->trackData[count($this->trackData)-1]['dstc'];
+		$totalDistance = $this->trackData[count($this->trackData)-1]->getDistance();
 		switch ($unit) {
 			case 'meters':
 			return number_format($totalDistance, 2, '.', '');
@@ -102,51 +131,63 @@ abstract class Tracklog {
 			return number_format($totalDistance/1609.34, 2, '.', '');
 			break;
 			default:
-			throw new TracklogPhpException("Unit format not recognized", 1);			
+			throw new TracklogPhpException("Unit format not recognized");			
 			break;
 		}
 	}
 
 	public function getMaxElevation(){
-		return number_format(max($this->getElevations()), 2);
+		if($this->hasElevation()){
+			return max($this->getElevations());
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}
 	}
 
 	public function getPace(){
-		$time = new DateTime($this->getTotalTime());
-		$hour = $time->format('H') * 60;
-		$minute = $time->format('i');
-		$second = $time->format('s') / 60;
-		$totalTime = $hour + $minute + $second;
-		$pace = $totalTime / $this->getTotalDistance('kilometers');
-		$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
-		return number_format($pace, 2, ":", "");
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+			$hour = $time->format('H') * 60;
+			$minute = $time->format('i');
+			$second = $time->format('s') / 60;
+			$totalTime = $hour + $minute + $second;
+			$pace = $totalTime / $this->getTotalDistance('kilometers');
+			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
+			return number_format($pace, 2, ":", "");
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
 	}
 
 	public function getTotalTime($format = null){
-		$dateDiff = new DateTime('0000-00-00 00:00:00');
-		for ($i=0; $i < count($this->trackData)-1; $i++) { 
-			$dateB = new DateTime($this->trackData[$i]['time']);
-			$dateE = new DateTime($this->trackData[$i+1]['time']);
-			$difference = $dateB->diff($dateE);	
-			$dateDiff->add($difference);
+		if($this->hasTime()){
+			$dateDiff = new DateTime('0000-00-00 00:00:00');
+			for ($i=0; $i < count($this->trackData)-1; $i++) { 
+				$dateB = new DateTime($this->trackData[$i]->getTime());
+				$dateE = new DateTime($this->trackData[$i+1]->getTime());
+				$difference = $dateB->diff($dateE);	
+				$dateDiff->add($difference);
+			}
+			$hours = $dateDiff->format('H');
+			$minutes = $dateDiff->format('i');
+			$seconds = $dateDiff->format('s');
+			switch ($format) {
+				case 'seconds':
+				return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');
+				break;
+				case 'minutes':
+				return number_format($minutes = $minutes + ($hours*60) + ($seconds/60), 1);
+				break;
+				case 'hours':
+				return number_format($hours = $hours + ($minutes/60), 1);
+				break;
+				default:
+				return $dateDiff->format('H:i:s');
+				break;
+			}
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
-		$hours = $dateDiff->format('H');
-		$minutes = $dateDiff->format('i');
-		$seconds = $dateDiff->format('s');
-		switch ($format) {
-			case 'seconds':
-			return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');
-			break;
-			case 'minutes':
-			return number_format($minutes = $minutes + ($hours*60) + ($seconds/60), 1);
-			break;
-			case 'hours':
-			return number_format($hours = $hours + ($minutes/60), 1);
-			break;
-			default:
-			return $dateDiff->format('H:i:s');
-			break;
-		}		
 	}
 
 	public function getMarkers(){}	

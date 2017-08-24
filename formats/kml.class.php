@@ -3,29 +3,31 @@ class KML extends Tracklog{
 
 	public function __construct($file){
 		try {
-			parent::validate($file);
+			$this->validate($file);
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
-			if (!empty($content = $xml->xpath('//kml:coordinates'))) {
-				$content = preg_replace('/\s+/', ',', $content);
-				$coordinates = explode(',', $content[0]);
-				$y = 0;
-				for ($i=0; $i < count($coordinates);) {			
-					$this->trackData[$y]['lon'] = number_format((float) $coordinates[$i], 7);
-					$this->trackData[$y]['lat'] = number_format((float) $coordinates[$i+1], 7);
-					$this->trackData[$y]['ele'] = number_format((float) $coordinates[$i+2], 6);
+			if (!empty($content = $xml->xpath('//kml:coordinates'))) {				
+				$content = preg_replace('/\s+/', ',', $content[0]);
+				$pointData = explode(',', $content);
+				for ($i=0; $i < count($pointData);) {
+					$trackPoint = new TrackPoint();
+					$trackPoint->setLongitude($pointData[$i]);
+					$trackPoint->setLatitude($pointData[$i+1]);
+					$trackPoint->setElevation($pointData[$i+2]);
+					array_push($this->trackData, $trackPoint);
 					$i = $i+3;
-					$y++;
 				}
-			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($coordinates = $xml->xpath('//gx:Track/gx:coord'))){
-				foreach ($coordinates as $i => $coordinate) {
-					$coordinate = explode(' ', $coordinate);
-					$this->trackData[$i]['lon'] = number_format((float) $coordinate[0], 7);
-					$this->trackData[$i]['lat'] = number_format((float) $coordinate[1], 7);
-					$this->trackData[$i]['ele'] = number_format((float) $coordinate[2], 6);
-					$this->trackData[$i]['time'] = (string) $times[$i];
+			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord'))){
+				foreach ($points as $i => $pointData) {
+					$pointData = explode(' ', $pointData);
+					$trackPoint = new TrackPoint();
+					$trackPoint->setLongitude("dddfg");
+					$trackPoint->setLatitude($pointData[1]);
+					$trackPoint->setElevation($pointData[2]);
+					$trackPoint->setTime($times[$i]);
+					array_push($this->trackData, $trackPoint);
 				}
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
@@ -36,30 +38,6 @@ class KML extends Tracklog{
 
 		} catch (TracklogPhpException $e) {
 			throw $e;
-		}
-	}
-
-	public function getTime(){
-		if ($this->hasTime()) {
-			return parent::getTime();
-		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations");	
-		}
-	}
-
-	public function getPace(){
-		if ($this->hasTime()) {
-			return parent::getPace();
-		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations");	
-		}
-	}
-
-	public function getTotalTime($format = null){
-		if ($this->hasTime()) {
-			return parent::getTotalTime($format);
-		}else{
-			throw new TracklogPhpException("This KML file don't support time manipulations");	
 		}
 	}
 
@@ -123,9 +101,11 @@ class KML extends Tracklog{
 		}		
 		try {			
 			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
-		} catch (Exception $e) {
-			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
-		}	
+		} catch (TracklogPhpException $e) {
+			$e->setMessage("This isn't a valid " . get_class($this) . " file.");
+			throw $e;
+		}
+		restore_error_handler();
 	}
 }
 ?>

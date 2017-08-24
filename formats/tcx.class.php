@@ -4,19 +4,20 @@ class TCX extends Tracklog{
 	
 	public function __construct($file){
 		try {
-			parent::validate($file);
+			$this->validate($file);
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('tcx', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
-			if (!empty($content = $xml->xpath('//tcx:Track'))) {
-				$i = 0;		
-				foreach ($content[0] as $trackpoint) {
-					$this->trackData[$i]['lat'] = (float) $trackpoint->Position->LatitudeDegrees;
-					$this->trackData[$i]['lon'] = (float) $trackpoint->Position->LongitudeDegrees;;
-					$this->trackData[$i]['ele'] = (float) $trackpoint->AltitudeMeters;
-					$this->trackData[$i]['dstc'] = (float) $trackpoint->DistanceMeters;
-					$this->trackData[$i]['time'] = (string) $trackpoint->Time;
-					$i++;
+			if (!empty($content = $xml->xpath('//tcx:Track/tcx:Trackpoint'))) {
+				foreach ($content as $pointData) {
+					$trackPoint = new TrackPoint();
+					$trackPoint->setLatitude($pointData->Position->LatitudeDegrees);
+					$trackPoint->setLongitude($pointData->Position->LongitudeDegrees);
+					$trackPoint->setTime($pointData->Time);
+					!empty($pointData->AltitudeMeters) ? $trackPoint->setElevation($pointData->AltitudeMeters) : 0;
+					!empty($pointData->DistanceMeters) ? $trackPoint->setDistance($pointData->DistanceMeters) : 0;
+					array_push($this->trackData, $trackPoint);
 				}
+				!$this->hasDistance() ? $this->populateDistance(): 0;
 				return $this;
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");	
@@ -33,30 +34,26 @@ class TCX extends Tracklog{
 		$tcx->addAttribute('xsi:xsi:schemaLocation', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd');
 		$courses = $tcx->addChild('Courses');
 			$course = $courses->addChild('Course');
-				$course->addChild('Name', isset($this->trackData['meta_tag']['name']) ? $this->trackData['meta_tag']['name'] : 'TrackLogPHPConv');
+				$course->addChild('Name', isset($this->trackName) ? $this->trackName : 'TrackLogPHPConv');
 				$lap = $course->addChild('Lap');
-					$lap->addChild('TotalTimeSeconds', (get_class($this) == 'KML' && $this->hasTime()) && get_class($this) != 'GeoJson' ? $this->getTotalTime('seconds') : 0.0);
+					$lap->addChild('TotalTimeSeconds', ($this->hasTime()) ? $this->getTotalTime('seconds') : 0.0);
 						$lap->addChild('DistanceMeters', $this->getTotalDistance('meters'));
 						$begginPosition = $lap->addChild('BeginPosition');
-							$begginPosition->addChild('LatitudeDegrees', $this->trackData[0]['lat']);
-							$begginPosition->addChild('LongitudeDegrees', $this->trackData[0]['lon']);
+							$begginPosition->addChild('LatitudeDegrees', $this->trackData[0]->getLatitude());
+							$begginPosition->addChild('LongitudeDegrees', $this->trackData[0]->getLongitude());
 						$endPosition = $lap->addChild('EndPosition');
-							$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1]['lat']);
-							$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1]['lon']);
+							$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1]->getLatitude());
+							$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1]->getLongitude());
 						$lap->addChild('Intensity', 'Active');
 				$track = $course->addChild('Track');
-				foreach ($this->trackData as $trackdata) {
+				foreach ($this->trackData as $trackPoint) {
 					$trackpoint = $track->addChild('Trackpoint');
-						if ($this->hasTime()) {
-							$trackpoint->addChild('Time', $trackdata['time']);
-						}else{
-							$trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
-						}
+						$this->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
 						$position = $trackpoint->addChild('Position');
-							$position->addChild('LatitudeDegrees', $trackdata['lat']);
-							$position->addChild('LongitudeDegrees', $trackdata['lon']);
-						$trackpoint->addChild('AltitudeMeters', $trackdata['ele']);							
-						$trackpoint->addChild('DistanceMeters', $trackdata['dstc']);
+							$position->addChild('LatitudeDegrees', $trackPoint->getLatitude());
+							$position->addChild('LongitudeDegrees', $trackPoint->getLongitude());
+						$this->hasElevation() ? $trackpoint->addChild('AltitudeMeters', $trackPoint->getElevation()) : 0;
+						$trackpoint->addChild('DistanceMeters', $trackPoint->getDistance());
 				}
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
@@ -77,12 +74,14 @@ class TCX extends Tracklog{
 			throw new Exception('Failed to load external entity "' . $file . '"');
 		}else{
 			$dom->load($file);	
-		}		
+		}
 		try {			
 			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
-		} catch (Exception $e) {
-			throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
-		}	
+		} catch (TracklogPhpException $e) {
+			$e->setMessage("This isn't a valid " . get_class($this) . " file.");
+			throw $e;
+		}
+		restore_error_handler();
 	}
 }
 ?>

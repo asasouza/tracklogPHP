@@ -6,8 +6,8 @@ class TrackPoint{
 	private $time = null;
 	private $distance = null;
 
-	private function isFloat($float){		
-		return ($float == (string)(float)$float || ((string)(float)$float - $float) < 0.1);
+	private function isFloat($float){
+		return ($float == (string)(float)$float || is_numeric($float));
 	}
 
 	public function getLatitude(){

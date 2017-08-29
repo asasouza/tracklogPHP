@@ -23,7 +23,7 @@ class KML extends Tracklog{
 				foreach ($points as $i => $pointData) {
 					$pointData = explode(' ', $pointData);
 					$trackPoint = new TrackPoint();
-					$trackPoint->setLongitude("dddfg");
+					$trackPoint->setLongitude($pointData[0]);
 					$trackPoint->setLatitude($pointData[1]);
 					$trackPoint->setElevation($pointData[2]);
 					$trackPoint->setTime($times[$i]);

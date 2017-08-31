@@ -8,16 +8,17 @@ class KML extends Tracklog{
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
-			if (!empty($content = $xml->xpath('//kml:coordinates'))) {				
-				$content = preg_replace('/\s+/', ',', $content[0]);
+			if (!empty($content = $xml->xpath('//kml:coordinates'))) {
+				$content = preg_replace('/\s+/', ',', trim($content[0]));
 				$pointData = explode(',', $content);
-				for ($i=0; $i < count($pointData);) {
+				$elevationIndex = (count($pointData)%2 == 0) ? 1 : 2; //check if the KML data has elevation data, and use it to control de loop.
+				for ($i=0; $i < count($pointData) - $elevationIndex;) {
 					$trackPoint = new TrackPoint();
 					$trackPoint->setLongitude($pointData[$i]);
 					$trackPoint->setLatitude($pointData[$i+1]);
-					$trackPoint->setElevation($pointData[$i+2]);
+					($elevationIndex == 2) ? $trackPoint->setElevation($pointData[$i+2]) : 0;
 					array_push($this->trackData, $trackPoint);
-					$i = $i+3;
+					$i += $elevationIndex + 1;
 				}
 			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord'))){
 				foreach ($points as $i => $pointData) {
@@ -25,7 +26,7 @@ class KML extends Tracklog{
 					$trackPoint = new TrackPoint();
 					$trackPoint->setLongitude($pointData[0]);
 					$trackPoint->setLatitude($pointData[1]);
-					$trackPoint->setElevation($pointData[2]);
+					isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
 					$trackPoint->setTime($times[$i]);
 					array_push($this->trackData, $trackPoint);
 				}
@@ -50,22 +51,24 @@ class KML extends Tracklog{
 			$document = $kml->addChild('Document');
 				if ($this->hasTime()) {
 				$folder = $document->addChild('Folder');
-					if (isset($this->trackData['meta_tag']['name'])) {
-					$folder->addChild('name', $this->trackData['meta_tag']['name']);
+					if (isset($this->trackName)) {
+					$folder->addChild('name', $this->trackName);
 					}
 					$folder->addChild('open', 1);
 						$placemark = $folder->addChild('Placemark');
 							$gxtrack = $placemark->addChild('gx:gx:Track');
-								foreach ($this->trackData as $time) {
-									$gxtrack->addChild('when', $time['time']);
+								foreach ($this->trackData as $trackPoint) {
+									$gxtrack->addChild('when', $trackPoint->getTime());
 								}
-								foreach ($this->trackData as $coordinate) {
-									$gxtrack->addChild('gx:gx:coord', $coordinate['lon'].' '.$coordinate['lat'].' '.$coordinate['ele']);
+								foreach ($this->trackData as $trackPoint) {
+									$coordinates = $trackPoint->getLongitude().' '.$trackPoint->getLatitude();
+									$coordinates .= $this->hasElevation() ? ' '.$trackPoint->getElevation() : "";
+									$gxtrack->addChild('gx:gx:coord', $coordinates);
 								}
 				}else{
 				$placemark = $document->addChild('Placemark');
-					if (isset($this->trackData['meta_tag']['name'])) {
-						$placemark->addChild('name', $this->trackData['meta_tag']['name']);
+					if (isset($this->trackName)) {
+						$placemark->addChild('name', $this->trackName);
 					}
 					$placemark->addChild('visibility', 1);
 					$placemark->addChild('open', 1);
@@ -73,8 +76,9 @@ class KML extends Tracklog{
 						$linestring->addChild('extrude', 'true');
 						$linestring->addChild('tessellate', 'true');						
 						$trackData = '';
-						foreach ($this->trackData as $coordinates) {
-							$trackData = $trackData . $coordinates['lon'].','.$coordinates['lat'].','.$coordinates['ele']. '&#10;';
+						foreach ($this->trackData as $trackPoint) {
+							$trackData .= $trackPoint->getLongitude().','.$trackPoint->getLatitude();
+							$trackData .= $this->hasElevation() ? ',' . $trackPoint->getElevation().'&#10;' : '&#10;';
 						}
 						$coordinates = $linestring->addChild('coordinates', $trackData);							
 				}

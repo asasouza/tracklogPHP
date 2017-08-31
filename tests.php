@@ -2,21 +2,25 @@
 require("autoloader.php");
 
 // //KML tests
-$file = 'test_files/kml/test_correct_time.kml';
+$file = 'test_files/kml/test_correct_no_time_no_elevation.kml';
 $kml = new KML($file);
 print_r($kml->getPoints());
 // print_r($kml->getElevations());
 // print_r($kml->getLongitudes());
 // print_r($kml->getLatitudes());
 // print_r($kml->getTimes());
-echo $kml->getPace();
+// echo $kml->getPace();
 // echo ($kml->getTotalTime());
 // echo $kml->getTotalDistance('kilometers');
 // echo $kml->getMaxHeight();
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
 // print_r($kml->getDistances());
-// htmlentities($kml->out('tcx', 'converted_files/test2.tcx'));
+htmlentities($kml->out('kml', 'converted_files/test2.kml'));
+
+$kml = new KML('converted_files/test2.kml');
+print_r($kml->getPoints());
+// echo $kml->getPace();
 // echo $kml->validate($file);
 print("<br>");
 

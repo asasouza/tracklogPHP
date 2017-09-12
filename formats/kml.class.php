@@ -26,7 +26,7 @@ class KML extends Tracklog{
 					$trackPoint = new TrackPoint();
 					$trackPoint->setLongitude($pointData[0]);
 					$trackPoint->setLatitude($pointData[1]);
-					isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+					isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0; //verify if exists elevation data.
 					$trackPoint->setTime($times[$i]);
 					array_push($this->trackData, $trackPoint);
 				}

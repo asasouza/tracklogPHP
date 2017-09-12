@@ -17,18 +17,6 @@ class GeoJson extends Tracklog{
 		return $this;
 	}
 
-	public function getTime(){
-		throw new TracklogPhpException("GeoJson files don't support time manipulations", 1);
-	}
-
-	public function getPace(){
-		throw new TracklogPhpException("GeoJson files don't support time manipulations", 1);
-	}
-
-	public function getTotalTime(){
-		throw new TracklogPhpException("GeoJson files don't support time manipulations", 1);
-	}
-
 	protected function write($file_path = null){
 		$trackData;
 		foreach ($this->trackData as $key => $point) {			

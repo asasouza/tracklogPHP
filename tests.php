@@ -78,15 +78,15 @@ print("<br>");
 print("<br>");
 
 //CSV Tests
-// $file = 'test_files/csv/test_correct.csv';
-// $csv = new CSV($file);
+$file = 'test_files/csv/test_correct.csv';
+$csv = new CSV($file);
 // print_r($csv->getPoints());
-//$csv->getElevations();
+// print_r($csv->getElevations());
 //$csv->getLongitudes();
 //$csv->getLatitudes();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
-// echo $tcx->out('csv');
+echo $csv->out('csv', 'converted_files/test.csv');
 
 
 

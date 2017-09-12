@@ -20,7 +20,7 @@ class TCX extends Tracklog{
 				!$this->hasDistance() ? $this->populateDistance(): 0;
 				return $this;
 			}else{
-				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");	
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 			}
 		} catch (Exception $e) {
 			throw $e;

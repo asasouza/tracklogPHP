@@ -1,40 +1,61 @@
 <?php
 class GeoJson extends Tracklog{
-
 	public function __construct($file){
-		$json = file_get_contents($file);
-		$object = json_decode($json);
-		$object = $object->{'data'}->{'trackData'}[0];
-
-		for ($i=0; $i < count($object); $i++) { 
-			$this->trackData[$i]['lat'] = $object[$i]->lat;
-			$this->trackData[$i]['lon'] = $object[$i]->lon;
-			$this->trackData[$i]['ele'] = $object[$i]->ele;
+		try {
+			$this->validate($file);
+			$json = file_get_contents($file);
+			$json = json_decode($json);
+			$content = $json->{'data'}->{'trackData'}[0];
+			if (!empty($content)) {
+				foreach ($content as $key => $pointData) {
+					$trackPoint = new TrackPoint();
+					$trackPoint->setLatitude($pointData->lat);
+					$trackPoint->setLongitude($pointData->lon);
+					isset($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
+					array_push($this->trackData, $trackPoint);
+				}
+				$this->populateDistance();
+				return $this;
+			}else{
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
+			}			
+		} catch (Exception $e) {
+			throw $e;
 		}
-
-		$this->populateDistance();
-
-		return $this;
 	}
 
 	protected function write($file_path = null){
-		$trackData;
-		foreach ($this->trackData as $key => $point) {			
-			$trackData[$key]['lon'] = $point['lon'];
-			$trackData[$key]['lat'] = $point['lat'];
-			$trackData[$key]['ele'] = $point['ele'];
+		$json;
+		foreach ($this->trackData as $key => $trackPoint) {
+			$json[$key]['lon'] = $trackPoint->getLongitude();
+			$json[$key]['lat'] = $trackPoint->getLatitude();
+			$this->hasElevation() ? $json[$key]['ele'] = $trackPoint->getElevation() : 0;
 		}
-		$trackData = ['trackData' => [$trackData]];
+		$trackData = ['trackData' => [$json]];
 		$data = ['data' => $trackData];
 		$json = json_encode($data);
-
 		if (!is_null($file_path)) {
 			file_put_contents($file_path, $json);
 		}
-
 		return $json;
 	}
 
-	protected function validate($file){}
+	protected function validate($file){
+		set_error_handler(array('Tracklog', 'error_handler'));
+		if (!file_exists($file)) {
+			throw new Exception('Failed to load external entity "' . $file . '"');
+		}else{
+			$json = file_get_contents($file);
+			$json = trim($json);
+			$json = json_decode($json);
+			$content = $json->{'data'}->{'trackData'}[0];
+			foreach ($content as $key => $pointData) {
+				if (!isset($pointData->lat) || !isset($pointData->lon)) {
+					throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+				}
+			}
+		}
+		restore_error_handler();
+	}
 }
 ?>

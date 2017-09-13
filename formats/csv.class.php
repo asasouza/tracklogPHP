@@ -29,11 +29,9 @@ class CSV extends Tracklog{
 					}
 				}else{
 					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
-				}				
+				}
 			}else{
 				if (!empty($content)) {
-					
-
 					foreach ($content as $key => $value) {
 						$coordinates = explode(',', $value);
 						$trackPoint = new TrackPoint();
@@ -47,10 +45,8 @@ class CSV extends Tracklog{
 					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 				}
 			}
-
 			$this->populateDistance();
 			return $this;	
-
 		} catch (Exception $e) {
 			throw $e;
 		}

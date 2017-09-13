@@ -65,28 +65,28 @@ print("<br>");
 print("<br>");
 
 //GeoJSON tests
-// $file = 'test_files/test.js';
-// $json = new GeoJson($file);
-// $json->getPoints();
+$file = 'test_files/geoJson/test_no_elevation.js';
+$json = new GeoJson($file);
+// print_r($json->getPoints());
 // $json->getElevations();
 // $json->getLongitudes();
 // $json->getLatitudes();
 // $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
-// echo $tcx->out('geoJson', 'converted_files/test.js');
+echo $json->out('geoJson', 'converted_files/test.js');
 
 print("<br>");
 
 //CSV Tests
-$file = 'test_files/csv/test_correct.csv';
-$csv = new CSV($file);
+// $file = 'test_files/csv/test_correct.csv';
+// $csv = new CSV($file);
 // print_r($csv->getPoints());
 // print_r($csv->getElevations());
 //$csv->getLongitudes();
 //$csv->getLatitudes();
 // $csv->getTotalDistance('kilometers');
 //$csv->getMaxHeight();
-echo $csv->out('csv', 'converted_files/test.csv');
+// echo $csv->out('csv', 'converted_files/test.csv');
 
 
 

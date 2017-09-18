@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
+  <Courses>
+    <Course>
+      <Name>TrackLogPHPConv</Name>
+      <Lap>
+        <TotalTimeSeconds>0</TotalTimeSeconds>
+        <DistanceMeters>0.00</DistanceMeters>
+        <BeginPosition>
+          <LatitudeDegrees>-23.8097560</LatitudeDegrees>
+          <LongitudeDegrees>-45.4189910</LongitudeDegrees>
+        </BeginPosition>
+        <EndPosition>
+          <LatitudeDegrees>-23.8097560</LatitudeDegrees>
+          <LongitudeDegrees>-45.4189910</LongitudeDegrees>
+        </EndPosition>
+        <Intensity>Active</Intensity>
+      </Lap>
+      <Track>
+        <Trackpoint>
+          <Time>2017-09-18T00:00:00Z</Time>
+          <Position>
+            <LatitudeDegrees>-23.8097560</LatitudeDegrees>
+            <LongitudeDegrees>-45.4189910</LongitudeDegrees>
+          </Position>
+          <DistanceMeters>0.000</DistanceMeters>
+        </Trackpoint>
+      </Track>
+    </Course>
+  </Courses>
+</TrainingCenterDatabase>

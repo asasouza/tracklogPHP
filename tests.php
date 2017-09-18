@@ -2,7 +2,7 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/kml/test_correct_time_no_elevation.kml';
+// $file = 'test_files/kml/test_correct_no_time.kml';
 // $kml = new KML($file);
 // print_r($kml->getPoints());
 // echo "<br>";
@@ -12,7 +12,7 @@ require("autoloader.php");
 // print_r($kml->getTimes());
 // echo $kml->getPace();
 // echo ($kml->getTotalTime());
-// echo $kml->getTotalDistance('kilometers');
+// echo $kml->getTotalDistance('miles');
 // echo $kml->getMaxHeight();
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
@@ -22,10 +22,12 @@ require("autoloader.php");
 // print_r($kml->getPoints());
 // echo $kml->getPace();
 // echo $kml->validate($file);
+// echo $kml->getElevationGain() . "<br>";
+// echo $kml->getElevationLoss() . "<br>";
 print("<br>");
 
 // TCX tests
-// $file = 'test_files/tcx/test_correct_no_elevation.tcx';
+// $file = 'test_files/tcx/test_correct.tcx';
 // $tcx = new TCX($file);
 // print_r($tcx->getPoints());
 // $tcx->getElevations();
@@ -41,6 +43,8 @@ print("<br>");
 // $file = 'converted_files/test.tcx';
 // $tcx = new TCX($file);
 // print_r($tcx->getPoints());
+// echo $tcx->getElevationLoss();
+// echo $tcx->getElevationGain();
 
 print("<br>");
 
@@ -65,7 +69,7 @@ print("<br>");
 print("<br>");
 
 //GeoJSON tests
-$file = 'test_files/geoJson/test_no_elevation.js';
+$file = 'test_files/geoJson/test_correct_no_elevation.js';
 $json = new GeoJson($file);
 // print_r($json->getPoints());
 // $json->getElevations();
@@ -73,7 +77,9 @@ $json = new GeoJson($file);
 // $json->getLatitudes();
 // $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
-echo $json->out('geoJson', 'converted_files/test.js');
+htmlentities($json->out('tcx', 'converted_files/test.tcx'));
+$tcx = new TCX("converted_files/test.tcx");
+print_r($tcx->getPoints());
 
 print("<br>");
 

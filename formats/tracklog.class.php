@@ -218,6 +218,37 @@ abstract class Tracklog {
 	public function getTrackName(){
 		return 0;
 	}
+
+	public function getElevationGain(){
+		if ($this->hasElevation()) {
+			$elevationGain = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
+					$elevationGain += $this->trackData[$i+1]->getElevation() - $this->trackData[$i]->getElevation();
+				}
+			}
+			return $elevationGain;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+			
+		}
+		
+	}
+
+	public function getElevationLoss(){
+		if ($this->hasElevation()) {
+			$elevationLoss = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
+					$elevationLoss += $this->trackData[$i]->getElevation() - $this->trackData[$i+1]->getElevation();
+				}
+			}
+			return $elevationLoss;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}
+		
+	}
 }
 
 ?>

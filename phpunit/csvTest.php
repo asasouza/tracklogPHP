@@ -8,7 +8,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-final class CSVTeste extends TestCase{
+final class CSVTest extends TestCase{
 
 	public function testCreateFile(){
 		$this->assertInstanceOf(

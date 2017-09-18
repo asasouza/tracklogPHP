@@ -7,7 +7,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-final class TCXTeste extends TestCase{
+final class TCXTest extends TestCase{
 
 	public function testCreateFile(){
 		$this->assertInstanceOf(

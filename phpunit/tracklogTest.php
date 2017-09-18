@@ -10,7 +10,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-final class TracklogTeste extends TestCase{
+final class TracklogTest extends TestCase{
 
 	public function testGetAllPoints(){
 		$gpx = new GPX('test_files/gpx/test_correct.gpx');

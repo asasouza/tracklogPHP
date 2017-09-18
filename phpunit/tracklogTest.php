@@ -24,7 +24,7 @@ final class TracklogTeste extends TestCase{
 	}
 
 	public function testGetAllLatitudes(){
-		$csv = new CSV('test_files/csv/test_w_head.csv');
+		$csv = new CSV('test_files/csv/test_correct_no_head.csv');
 		$this->assertFalse(empty($csv->getLatitudes()));
 		$this->assertEquals(1293, count($csv->getLatitudes()));
 		$this->assertArraySubset( [-23.8097560, -23.8097460, -23.8097540, -23.8097660] ,$csv->getLatitudes());

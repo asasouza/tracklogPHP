@@ -9,6 +9,7 @@ class KML extends Tracklog{
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
 			if (!empty($content = $xml->xpath('//kml:coordinates'))) {
+				echo is_string($content[0]);
 				$content = preg_replace('/\s+/', ',', trim($content[0]));
 				$pointData = explode(',', $content);
 				$elevationIndex = (count($pointData)%2 == 0) ? 1 : 2; //check if the KML data has elevation data, and use it to control de loop.
@@ -20,7 +21,7 @@ class KML extends Tracklog{
 					array_push($this->trackData, $trackPoint);
 					$i += $elevationIndex + 1;
 				}
-			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord'))){
+			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord')) && count($times) == count($points)){
 				foreach ($points as $i => $pointData) {
 					$pointData = explode(' ', $pointData);
 					$trackPoint = new TrackPoint();
@@ -33,7 +34,6 @@ class KML extends Tracklog{
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 			}
-
 			$this->populateDistance();
 			return $this;
 

@@ -2,9 +2,9 @@
 require("autoloader.php");
 
 // //KML tests
-// $file = 'test_files/kml/test_correct_no_time.kml';
-// $kml = new KML($file);
-// print_r($kml->getPoints());
+$file = 'test_files/kml/test_correct_no_time.kml';
+$kml = new KML($file);
+print_r($kml->getPoints());
 // echo "<br>";
 // print_r($kml->getElevations());
 // print_r($kml->getLongitudes());
@@ -69,17 +69,17 @@ print("<br>");
 print("<br>");
 
 //GeoJSON tests
-$file = 'test_files/geoJson/test_correct_no_elevation.js';
-$json = new GeoJson($file);
+// $file = 'test_files/geoJson/test_correct_no_elevation.js';
+// $json = new GeoJson($file);
 // print_r($json->getPoints());
 // $json->getElevations();
 // $json->getLongitudes();
 // $json->getLatitudes();
 // $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
-htmlentities($json->out('tcx', 'converted_files/test.tcx'));
-$tcx = new TCX("converted_files/test.tcx");
-print_r($tcx->getPoints());
+// htmlentities($json->out('tcx', 'converted_files/test.tcx'));
+// $tcx = new TCX("converted_files/test.tcx");
+// print_r($tcx->getPoints());
 
 print("<br>");
 

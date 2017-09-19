@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gx="http://www.google.com/kml/ext/2.2" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd&quot;&gt;">
+  <Document>
+    <Placemark>
+      <visibility>1</visibility>
+      <open>1</open>
+      <LineString>
+        <extrude>true</extrude>
+        <tessellate>true</tessellate>
+        <coordinates>-45.4189910,-23.8097560
+-45.4188970,-23.8097460
+</coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>

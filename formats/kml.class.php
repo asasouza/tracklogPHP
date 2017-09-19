@@ -8,8 +8,7 @@ class KML extends Tracklog{
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
-			if (!empty($content = $xml->xpath('//kml:coordinates'))) {
-				echo is_string($content[0]);
+			if (!empty($content = $xml->xpath('//kml:coordinates')) && strlen($content[0]) > 0) {
 				$content = preg_replace('/\s+/', ',', trim($content[0]));
 				$pointData = explode(',', $content);
 				$elevationIndex = (count($pointData)%2 == 0) ? 1 : 2; //check if the KML data has elevation data, and use it to control de loop.

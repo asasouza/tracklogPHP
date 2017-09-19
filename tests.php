@@ -2,9 +2,10 @@
 require("autoloader.php");
 
 // //KML tests
-$file = 'test_files/kml/test_correct_no_time.kml';
+// $file = 'test_files/kml/test_correct_time.kml';
+$file = 'test_files/kml/test_time_no_data.kml';
 $kml = new KML($file);
-print_r($kml->getPoints());
+// print_r($kml->getPoints());
 // echo "<br>";
 // print_r($kml->getElevations());
 // print_r($kml->getLongitudes());

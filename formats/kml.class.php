@@ -8,17 +8,17 @@ class KML extends Tracklog{
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
 
-			if (!empty($content = $xml->xpath('//kml:coordinates')) && strlen($content[0]) > 0) {
-				$content = preg_replace('/\s+/', ',', trim($content[0]));
-				$pointData = explode(',', $content);
-				$elevationIndex = (count($pointData)%2 == 0) ? 1 : 2; //check if the KML data has elevation data, and use it to control de loop.
-				for ($i=0; $i < count($pointData) - $elevationIndex;) {
-					$trackPoint = new TrackPoint();
-					$trackPoint->setLongitude($pointData[$i]);
-					$trackPoint->setLatitude($pointData[$i+1]);
-					($elevationIndex == 2) ? $trackPoint->setElevation($pointData[$i+2]) : 0;
-					array_push($this->trackData, $trackPoint);
-					$i += $elevationIndex + 1;
+			if (!empty($content = $xml->xpath('//kml:LineString/kml:coordinates')) && strlen($content[0]) > 0) {
+				foreach ($content as $linestring) {
+					$linestring = preg_split('/\s+/', trim($linestring));					
+					foreach ($linestring as $linestring) {
+						$pointData = explode(',', $linestring);	
+						$trackPoint = new TrackPoint();
+						$trackPoint->setLongitude($pointData[0]);
+						$trackPoint->setLatitude($pointData[1]);
+						isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+						array_push($this->trackData, $trackPoint);
+					}					
 				}
 			}elseif(!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord')) && count($times) == count($points)){
 				foreach ($points as $i => $pointData) {

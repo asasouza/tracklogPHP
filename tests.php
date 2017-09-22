@@ -4,17 +4,17 @@ require("autoloader.php");
 // //KML tests
 // $file = 'test_files/kml/test_correct_time.kml';
 // $file = 'test_files/kml/test_correct_no_time.kml';
-// $file = "test_files/external_files/test_322/322km.kml";
-// $kml = new KML($file);
-// print_r($kml->getPoints());
-// echo "<br>";
-// print_r($kml->getElevations());
+$file = "test_files/external_files/test_322/322km.kml";
+$kml = new KML($file);
+echo count($kml->getPoints());
+echo "<br>";
+// echo count($kml->getElevations());
 // print_r($kml->getLongitudes());
 // print_r($kml->getLatitudes());
 // print_r($kml->getTimes());
 // echo $kml->getPace();
 // echo ($kml->getTotalTime());
-// echo $kml->getTotalDistance('kilometers');
+echo $kml->getTotalDistance('kilometers');
 // echo $kml->getMaxElevation();
 // echo $kml->write('kml');
 // echo htmlentities($kml->out('kml'));
@@ -78,16 +78,23 @@ print("<br>");
 
 //GeoJSON tests
 // $file = 'test_files/geoJson/test_correct_no_elevation.js';
-// $json = new GeoJson($file);
-// print_r($json->getPoints());
+$file = "test_files/external_files/test_322/322km.2.js";
+$json = new GeoJson($file);
+echo count($json->getPoints()) . "<br>";
 // $json->getElevations();
 // $json->getLongitudes();
 // $json->getLatitudes();
-// $json->getTotalDistance('kilometers');
+echo $json->getTotalDistance('kilometers');
 // $json->getMaxHeight();
 // htmlentities($json->out('tcx', 'converted_files/test.tcx'));
 // $tcx = new TCX("converted_files/test.tcx");
 // print_r($tcx->getPoints());
+
+// echo $kml->getPoints() == $json->getPoints();
+
+$resul = array_diff($kml->getPoints(), $kml->getPoints());
+
+print_r($resul);
 
 print("<br>");
 

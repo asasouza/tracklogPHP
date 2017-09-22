@@ -5,20 +5,39 @@ class GeoJson extends Tracklog{
 			$this->validate($file);
 			$json = file_get_contents($file);
 			$json = json_decode($json);
-			$content = $json->{'data'}->{'trackData'}[0];
-			if (!empty($content)) {
-				foreach ($content as $key => $pointData) {
-					$trackPoint = new TrackPoint();
-					$trackPoint->setLatitude($pointData->lat);
-					$trackPoint->setLongitude($pointData->lon);
-					isset($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
-					array_push($this->trackData, $trackPoint);
+			if (isset($json->{'data'}->{'trackData'}[0])) {
+				$content = $json->{'data'}->{'trackData'}[0];
+				if (!empty($content)) {
+					foreach ($content as $key => $pointData) {
+						$trackPoint = new TrackPoint();
+						$trackPoint->setLatitude($pointData->lat);
+						$trackPoint->setLongitude($pointData->lon);
+						isset($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
+						array_push($this->trackData, $trackPoint);
+					}
+					$this->populateDistance();
+					return $this;
+				}else{
+					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 				}
-				$this->populateDistance();
-				return $this;
-			}else{
-				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
-			}			
+			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
+				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
+				if (!empty($content)) {
+					foreach ($content as $linestring) {
+						foreach ($linestring as $pointData) {
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData[0]);
+							$trackPoint->setLongitude($pointData[1]);
+							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+							array_push($this->trackData, $trackPoint);
+						}
+					}
+					$this->populateDistance();
+					return $this;
+				}else{
+					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
+				}				
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -48,11 +67,24 @@ class GeoJson extends Tracklog{
 			$json = file_get_contents($file);
 			$json = trim($json);
 			$json = json_decode($json);
-			$content = $json->{'data'}->{'trackData'}[0];
-			foreach ($content as $key => $pointData) {
-				if (!isset($pointData->lat) || !isset($pointData->lon)) {
-					throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+			if (isset($json->{'data'}->{'trackData'}[0])) {
+				$content = $json->{'data'}->{'trackData'}[0];
+				foreach ($content as $key => $pointData) {
+					if (!isset($pointData->lat) || !isset($pointData->lon)) {
+						throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+					}
 				}
+			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
+				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
+				foreach ($content as $linestring) {
+					foreach ($linestring as $pointData) {
+						if (!isset($pointData[0]) || !isset($pointData[1])) {
+							throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+						}
+					}
+				}
+			}else{
+				throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
 			}
 		}
 		restore_error_handler();

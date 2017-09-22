@@ -21,14 +21,13 @@ abstract class Tracklog {
 
 	protected function populateDistance(){
 		$distance = 0;
+
 		$this->trackData[0]->setDistance($distance);
-		for ($i=0; $i < count($this->trackData)-1; $i++) { 
-			
+		for ($i=0; $i < count($this->trackData)-1; $i++) { 			
 			$distance += $this->haversineFormula($this->trackData[$i]->getLatitude(), 
 				$this->trackData[$i]->getLongitude(), 
 				$this->trackData[$i+1]->getLatitude(), 
-				$this->trackData[$i+1]->getLongitude());
-			
+				$this->trackData[$i+1]->getLongitude());			
 			$this->trackData[$i+1]->setDistance((string) $distance);
 		}
 	}

@@ -5,15 +5,17 @@ class GeoJson extends Tracklog{
 			$this->validate($file);
 			$json = file_get_contents($file);
 			$json = json_decode($json);
-			if (isset($json->{'data'}->{'trackData'}[0])) {
-				$content = $json->{'data'}->{'trackData'}[0];
-				if (!empty($content)) {
-					foreach ($content as $key => $pointData) {
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($pointData->lat);
-						$trackPoint->setLongitude($pointData->lon);
-						isset($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
-						array_push($this->trackData, $trackPoint);
+			if (isset($json->{'data'}->{'trackData'})) {
+				$content = $json->{'data'}->{'trackData'};
+				if (!empty($content[0])) {
+					foreach ($content as $linestring) {
+						foreach ($linestring as $pointData) {
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData->lat);
+							$trackPoint->setLongitude($pointData->lon);
+							isset($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
+							array_push($this->trackData, $trackPoint);	
+						}						
 					}
 					$this->populateDistance();
 					return $this;
@@ -22,12 +24,12 @@ class GeoJson extends Tracklog{
 				}
 			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
 				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
-				if (!empty($content)) {
+				if (!empty($content[0])) {
 					foreach ($content as $linestring) {
 						foreach ($linestring as $pointData) {
 							$trackPoint = new TrackPoint();
-							$trackPoint->setLatitude($pointData[0]);
-							$trackPoint->setLongitude($pointData[1]);
+							$trackPoint->setLongitude($pointData[0]);
+							$trackPoint->setLatitude($pointData[1]);							
 							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
 							array_push($this->trackData, $trackPoint);
 						}
@@ -67,13 +69,15 @@ class GeoJson extends Tracklog{
 			$json = file_get_contents($file);
 			$json = trim($json);
 			$json = json_decode($json);
-			if (isset($json->{'data'}->{'trackData'}[0])) {
-				$content = $json->{'data'}->{'trackData'}[0];
-				foreach ($content as $key => $pointData) {
-					if (!isset($pointData->lat) || !isset($pointData->lon)) {
-						throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
-					}
-				}
+			if (isset($json->{'data'}->{'trackData'})) {
+				$content = $json->{'data'}->{'trackData'};
+				foreach ($content as $linestring) {
+					foreach ($linestring as $pointData) {
+						if (!isset($pointData->lat) || !isset($pointData->lon)) {
+							throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
+						}
+					}	
+				}				
 			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
 				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
 				foreach ($content as $linestring) {

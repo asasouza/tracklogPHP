@@ -34,6 +34,7 @@ class KML extends Tracklog{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 			}
 			$this->populateDistance();
+			$this->trackName = $xml->xpath('//kml:Document/kml:name')[0];
 			return $this;
 
 		} catch (TracklogPhpException $e) {

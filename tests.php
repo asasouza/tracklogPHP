@@ -11,11 +11,14 @@ $tcx = new TCX($file.'.tcx');
 $json = new GeoJson($file.'.js');
 $json2 = new GeoJson($file.'.2.js');
 
-echo $kml->getTotalDistance('kilometers') . "<br>";
-echo $gpx->getTotalDistance('kilometers') . "<br>";
-echo $csv->getTotalDistance('kilometers') . "<br>";
-echo $tcx->getTotalDistance('kilometers') . "<br>";
-echo $json->getTotalDistance('kilometers') . "<br>";
-echo $json2->getTotalDistance('kilometers') . "<br>";
+// echo count($kml->getPoints('kilometers')) . "<br>";
+// echo count($gpx->getPoints('kilometers')) . "<br>";
+// echo count($csv->getPoints('kilometers')) . "<br>";
+// echo count($tcx->getPoints('kilometers')) . "<br>";
+// echo count($json->getPoints('kilometers')) . "<br>";
+// echo count($json2->getPoints('kilometers')) . "<br>";
+
+
+
 
 ?>

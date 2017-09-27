@@ -2,7 +2,6 @@
 abstract class Tracklog {
 
 	protected $trackData = array();
-
 	protected $trackName;
 
 	protected abstract function __construct($file);
@@ -215,7 +214,11 @@ abstract class Tracklog {
 	}
 
 	public function getTrackName(){
-		return 0;
+		if (isset($this->trackName)) {
+			return $this->trackName;
+		}else{
+			throw new TracklogPhpException("This file do not have a track name", 1);			
+		}		
 	}
 
 	public function getElevationGain(){

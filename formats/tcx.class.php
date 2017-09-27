@@ -18,6 +18,7 @@ class TCX extends Tracklog{
 					array_push($this->trackData, $trackPoint);
 				}
 				!$this->hasDistance() ? $this->populateDistance(): 0;
+				$this->trackName = $xml->xpath('//tcx:Course/tcx:Name')[0];
 				return $this;
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");

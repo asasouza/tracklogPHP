@@ -77,7 +77,7 @@ class TCX extends Tracklog{
 			$dom->load($file);	
 		}
 		try {			
-			$dom->schemaValidate("xsd_files/". get_class($this) .".xsd");
+			$dom->schemaValidate("lib/formats/xsd_files/". get_class($this) .".xsd");
 		} catch (TracklogPhpException $e) {
 			$e->setMessage("This isn't a valid " . get_class($this) . " file.");
 			throw $e;

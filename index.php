@@ -114,6 +114,7 @@
 				processData: false,
 				contentType: false,
 				success: function(response){
+					console.log(response);
 					response = $.parseJSON(response);
 					updateInfoBoard(response.info_board);
 				}

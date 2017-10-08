@@ -1,11 +1,11 @@
 <?php
 function tracklog_autoloader($class_name){
-	if (file_exists('lib/'.$class_name . '.class.php')) {
-		require_once('lib/'.$class_name . '.class.php');
-	}elseif (file_exists('lib/formats/' . $class_name . '.class.php')) {
-		require_once('lib/formats/' . $class_name . '.class.php');
-	}elseif(file_exists('lib/exceptions/' . $class_name . '.class.php')){
-		require_once('lib/exceptions/' . $class_name . '.class.php');
+	if (file_exists($class_name . '.class.php')) {
+		require_once($class_name . '.class.php');
+	}elseif (file_exists('formats/' . $class_name . '.class.php')) {
+		require_once('formats/' . $class_name . '.class.php');
+	}elseif(file_exists('exceptions/' . $class_name . '.class.php')){
+		require_once('exceptions/' . $class_name . '.class.php');
 	}
 }
 

@@ -115,10 +115,10 @@
 				contentType: false,
 				success: function(response){
 					console.log(response);
-					// response = $.parseJSON(response);
-					// updateInfoBoard(response.info_board);
-					// updateMapWithKml(response.data_kml);
-					// updateCharts(response.data_distances, response.data_elevations);
+					response = $.parseJSON(response);
+					updateInfoBoard(response.info_board);
+					updateMapWithKml(response.data_kml);
+					updateCharts(response.data_distances, response.data_elevations);
 
 				}
 			})			

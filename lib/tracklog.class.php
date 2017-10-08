@@ -217,7 +217,7 @@ abstract class Tracklog {
 		if (isset($this->trackName)) {
 			return $this->trackName;
 		}else{
-			throw new TracklogPhpException("This file do not have a track name", 1);			
+			return "TracklogPhpFile";
 		}		
 	}
 

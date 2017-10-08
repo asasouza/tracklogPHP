@@ -83,16 +83,16 @@
 		var chart = new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: ["0.0", "100.0", "220.0", "300.0", "430.0", "500.0", "590.0"],
+				labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
 				datasets: [{
 					label: "Elevation",
 					borderColor: '#F67C7C',
-					data: [0, 10, 15, 20, 15, 10, 0],
+					data: [0, 0, 0, 0, 0, 0, 0],
 				}, 
 				{
 					label: "Pace",
 					borderColor: '#95F079',
-					data: [{t: new Date(), y: "04.55"}, 10, 5, 2, 20, 30, 45],
+					data: [0, 0, 0, 0, 0, 0, 0],
 				}]
 			},
 			options: {
@@ -117,6 +117,9 @@
 					console.log(response);
 					response = $.parseJSON(response);
 					updateInfoBoard(response.info_board);
+					updateMapWithKml(response.data_kml);
+					updateCharts(response.data_distances, response.data_elevations);
+
 				}
 			})			
 		});
@@ -128,6 +131,37 @@
 		$("#data-elevation-loss").html(data.data_elevation_loss + " M");
 		$("#data-elevation-gain").html(data.data_elevation_gain + " M");
 		$("#data-total-time").html(data.data_total_time);
+	}
+
+	function updateMapWithKml(kml){
+		var kmlLayer = new google.maps.KmlLayer(kml, {
+	    	suppressInfoWindows: false,
+			preserveViewport: false,
+			map: new google.maps.Map(document.getElementById('map'))
+		});
+	}
+
+	function updateCharts(distances, elevations){
+		var ctx = document.getElementById('charts').getContext('2d');
+		var chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: distances,
+				datasets: [{
+					label: "Elevation",
+					borderColor: '#F67C7C',
+					data: elevations,
+				}, 
+				{
+					label: "Pace",
+					borderColor: '#95F079',
+					data: [{t: new Date(), y: "04.55"}, 10, 5, 2, 20, 30, 45],
+				}]
+			},
+			options: {
+				responsive: true,
+			}
+		});
 	}
 
 	</script>

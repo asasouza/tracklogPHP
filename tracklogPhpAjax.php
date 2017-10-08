@@ -9,8 +9,15 @@ if (isset($_FILES)) {
 	$response["info_board"]["data_total_distance"] = $tracklog->getTotalDistance("kilometers");
 	$response["info_board"]["data_elevation_gain"] = $tracklog->getElevationGain();
 	$response["info_board"]["data_elevation_loss"] = $tracklog->getElevationLoss();
-	$response["data_point"] = $tracklog->getPoints();
-	$response["data_elevation"] = $tracklog->getElevations();
+	$response["data_elevations"] = $tracklog->getElevations();
+	$response["data_distances"] = $tracklog->getDistances();
+
+	$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
+
+	$tracklog->out("kml", $path);
+
+	$response["data_kml"] = $_SERVER["HTTP_HOST"]."/tracklogPhp/".$path;
+	
 	echo json_encode($response);
 }else{
 	echo 'no';

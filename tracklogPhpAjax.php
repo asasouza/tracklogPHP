@@ -1,5 +1,5 @@
 <?php
-require_once("lib/tracklogPhp.main.php");
+require_once("cvcvcvlib/tracklogPhp.main.php");
 if (isset($_FILES)) {
 	$extension = pathinfo($_FILES["tracklogFile"]["name"], PATHINFO_EXTENSION);
 	$file_path = $_FILES["tracklogFile"]["tmp_name"];

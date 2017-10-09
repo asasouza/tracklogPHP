@@ -11,11 +11,11 @@ abstract class Tracklog {
 	protected abstract function validate($file);
 
 	public function error_handler($errno, $message){
-		if (!(error_reporting() & $errno)) {
-			return;
-		}
-		echo $message;
-		throw new TracklogPhpException();
+		// if (!(error_reporting() & $errno)) {
+		// 	return;
+		// }
+		// echo $message;
+		// throw new TracklogPhpException();
 	}
 
 	protected function populateDistance(){

@@ -17,7 +17,7 @@ if (isset($_FILES)) {
 
 	$tracklog->out("kml", $path);
 
-	$response["data_kml"] = $_SERVER["HTTP_HOST"]."/".$path;
+	$response["data_kml"] = "http://".$_SERVER["HTTP_HOST"]."/".$path;
 	
 	echo json_encode($response);
 }else{

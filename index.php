@@ -134,7 +134,8 @@
 	}
 
 	function updateMapWithKml(kml){
-		var kmlLayer = new google.maps.KmlLayer(kml, {
+		var kmlLayer = new google.maps.KmlLayer({
+			url: kml,
 	    	suppressInfoWindows: false,
 			preserveViewport: false,
 			map: new google.maps.Map(document.getElementById('map'))

@@ -126,11 +126,19 @@
 	});
 
 	function updateInfoBoard(data){
-		$("#data-pace").html(data.data_pace);
-		$("#data-distance").html(data.data_total_distance + " KM");
-		$("#data-elevation-loss").html(data.data_elevation_loss + " M");
-		$("#data-elevation-gain").html(data.data_elevation_gain + " M");
-		$("#data-total-time").html(data.data_total_time);
+		if (data.data_pace[0] == "success") {
+			$("#data-pace").html(data.data_pace[1]);
+		};
+		if (data.data_elevation_gain[0] == "success") {
+			$("#data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
+		};
+		if (data.data_elevation_loss[0] == "success") {
+			$("#data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
+		};
+		if (data.data_total_time[0] == "success") {
+			$("#data-total-time").html(data.data_total_time);	
+		};
+		$("#data-distance").html(data.data_total_distance + " KM");		
 	}
 
 	function updateMapWithKml(kml){

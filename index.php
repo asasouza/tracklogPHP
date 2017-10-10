@@ -120,7 +120,7 @@
 					response = $.parseJSON(response);
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
-					updateCharts(response.data_distances, response.data_elevations[1]);
+					updateCharts(response.data_distances, response.data_elevations);
 				}
 			})			
 		});
@@ -136,19 +136,19 @@
 		if (data.data_elevation_gain[0] == "success") {
 			$(".data.data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
 		}else{
-			$(".title.data-elevation-gain").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".title.data-elevation-gain").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_gain[1] +"</span></div>");
 			$(".data.data-elevation-gain").html("--- M");
 		}
 		if (data.data_elevation_loss[0] == "success") {
 			$(".data.data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
 		}else{
-			$(".title.data-elevation-loss").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".title.data-elevation-loss").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_loss[1] +"</span></div>");
 			$(".data.data-elevation-loss").html("--- M");
 		}
 		if (data.data_total_time[0] == "success") {
 			$(".data.data-total-time").html(data.data_total_time[1]);	
 		}else{
-			$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_total_time[1] +"</span></div>");
 			$(".data.data-total-time").html("--:--:--");
 		}
 
@@ -164,20 +164,12 @@
 		});
 	}
 
-	function updateCharts(distances, elevations){		
-		chart.data = {
-			labels: distances,
-			datasets: [{
-				label: "Elevation",
-				borderColor: '#F67C7C',
-				data: elevations,
-			}, 
-			{
-				label: "Pace",
-				borderColor: '#95F079',
-				data: [{t: new Date(), y: "04.55"}, 10, 5, 2, 20, 30, 45],
-			}]
-		}
+	function updateCharts(distances, elevations){
+		json = {labels: distances, datasets:[]};
+		if (elevations[0] == "success") {
+			json.datasets.push({label: "Elevation", borderColor: "#F67C7C", data: elevations[1]});
+		};
+		chart.data = json;
 		chart.update();
 	}
 

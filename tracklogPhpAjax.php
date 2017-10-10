@@ -22,7 +22,7 @@ if (isset($_FILES)) {
 			$response["info_board"]["data_elevation_gain"] = ["success", $tracklog->getElevationGain()];
 			$response["info_board"]["data_elevation_loss"] = ["success", $tracklog->getElevationLoss()];
 		} catch (Exception $e) {
-			$response["data_elevations"] = ["error", $tracklog->getElevations()];
+			$response["data_elevations"] = ["error", $e->getMessage()];
 			$response["info_board"]["data_elevation_gain"] = ["error", $e->getMessage()];
 			$response["info_board"]["data_elevation_loss"] = ["error", $e->getMessage()];
 		}

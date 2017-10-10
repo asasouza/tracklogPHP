@@ -11,7 +11,7 @@
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
 </head>
@@ -27,6 +27,11 @@
 	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
+
+	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
+	.tooltip .tooltiptext {background-color: #E1DCDC; border-radius: 6px; bottom:100%; left: 50%; margin-left:-60px; padding: 5px 0; position: absolute; text-align: center; visibility: hidden; width: 130px; z-index: 1;}
+	.tooltip:hover .tooltiptext {visibility: visible;}
+
 	</style>
 
 
@@ -43,24 +48,24 @@
 
 		<div id="info-board" style="margin:10px; width:100%;">
 			<div class="info col-5">
-				<div class="title"><i class="fa fa-globe"></i>Distance</div>
-				<div class="data" id="data-distance">0.0 KM</div>
+				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
+				<div class="data data-distance">0.0 KM</div>
 			</div>
 			<div class="info col-5">
-				<div class="title"><i class="fa fa-clock-o"></i>Total Time</div>
-				<div class="data" id="data-total-time"><b>00:00:00</b></div>
+				<div class="title data-total-time"><i class="fa fa-clock-o"></i>Total Time</div>
+				<div class="data data-total-time"><b>00:00:00</b></div>
 			</div>
 			<div class="info col-5">
-				<div class="title"><i class="fa fa-tachometer"></i>Pace</div>
-				<div class="data" id="data-pace"><b>0:00</b></div>
+				<div class="title data-pace"><i class="fa fa-tachometer"></i>Pace</div>
+				<div class="data data-pace"><b>0:00</b></div>
 			</div>
 			<div class="info col-5">
-				<div class="title"><i class="fa fa-arrow-up"></i>Elevation Gain</div>
-				<div class="data" id="data-elevation-gain"><b>000 M</b></div>
+				<div class="title data-elevation-gain"><i class="fa fa-arrow-up"></i>Elevation Gain</div>
+				<div class="data data-elevation-gain"><b>000 M</b></div>
 			</div>
 			<div class="info col-5">
-				<div class="title"><i class="fa fa-arrow-down"></i>Elevation Loss</div>
-				<div class="data" id="data-elevation-loss"><b>000 M</b></div>
+				<div class="title data-elevation-loss"><i class="fa fa-arrow-down"></i>Elevation Loss</div>
+				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
 		</div>
 
@@ -69,8 +74,26 @@
 	</div>
 
 
-	<script type="text/javascript">
-	initCharts();
+	<script type="text/javascript">	
+	var chart = new Chart($("#charts"), {
+		type: 'line',
+		data: {
+			labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
+			datasets: [{
+				label: "Elevation",
+				borderColor: '#F67C7C',
+				data: [0, 0, 0, 0, 0, 0, 0],
+			}, 
+			{
+				label: "Pace",
+				borderColor: '#95F079',
+				data: [0, 0, 0, 0, 0, 0, 0],
+			}]
+		},
+		options: {
+			responsive: true,
+		}
+	});	
 
 	function initMap(){
 		var map = new google.maps.Map(document.getElementById('map'), {
@@ -78,28 +101,7 @@
 			zoom: 1
 		});
 	}
-	function initCharts(){
-		var ctx = document.getElementById('charts').getContext('2d');
-		var chart = new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-				datasets: [{
-					label: "Elevation",
-					borderColor: '#F67C7C',
-					data: [0, 0, 0, 0, 0, 0, 0],
-				}, 
-				{
-					label: "Pace",
-					borderColor: '#95F079',
-					data: [0, 0, 0, 0, 0, 0, 0],
-				}]
-			},
-			options: {
-				responsive: true,
-			}
-		});
-	}
+
 	$(document).ready(function() {
 		$("#file-chooser").click(function(){
 			$("input[type=file]").click();
@@ -118,8 +120,7 @@
 					response = $.parseJSON(response);
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
-					updateCharts(response.data_distances, response.data_elevations);
-
+					updateCharts(response.data_distances, response.data_elevations[1]);
 				}
 			})			
 		});
@@ -127,50 +128,57 @@
 
 	function updateInfoBoard(data){
 		if (data.data_pace[0] == "success") {
-			$("#data-pace").html(data.data_pace[1]);
-		};
+			$(".data.data-pace").html(data.data_pace[1]);
+		}else{
+			$(".title.data-pace").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".data.data-pace").html("--:--");
+		}
 		if (data.data_elevation_gain[0] == "success") {
-			$("#data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
-		};
+			$(".data.data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
+		}else{
+			$(".title.data-elevation-gain").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".data.data-elevation-gain").html("--- M");
+		}
 		if (data.data_elevation_loss[0] == "success") {
-			$("#data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
-		};
+			$(".data.data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
+		}else{
+			$(".title.data-elevation-loss").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".data.data-elevation-loss").html("--- M");
+		}
 		if (data.data_total_time[0] == "success") {
-			$("#data-total-time").html(data.data_total_time);	
-		};
-		$("#data-distance").html(data.data_total_distance + " KM");		
+			$(".data.data-total-time").html(data.data_total_time[1]);	
+		}else{
+			$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+			$(".data.data-total-time").html("--:--:--");
+		}
+
+		$(".data.data-distance").html(data.data_total_distance + " KM");		
 	}
 
 	function updateMapWithKml(kml){
 		var kmlLayer = new google.maps.KmlLayer({
 			url: kml,
-	    	suppressInfoWindows: false,
+			suppressInfoWindows: false,
 			preserveViewport: false,
 			map: new google.maps.Map(document.getElementById('map'))
 		});
 	}
 
-	function updateCharts(distances, elevations){
-		var ctx = document.getElementById('charts').getContext('2d');
-		var chart = new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: distances,
-				datasets: [{
-					label: "Elevation",
-					borderColor: '#F67C7C',
-					data: elevations,
-				}, 
-				{
-					label: "Pace",
-					borderColor: '#95F079',
-					data: [{t: new Date(), y: "04.55"}, 10, 5, 2, 20, 30, 45],
-				}]
-			},
-			options: {
-				responsive: true,
-			}
-		});
+	function updateCharts(distances, elevations){		
+		chart.data = {
+			labels: distances,
+			datasets: [{
+				label: "Elevation",
+				borderColor: '#F67C7C',
+				data: elevations,
+			}, 
+			{
+				label: "Pace",
+				borderColor: '#95F079',
+				data: [{t: new Date(), y: "04.55"}, 10, 5, 2, 20, 30, 45],
+			}]
+		}
+		chart.update();
 	}
 
 	</script>

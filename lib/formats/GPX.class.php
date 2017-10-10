@@ -16,7 +16,7 @@ class GPX extends Tracklog{
 					array_push($this->trackData, $trackPoint);
 				}
 				$this->populateDistance();
-				$this->trackName = $xml->xpath('//gpx:trk/gpx:name')[0];
+				isset($xml->xpath('//gpx:trk/gpx:name')[0]) ? $this->trackName = $xml->xpath('//gpx:trk/gpx:name')[0] : 0;
 				return $this;
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");			

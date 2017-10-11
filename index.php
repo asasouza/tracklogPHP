@@ -42,8 +42,8 @@
 				<a href="javascript:" style="color:#bbb">Click to choose a tracklog file</a>
 			</div>
 		</div>
-		<form enctype="multipart/form-data">
-			<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" style="display:none" type="file">
+		<form enctype="multipart/form-data" style="display:none">
+			<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
 		</form>
 
 		<div id="info-board" style="margin:10px; width:100%;">
@@ -120,7 +120,8 @@
 					response = $.parseJSON(response);
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
-					updateCharts(response.data_distances, response.data_elevations);
+					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
+					updateFileChooser();
 				}
 			})			
 		});
@@ -164,10 +165,13 @@
 		});
 	}
 
-	function updateCharts(distances, elevations){
+	function updateCharts(distances, elevations, paces){
 		json = {labels: distances, datasets:[]};
 		if (elevations[0] == "success") {
 			json.datasets.push({label: "Elevation", borderColor: "#F67C7C", data: elevations[1]});
+		};
+		if (paces[0] == "success") {
+			json.datasets.push({label: "Pace Per Kilometer", borderColor: "#95F079", data: paces[1]});
 		};
 		chart.data = json;
 		chart.update();

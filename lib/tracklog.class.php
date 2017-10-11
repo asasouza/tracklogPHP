@@ -116,6 +116,32 @@ abstract class Tracklog {
 		return $distances;
 	}
 
+	public function getPaces(){
+		$paces = array();
+		$distances = $this->getDistances();
+		$times = $this->getTimes();
+
+		$distanceDiff = 0;
+		$timeDiff = new DateTime('0000-00-00 00:00:00');
+		for ($i=0; $i < count($distances) - 1; $i++) { 
+
+			$dateB = new DateTime($this->trackData[$i]->getTime());
+			$dateE = new DateTime($this->trackData[$i+1]->getTime());
+
+			$timeDiff->add($dateB->diff($dateE));
+			$distanceDiff += $distances[$i + 1] - $distances[$i];
+
+			if ($distanceDiff >= 1000) {
+				array_push($paces, $timeDiff->format("i.s"));
+				$distanceDiff = 0;
+				$timeDiff = new DateTime('0000-00-00 00:00:00');
+			}else{
+				isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
+			}
+		}
+		return $paces;
+	}
+
 	public function getTotalDistance($unit = "meters"){
 		$totalDistance = $this->trackData[count($this->trackData)-1]->getDistance();
 		switch ($unit) {

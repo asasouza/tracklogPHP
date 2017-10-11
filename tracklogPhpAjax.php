@@ -8,15 +8,15 @@ if (isset($_FILES)) {
 		$tracklog = new $extension($file_path);
 
 		try {
-			$response["info_board"]["data_pace"] = ["success", $tracklog->getPace()];
-		} catch (Exception $e) {
-			$response["info_board"]["data_pace"] = ["error", $e->getMessage()];
-		}
-		try {
 			$response["info_board"]["data_total_time"] = ["success", $tracklog->getTotalTime()];
+			$response["info_board"]["data_pace"] = ["success", $tracklog->getPace()];
+			$response["data_paces"] = ["success", $tracklog->getPaces()];
 		} catch (Exception $e) {
 			$response["info_board"]["data_total_time"] = ["error", $e->getMessage()];
+			$response["info_board"]["data_pace"] = ["error", $e->getMessage()];
+			$response["data_paces"] = ["error", $e->getMessage()];
 		}
+
 		try {
 			$response["data_elevations"] = ["success", $tracklog->getElevations()];
 			$response["info_board"]["data_elevation_gain"] = ["success", $tracklog->getElevationGain()];

@@ -217,20 +217,21 @@ abstract class Tracklog {
 	public function getMarkers(){}	
 
 	public function out($output, $file_path = null){
+		$output = strtoupper($output);
 		switch ($output) {
-			case 'kml':
+			case 'KML':
 			return KML::write($file_path);
 			break;
-			case 'gpx':
+			case 'GPX':
 			return GPX::write($file_path);
 			break;
-			case 'tcx':
+			case 'TCX':
 			return TCX::write($file_path);
 			break;
-			case 'geoJson':
+			case 'GEOJSON':
 			return GeoJson::write($file_path);
 			break;
-			case 'csv':
+			case 'CSV':
 			return CSV::write($file_path);
 			break;
 			default:

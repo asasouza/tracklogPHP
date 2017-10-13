@@ -37,14 +37,30 @@
 
 	<div id="content" style="margin:auto; width:80%;">
 		<div id="map" style="height:calc(100vw / 4); width:100%;"></div>
-		<div id="file-chooser" style="margin: 10px auto 10px auto; width:100%;">
-			<div style="border: dashed 5px #cecece; color:#ccc; cursor:pointer; padding:5px; text-align:center">
-				<a href="javascript:" style="color:#bbb">Click to choose a tracklog file</a>
+		<div style="margin: 10px auto 10px auto; width:100%;">
+			<div id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer; float:left; padding:5px; text-align:center; width:100%;">
+				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
 			</div>
+			
+			<div id="download" style="float:right; display:none; margin:5px auto 6px auto; text-align:center; width:37%;">
+				<form action="javascript:" id="download-file" style="margin:0px;" data-file-path="">
+					<select style="border-radius:6px; font-family: 'Roboto Mono', 'Roboto', monospace; font-size: 15px; height: 30px; width: 70%;">
+						<option value="0">Convert to another extension</option>
+						<option>KML</option>
+						<option>TCX</option>
+						<option>GPX</option>
+						<option>GeoJson</option>
+						<option>CSV</option>
+					</select>
+					<button id="download-file-trigger" style="border-radius:6px; cursor:pointer; font-family:'Roboto Mono','Roboto',monospace; font-size:15px; height:30px; width: 27%;">Download</button>
+				</form>
+			</div>
+
+			<form id="submit-file" enctype="multipart/form-data" style="display:none">
+				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
+			</form>
 		</div>
-		<form enctype="multipart/form-data" style="display:none">
-			<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
-		</form>
+		
 
 		<div id="info-board" style="margin:10px; width:100%;">
 			<div class="info col-5">
@@ -108,7 +124,7 @@
 		})
 
 		$("input[type=file]").change(function() {
-			var form = new FormData($("form")[0]);
+			var form = new FormData($("#submit-file")[0]);
 			$.ajax({
 				url: 'tracklogPhpAjax.php',
 				type: 'POST',
@@ -121,62 +137,93 @@
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
 					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
-					updateFileChooser();
+					updateFileChooser(response.data_kml);
 				}
 			})			
 		});
+
+		$("#download-file-trigger").click(function(){
+			if ($("select").val() != 0) {
+				var form = new FormData($("#submit-file")[0]);
+				form.append('extension_to_download', $("select").val());
+				$.ajax({
+					url: 'tracklogPhpAjax.php',
+					type: 'POST',
+					processData: false,
+					contentType: false,
+					data: form,
+					success: function(response){
+						console.log(response);
+						response = $.parseJSON(response);
+						// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download>x</a>");
+						// $("#download-file").click();
+						$("select").val(0);
+					}
+				})
+			}else{
+				console.log("choose a file extension to download!");
+			}
+		})
 	});
 
-	function updateInfoBoard(data){
-		if (data.data_pace[0] == "success") {
-			$(".data.data-pace").html(data.data_pace[1]);
-		}else{
-			$(".title.data-pace").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
-			$(".data.data-pace").html("--:--");
-		}
-		if (data.data_elevation_gain[0] == "success") {
-			$(".data.data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
-		}else{
-			$(".title.data-elevation-gain").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_gain[1] +"</span></div>");
-			$(".data.data-elevation-gain").html("--- M");
-		}
-		if (data.data_elevation_loss[0] == "success") {
-			$(".data.data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
-		}else{
-			$(".title.data-elevation-loss").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_loss[1] +"</span></div>");
-			$(".data.data-elevation-loss").html("--- M");
-		}
-		if (data.data_total_time[0] == "success") {
-			$(".data.data-total-time").html(data.data_total_time[1]);	
-		}else{
-			$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_total_time[1] +"</span></div>");
-			$(".data.data-total-time").html("--:--:--");
-		}
-
-		$(".data.data-distance").html(data.data_total_distance + " KM");		
+function updateInfoBoard(data){
+	if (data.data_pace[0] == "success") {
+		$(".data.data-pace").html(data.data_pace[1]);
+	}else{
+		$(".title.data-pace").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
+		$(".data.data-pace").html("--:--");
+	}
+	if (data.data_elevation_gain[0] == "success") {
+		$(".data.data-elevation-gain").html(data.data_elevation_gain[1] + " M");	
+	}else{
+		$(".title.data-elevation-gain").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_gain[1] +"</span></div>");
+		$(".data.data-elevation-gain").html("--- M");
+	}
+	if (data.data_elevation_loss[0] == "success") {
+		$(".data.data-elevation-loss").html(data.data_elevation_loss[1] + " M");	
+	}else{
+		$(".title.data-elevation-loss").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_elevation_loss[1] +"</span></div>");
+		$(".data.data-elevation-loss").html("--- M");
+	}
+	if (data.data_total_time[0] == "success") {
+		$(".data.data-total-time").html(data.data_total_time[1]);	
+	}else{
+		$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_total_time[1] +"</span></div>");
+		$(".data.data-total-time").html("--:--:--");
 	}
 
-	function updateMapWithKml(kml){
-		var kmlLayer = new google.maps.KmlLayer({
-			url: kml,
-			suppressInfoWindows: false,
-			preserveViewport: false,
-			map: new google.maps.Map(document.getElementById('map'))
-		});
-	}
+	$(".data.data-distance").html(data.data_total_distance + " KM");		
+}
 
-	function updateCharts(distances, elevations, paces){
-		json = {labels: distances, datasets:[]};
-		if (elevations[0] == "success") {
-			json.datasets.push({label: "Elevation", borderColor: "#F67C7C", data: elevations[1]});
-		};
-		if (paces[0] == "success") {
-			json.datasets.push({label: "Pace Per Kilometer", borderColor: "#95F079", data: paces[1]});
-		};
-		chart.data = json;
-		chart.update();
-	}
+function updateMapWithKml(kml){
+	var kmlLayer = new google.maps.KmlLayer({
+		url: kml,
+		suppressInfoWindows: false,
+		preserveViewport: false,
+		map: new google.maps.Map(document.getElementById('map'))
+	});
+}
 
-	</script>
+function updateCharts(distances, elevations, paces){
+	json = {labels: distances, datasets:[]};
+	if (elevations[0] == "success") {
+		json.datasets.push({label: "Elevation", borderColor: "#F67C7C", data: elevations[1]});
+	};
+	if (paces[0] == "success") {
+		json.datasets.push({label: "Pace", borderColor: "#95F079", data: paces[1]});
+	};
+	chart.data = json;
+	chart.update();
+}
+
+function updateFileChooser(file_path){
+	$("#download-file").attr('data-file-path', file_path);
+	$("#file-chooser").css('width', '60%');
+	$("#file-chooser-text").html("Click to change file");
+	$("#download").css('display', 'inline');
+
+}
+
+</script>
 </body>
 </html>

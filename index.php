@@ -145,6 +145,7 @@
 		})
 
 		$("input[type=file]").change(function() {
+			revertFileChooser();
 			var form = new FormData($("#submit-file")[0]);
 			$.ajax({
 				url: 'tracklogPhpAjax.php',
@@ -246,7 +247,12 @@ function updateFileChooser(file_path){
 	$("#file-chooser").css('width', '60%');
 	$("#file-chooser-text").html("Click to change file");
 	$("#download").css('display', 'inline');
-
+}
+function revertFileChooser(){
+	$("#download-file").attr('data-file-path', "");
+	$("#file-chooser").css('width', '100%');
+	$("#file-chooser-text").html("Click to choose a tracklog file");
+	$("#download").css('display', 'none');
 }
 
 </script>

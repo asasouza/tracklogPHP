@@ -123,8 +123,8 @@
 					id: "pace",
 					ticks: {
 						reverse: true,
-						userCallback: function(v){return v},
-						stepSize: .5,
+						userCallback: function(v){return convert_time(v)},
+						stepSize: 30,
 					},
 					gridLines: {
 						drawOnChartArea: false,
@@ -147,12 +147,17 @@
 			tooltips:{
 				callbacks:{
 					label: function(tooltipItem, data){
-						return data.datasets[tooltipItem.datasetIndex].label + ":" + tooltipItem.yLabel;
+						return data.datasets[tooltipItem.datasetIndex].label + ":" + convert_time(tooltipItem.yLabel);
 					}
 				}
 			}
 		}
 	});	
+
+function convert_time(time){
+	console.log(time);
+	return new Date(time*1000).toISOString().substr(12, 7);
+}
 
 function initMap(){
 	var map = new google.maps.Map(document.getElementById('map'), {

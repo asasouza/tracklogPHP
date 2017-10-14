@@ -132,7 +132,7 @@ abstract class Tracklog {
 				$timeInSeconds += $timeDiff->format("i") * 60;
 				$timeInSeconds += $timeDiff->format("s");
 				$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
-				array_push($paces, gmdate("i.s", $pacePerDistance));
+				array_push($paces, $pacePerDistance);
 				$distanceDiff = 0;
 				$timeDiff = new DateTime('0000-00-00 00:00:00');
 			}else{

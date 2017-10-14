@@ -11,7 +11,7 @@
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
 </head>
@@ -91,23 +91,44 @@
 
 
 	<script type="text/javascript">	
-	var chart = new Chart($("#charts"), {
-		type: 'line',
+	var chart = new Chart.Line($("#charts"), {
 		data: {
 			labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
 			datasets: [{
 				label: "Elevation",
-				borderColor: '#F67C7C',
+				yAxisID: "elevation",
+				borderColor: '#749FE0',
 				data: [0, 0, 0, 0, 0, 0, 0],
 			}, 
 			{
 				label: "Pace",
+				yAxisID: "pace",
 				borderColor: '#95F079',
+				backgroundColor: "#FFFFFF",
 				data: [0, 0, 0, 0, 0, 0, 0],
 			}]
 		},
 		options: {
 			responsive: true,
+			scales: {
+				yAxes: [{
+					type: "linear",
+					display: true,
+					position: "left",
+					id: "elevation",					
+				}, {
+					type: "linear",
+					display: true,
+					position: "right",
+					id: "pace",
+					ticks: {
+						reverse: true
+					},
+					gridLines: {
+						drawOnChartArea: false,
+					},
+				}]
+			}
 		}
 	});	
 
@@ -207,10 +228,10 @@ function updateMapWithKml(kml){
 function updateCharts(distances, elevations, paces){
 	json = {labels: distances, datasets:[]};
 	if (elevations[0] == "success") {
-		json.datasets.push({label: "Elevation", borderColor: "#F67C7C", data: elevations[1]});
+		json.datasets.push({label: "Elevation", yAxisID: "elevation", backgroundColor:"#BAC8D7", borderColor: "#749FE0", data: elevations[1]});
 	};
 	if (paces[0] == "success") {
-		json.datasets.push({label: "Pace", borderColor: "#95F079", data: paces[1]});
+		json.datasets.push({label: "Pace", yAxisID: "pace", backgroundColor: "transparent", borderColor: "#95F079", data: paces[1]});
 	};
 	chart.data = json;
 	chart.update();

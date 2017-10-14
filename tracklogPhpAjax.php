@@ -23,8 +23,9 @@ if (isset($_FILES["tracklogFile"])) {
 			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
 
 			$tracklog->out($extension_to_download, $path);
+			($extension_to_download == "geojson") ? $extension_to_download = "js" : 0;
 
-			$response["download_file_path"] = "http://".$_SERVER["HTTP_HOST"]."/".$path;
+			$response["download_file_path"] = "http://".$_SERVER["HTTP_HOST"]."/".$path.".".$extension_to_download;
 
 			echo json_encode($response);	
 
@@ -38,7 +39,6 @@ if (isset($_FILES["tracklogFile"])) {
 				$response["info_board"]["data_pace"] = ["error", $e->getMessage()];
 				$response["data_paces"] = ["error", $e->getMessage()];
 			}
-
 			try {
 				$response["data_elevations"] = ["success", $tracklog->getElevations()];
 				$response["info_board"]["data_elevation_gain"] = ["success", $tracklog->getElevationGain()];
@@ -56,7 +56,7 @@ if (isset($_FILES["tracklogFile"])) {
 
 			$tracklog->out("kml", $path);
 
-			$response["data_kml"] = "http://".$_SERVER["HTTP_HOST"]."/".$path;
+			$response["data_kml"] = "http://".$_SERVER["HTTP_HOST"]."/".$path.".kml";
 
 			echo json_encode($response);	
 		}

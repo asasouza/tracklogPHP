@@ -95,16 +95,16 @@
 		data: {
 			labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
 			datasets: [{
-				label: "Elevation",
-				yAxisID: "elevation",
-				borderColor: '#749FE0',
-				data: [0, 0, 0, 0, 0, 0, 0],
-			}, 
-			{
 				label: "Pace",
 				yAxisID: "pace",
 				borderColor: '#95F079',
 				backgroundColor: "#FFFFFF",
+				data: [0, 0, 0, 0, 0, 0, 0],
+			}, 
+			{
+				label: "Elevation",
+				yAxisID: "elevation",
+				borderColor: '#749FE0',
 				data: [0, 0, 0, 0, 0, 0, 0],
 			}]
 		},
@@ -155,10 +155,14 @@
 				success: function(response){
 					console.log(response);
 					response = $.parseJSON(response);
+					if (response.error) {
+						$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
+					}else{
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
 					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
 					updateFileChooser(response.data_kml);
+					}
 				}
 			})			
 		});
@@ -227,12 +231,12 @@ function updateMapWithKml(kml){
 
 function updateCharts(distances, elevations, paces){
 	json = {labels: distances, datasets:[]};
-	if (elevations[0] == "success") {
-		json.datasets.push({label: "Elevation", yAxisID: "elevation", backgroundColor:"#BAC8D7", borderColor: "#749FE0", data: elevations[1]});
-	};
 	if (paces[0] == "success") {
 		json.datasets.push({label: "Pace", yAxisID: "pace", backgroundColor: "transparent", borderColor: "#95F079", data: paces[1]});
 	};
+	if (elevations[0] == "success") {
+		json.datasets.push({label: "Elevation", yAxisID: "elevation", backgroundColor:"#BAC8D7", borderColor: "#749FE0", data: elevations[1]});
+	};	
 	chart.data = json;
 	chart.update();
 }

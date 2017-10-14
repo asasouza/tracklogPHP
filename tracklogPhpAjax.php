@@ -8,7 +8,14 @@ if (isset($_FILES["tracklogFile"])) {
 	if (in_array($extension, $extensions)) {
 
 		$file_path = $_FILES["tracklogFile"]["tmp_name"];
-		$tracklog = new $extension($file_path);
+		try {
+			$tracklog = new $extension($file_path);	
+		} catch (Exception $e) {
+			$response["error"] = $e->getMessage();
+			echo json_encode($response);
+			exit;
+		}
+		
 
 		if (isset($_POST["extension_to_download"])) {
 			$extension_to_download = strtolower($_POST["extension_to_download"]);
@@ -56,6 +63,7 @@ if (isset($_FILES["tracklogFile"])) {
 	}else{
 		$response["error"] = "Invalid extension.";
 		echo json_encode($response);
+		exit;
 	}
 	
 }else{

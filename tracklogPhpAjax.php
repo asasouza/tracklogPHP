@@ -1,12 +1,9 @@
 <?php
 require_once("lib/tracklogPhp.main.php");
-
-if (isset($_FILES["tracklogFile"])) {
-	
+if (isset($_FILES["tracklogFile"])) {	
 	$extensions = ['kml', 'tcx', 'gpx', 'csv', 'js'];
 	$extension = pathinfo($_FILES["tracklogFile"]["name"], PATHINFO_EXTENSION);
 	if (in_array($extension, $extensions)) {
-
 		$file_path = $_FILES["tracklogFile"]["tmp_name"];
 		try {
 			$tracklog = new $extension($file_path);	
@@ -15,20 +12,13 @@ if (isset($_FILES["tracklogFile"])) {
 			echo json_encode($response);
 			exit;
 		}
-		
-
 		if (isset($_POST["extension_to_download"])) {
 			$extension_to_download = strtolower($_POST["extension_to_download"]);
-
 			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
-
 			$tracklog->out($extension_to_download, $path);
 			($extension_to_download == "geojson") ? $extension_to_download = "js" : 0;
-
 			$response["download_file_path"] = "http://".$_SERVER["HTTP_HOST"]."/".$path.".".$extension_to_download;
-
-			echo json_encode($response);	
-
+			echo json_encode($response);
 		}else{
 			try {
 				$response["info_board"]["data_total_time"] = ["success", $tracklog->getTotalTime()];
@@ -48,24 +38,18 @@ if (isset($_FILES["tracklogFile"])) {
 				$response["info_board"]["data_elevation_gain"] = ["error", $e->getMessage()];
 				$response["info_board"]["data_elevation_loss"] = ["error", $e->getMessage()];
 			}
-
 			$response["info_board"]["data_total_distance"] = $tracklog->getTotalDistance("kilometers");
 			$response["data_distances"] = $tracklog->getDistances();
-
 			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
-
 			$tracklog->out("kml", $path);
-
 			$response["data_kml"] = "http://".$_SERVER["HTTP_HOST"]."/".$path.".kml";
-
 			echo json_encode($response);	
 		}
 	}else{
 		$response["error"] = "Invalid extension.";
 		echo json_encode($response);
 		exit;
-	}
-	
+	}	
 }else{
 	echo "no";
 }

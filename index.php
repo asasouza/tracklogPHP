@@ -117,80 +117,98 @@
 					position: "left",
 					id: "elevation",					
 				}, {
-					type: "linear",
+					type: "time",
+					time:{
+						displayFormats:{
+							hour: 'mm a',
+						}
+					},
 					display: true,
 					position: "right",
 					id: "pace",
 					ticks: {
-						reverse: true
+						reverse: true,
 					},
 					gridLines: {
 						drawOnChartArea: false,
 					},
+				}],
+				xAxes:[{
+					// type: "linear",
+					// position: "bottom",
+					// display: true,
+					// scaleLabel: {
+						// display: true,
+					// },
+					// ticks: {
+						// autoSkip: true,
+						// stepSize: 1000,
+						// unitStepSize: 1000,
+					// }
 				}]
 			}
 		}
 	});	
 
-	function initMap(){
-		var map = new google.maps.Map(document.getElementById('map'), {
-			center: {lat: 0, lng: 0},
-			zoom: 1
-		});
-	}
+function initMap(){
+	var map = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: 0, lng: 0},
+		zoom: 1
+	});
+}
 
-	$(document).ready(function() {
-		$("#file-chooser").click(function(){
-			$("input[type=file]").click();
-		})
+$(document).ready(function() {
+	$("#file-chooser").click(function(){
+		$("input[type=file]").click();
+	})
 
-		$("input[type=file]").change(function() {
-			revertFileChooser();
-			var form = new FormData($("#submit-file")[0]);
-			$.ajax({
-				url: 'tracklogPhpAjax.php',
-				type: 'POST',
-				data: form,
-				processData: false,
-				contentType: false,
-				success: function(response){
-					console.log(response);
-					response = $.parseJSON(response);
-					if (response.error) {
-						$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
-					}else{
+	$("input[type=file]").change(function() {
+		revertFileChooser();
+		var form = new FormData($("#submit-file")[0]);
+		$.ajax({
+			url: 'tracklogPhpAjax.php',
+			type: 'POST',
+			data: form,
+			processData: false,
+			contentType: false,
+			success: function(response){
+				console.log(response);
+				response = $.parseJSON(response);
+				if (response.error) {
+					$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
+				}else{
 					updateInfoBoard(response.info_board);
 					updateMapWithKml(response.data_kml);
 					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
 					updateFileChooser(response.data_kml);
-					}
 				}
-			})			
-		});
-
-		$("#download-file-trigger").click(function(){
-			if ($("select").val() != 0) {
-				var form = new FormData($("#submit-file")[0]);
-				form.append('extension_to_download', $("select").val());
-				$.ajax({
-					url: 'tracklogPhpAjax.php',
-					type: 'POST',
-					processData: false,
-					contentType: false,
-					data: form,
-					success: function(response){
-						console.log(response);
-						response = $.parseJSON(response);
-						var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
-						$("#download-file").click();
-						$("select").val(0);
-					}
-				})
-			}else{
-				console.log("choose a file extension to download!");
 			}
-		})
+		})			
 	});
+
+	$("#download-file-trigger").click(function(){
+		if ($("select").val() != 0) {
+			var form = new FormData($("#submit-file")[0]);
+			form.append('extension_to_download', $("select").val());
+			$.ajax({
+				url: 'tracklogPhpAjax.php',
+				type: 'POST',
+				processData: false,
+				contentType: false,
+				data: form,
+				success: function(response){
+					console.log(response);
+					response = $.parseJSON(response);
+					var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
+					$("#download-file").click();
+					$("select").val(0);
+				}
+			})
+		}else{
+			console.log("choose a file extension to download!");
+		}
+	})
+});
 
 function updateInfoBoard(data){
 	if (data.data_pace[0] == "success") {

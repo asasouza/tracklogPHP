@@ -116,28 +116,32 @@ abstract class Tracklog {
 		return $distances;
 	}
 
-	public function getPaces(){
+	public function getPaces($distanceToCalc = 100){
 		$paces = array();
 		$distances = $this->getDistances();
 		$times = $this->getTimes();
-
 		$distanceDiff = 0;
 		$timeDiff = new DateTime('0000-00-00 00:00:00');
-		for ($i=0; $i < count($distances) - 1; $i++) { 
-
+		for ($i=0; $i < count($distances) - 1; $i++) {
 			$dateB = new DateTime($this->trackData[$i]->getTime());
 			$dateE = new DateTime($this->trackData[$i+1]->getTime());
-
 			$timeDiff->add($dateB->diff($dateE));
 			$distanceDiff += $distances[$i + 1] - $distances[$i];
-
-			if ($distanceDiff >= 1000) {
-				array_push($paces, $timeDiff->format("i.s"));
+			if ($distanceDiff >= $distanceToCalc) {
+				$timeInSeconds = $timeDiff->format("h") * 3600;
+				$timeInSeconds += $timeDiff->format("i") * 60;
+				$timeInSeconds += $timeDiff->format("s");
+				$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
+				array_push($paces, gmdate("H:i:s", $pacePerDistance));
 				$distanceDiff = 0;
 				$timeDiff = new DateTime('0000-00-00 00:00:00');
 			}else{
 				isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
 			}
+		}
+		$arrayDiff = count($distances)-count($paces);
+		for ($i=0; $i < $arrayDiff; $i++) {
+			$paces[] = $paces[count($paces)-1];
 		}
 		return $paces;
 	}

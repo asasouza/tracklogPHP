@@ -56,7 +56,7 @@ class GeoJson extends Tracklog{
 		$data = ['data' => $trackData];
 		$json = json_encode($data);
 		if (!is_null($file_path)) {
-			file_put_contents($file_path, $json);
+			file_put_contents($file_path.".js", $json);
 		}
 		return $json;
 	}

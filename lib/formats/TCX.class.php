@@ -63,7 +63,7 @@ class TCX extends Tracklog{
 		$dom_xml = $dom->importNode($dom_xml, true);
 		$dom_xml = $dom->appendChild($dom_xml);
 		if (!is_null($file_path)) {
-			$dom->save($file_path);
+			$dom->save($file_path.".tcx");
 		}
 		return $dom->saveXML();
 	}

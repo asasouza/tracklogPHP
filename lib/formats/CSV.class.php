@@ -65,7 +65,7 @@ class CSV extends Tracklog{
 		}
 		if (!empty($file_path)) {
 			$content = preg_split('/\s+/', $trackData);
-			$file = fopen($file_path, 'w');
+			$file = fopen($file_path.".csv", 'w');
 			foreach ($content as $value) {
 				fputcsv($file, explode(',', $value));	
 			}

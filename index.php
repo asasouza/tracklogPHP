@@ -155,8 +155,8 @@
 					success: function(response){
 						console.log(response);
 						response = $.parseJSON(response);
-						// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download>x</a>");
-						// $("#download-file").click();
+						var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
+						$("#download-file").click();
 						$("select").val(0);
 					}
 				})

@@ -12,14 +12,15 @@ if (isset($_FILES["tracklogFile"])) {
 
 		if (isset($_POST["extension_to_download"])) {
 			$extension_to_download = strtolower($_POST["extension_to_download"]);
-			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName().".$extension_to_download");
+
+			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
 
 			$tracklog->out($extension_to_download, $path);
 
 			$response["download_file_path"] = "http://".$_SERVER["HTTP_HOST"]."/".$path;
 
 			echo json_encode($response);	
-			
+
 		}else{
 			try {
 				$response["info_board"]["data_total_time"] = ["success", $tracklog->getTotalTime()];
@@ -44,7 +45,7 @@ if (isset($_FILES["tracklogFile"])) {
 			$response["info_board"]["data_total_distance"] = $tracklog->getTotalDistance("kilometers");
 			$response["data_distances"] = $tracklog->getDistances();
 
-			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName().".kml");
+			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
 
 			$tracklog->out("kml", $path);
 

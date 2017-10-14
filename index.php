@@ -117,17 +117,14 @@
 					position: "left",
 					id: "elevation",					
 				}, {
-					type: "time",
-					time:{
-						displayFormats:{
-							hour: 'mm a',
-						}
-					},
+					type: "linear",
 					display: true,
 					position: "right",
 					id: "pace",
 					ticks: {
 						reverse: true,
+						userCallback: function(v){return v},
+						stepSize: .5,
 					},
 					gridLines: {
 						drawOnChartArea: false,
@@ -146,6 +143,13 @@
 						// unitStepSize: 1000,
 					// }
 				}]
+			},
+			tooltips:{
+				callbacks:{
+					label: function(tooltipItem, data){
+						return data.datasets[tooltipItem.datasetIndex].label + ":" + tooltipItem.yLabel;
+					}
+				}
 			}
 		}
 	});	
@@ -199,8 +203,9 @@ $(document).ready(function() {
 				success: function(response){
 					console.log(response);
 					response = $.parseJSON(response);
-					var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
-					$("#download-file").click();
+					// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
+					// $("#download-file").click();
+					window.open(response.download_file_path, "_blank");
 					$("select").val(0);
 				}
 			})

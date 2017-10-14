@@ -116,7 +116,7 @@ abstract class Tracklog {
 		return $distances;
 	}
 
-	public function getPaces($distanceToCalc = 100){
+	public function getPaces( $format_output = "timestamp", $distanceToCalc = 100){
 		$paces = array();
 		$distances = $this->getDistances();
 		$times = $this->getTimes();
@@ -132,7 +132,18 @@ abstract class Tracklog {
 				$timeInSeconds += $timeDiff->format("i") * 60;
 				$timeInSeconds += $timeDiff->format("s");
 				$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
-				array_push($paces, $pacePerDistance);
+				switch ($format_output) {
+					case 'timestamp':
+					array_push($paces, gmdate("0000-00-00TH:i:sZ", $pacePerDistance));
+					break;
+					case 'seconds':
+					array_push($paces, $pacePerDistance);
+					break;
+					default:
+					throw new TracklogPhpException("Invalid output format", 1);
+					break;					
+				}
+				
 				$distanceDiff = 0;
 				$timeDiff = new DateTime('0000-00-00 00:00:00');
 			}else{

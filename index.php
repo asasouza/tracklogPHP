@@ -123,7 +123,7 @@
 					id: "pace",
 					ticks: {
 						reverse: true,
-						userCallback: function(v){return convert_time(v)},
+						userCallback: function(v){return convert_to_date(v)},
 						stepSize: 30,
 					},
 					gridLines: {
@@ -147,15 +147,14 @@
 			tooltips:{
 				callbacks:{
 					label: function(tooltipItem, data){
-						return data.datasets[tooltipItem.datasetIndex].label + ":" + convert_time(tooltipItem.yLabel);
+						return data.datasets[tooltipItem.datasetIndex].label + ":" + convert_to_date(tooltipItem.yLabel);
 					}
 				}
 			}
 		}
 	});	
 
-function convert_time(time){
-	console.log(time);
+function convert_to_date(time){
 	return new Date(time*1000).toISOString().substr(12, 7);
 }
 

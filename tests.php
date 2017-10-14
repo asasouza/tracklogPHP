@@ -19,7 +19,8 @@ $gpx = new GPX($file.'.gpx');
 // echo count($json->getPoints('kilometers')) . "<br>";
 // echo count($json2->getPoints('kilometers')) . "<br>";
 
-print_r($gpx->getPaces());
+print_r($gpx->getPaces("seconds"));
+// print_r($gpx->getTimes());
 
 
 ?>

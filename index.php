@@ -11,8 +11,9 @@
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
 
 </head>
 
@@ -86,77 +87,101 @@
 		</div>
 
 
-		<canvas id="charts" style="width:100%;"></canvas>
+		<div id="charts" style="width:100%;"></div>
 	</div>
 
 
 	<script type="text/javascript">	
-	var chart = new Chart.Line($("#charts"), {
-		data: {
-			labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-			datasets: [{
-				label: "Pace",
-				yAxisID: "pace",
-				borderColor: '#95F079',
-				backgroundColor: "#FFFFFF",
-				data: [0, 0, 0, 0, 0, 0, 0],
-			}, 
-			{
-				label: "Elevation",
-				yAxisID: "elevation",
-				borderColor: '#749FE0',
-				data: [0, 0, 0, 0, 0, 0, 0],
-			}]
+	var chart = new Highcharts.chart("charts", {
+		chart:{
+			type:"line",
+			zoomType:"x",
 		},
-		options: {
-			responsive: true,
-			scales: {
-				yAxes: [{
-					type: "linear",
-					display: true,
-					position: "left",
-					id: "elevation",					
-				}, {
-					type: "linear",
-					display: true,
-					position: "right",
-					id: "pace",
-					ticks: {
-						reverse: true,
-						userCallback: function(v){return convert_to_date(v)},
-						stepSize: 30,
-					},
-					gridLines: {
-						drawOnChartArea: false,
-					},
-				}],
-				xAxes:[{
-					// type: "linear",
-					// position: "bottom",
-					// display: true,
-					// scaleLabel: {
-						// display: true,
-					// },
-					// ticks: {
-						// autoSkip: true,
-						// stepSize: 1000,
-						// unitStepSize: 1000,
-					// }
-				}]
-			},
-			tooltips:{
-				callbacks:{
-					label: function(tooltipItem, data){
-						return data.datasets[tooltipItem.datasetIndex].label + ":" + convert_to_date(tooltipItem.yLabel);
-					}
+		title:{
+			text:"",
+		},
+		xAxis: {
+			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
+		},
+		yAxis:[{
+			type:"datetime",
+			grideLineWidth: 0,
+			labels:{
+				format:"{value}m/km",
+				style:{
+					// color: "#000",
+				},
+				formatter: function(){
+					var time = this.value;
+					var time = new Date(time*1000).toISOString().substr(12, 7);
+					return time;
 				}
+			},
+			title:{
+				text: 'Pace',
+				// style: "#000",
+			},
+			opposite: true,
+		},{
+			labels:{
+				format:"{value}m",
+				style:{
+					// color: "#000",
+				}
+			},
+			title:{
+				text: 'Elevation',
+				// style: "#000",
+			},
+		}],
+		tooltip:{
+			shared: true,
+		},
+		series: [{	
+			name:"Pace",
+			type:"spline",
+			data: [432570,],
+			tooltip:{
+				valueSuffix:" min/km",
 			}
-		}
-	});	
+		}, 
+		{
+			name:"Elevation",
+			type:"area",
+			yAxis: 1,
+			data: [0, 50, 60, 70, 80, 90, 0],
+			tooltip:{
+				valueSuffix:" m",
+			}
+		}],
+		plotOptions: {
+			area: {
+				fillColor: {
+					linearGradient: {
+						x1: 0,
+						y1: 0,
+						x2: 0,
+						y2: 1
+					},
+					stops: [
+					[0, Highcharts.getOptions().colors[0]],
+					[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+					]
+				},
+				marker: {
+					radius: 2
+				},
+				lineWidth: 1,
+				states: {
+					hover: {
+						lineWidth: 1
+					}
+				},
+				threshold: null
+			}
+		},
 
-function convert_to_date(time){
-	return new Date(time*1000).toISOString().substr(12, 7);
-}
+	});
 
 function initMap(){
 	var map = new google.maps.Map(document.getElementById('map'), {
@@ -258,15 +283,18 @@ function updateMapWithKml(kml){
 }
 
 function updateCharts(distances, elevations, paces){
-	json = {labels: distances, datasets:[]};
+	series = {series:[]};
+	xAxis = {categories: distances};
 	if (paces[0] == "success") {
-		json.datasets.push({label: "Pace", yAxisID: "pace", backgroundColor: "transparent", borderColor: "#95F079", data: paces[1]});
+		series.series.push({name: "Pace", type:"spline", tooltip:{valueSuffix:" min/km"}, data: paces[1]});
 	};
+
 	if (elevations[0] == "success") {
-		json.datasets.push({label: "Elevation", yAxisID: "elevation", backgroundColor:"#BAC8D7", borderColor: "#749FE0", data: elevations[1]});
-	};	
-	chart.data = json;
-	chart.update();
+		series.series.push({name: "Elevation", type:"area",tooltip:{valueSuffix:" m"}, data: elevations[1]});
+	};
+
+	chart.series = series;
+	chart.xAxis = xAxis;
 }
 
 function updateFileChooser(file_path){

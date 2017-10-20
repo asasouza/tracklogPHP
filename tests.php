@@ -3,9 +3,10 @@ require_once('lib/tracklogPhp.main.php');
 
 
 // $file = 'test_files/external_files/test_322/322km';
-// $file = "test_files/external_files_avbox/errado - trekking-morro-do-bau-ilhota-sc1-morro-do-bau";
+// $file = "test_files/external_files_avbox/certo - trekking-morro-do-bau-ilhota-sc1-morro-do-bau";
 // $file = "test_files/external_files_avbox/certo - travessia-toca-do-lopo-a-casa-de-pedra-travessia-toca-do-lopo-a-casa-de-pedra";
-$file = "test_files/external_files_avbox/errado - elevacao - cachoeira-do-gato-e-praia-do-gato-ilhabela-tracklog-cachoeira-do-gato";
+// $file = "test_files/external_files_avbox/errado - elevacao - cachoeira-do-gato-e-praia-do-gato-ilhabela-tracklog-cachoeira-do-gato";
+// $file = "test_files/external_files_avbox/corrida-rustica-ilhabela-ponta-das-canas-corrida-rustica-ilhabela-ponta-das-canas-10km";
 
 $kml = new KML($file.'.kml');
 // $gpx = new GPX($file.'.gpx');

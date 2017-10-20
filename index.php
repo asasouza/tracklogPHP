@@ -182,7 +182,7 @@ $(document).ready(function() {
 		$("input[type=file]").click();
 	});
 	$("input[type=file]").change(function() {
-		revertFileChooser();
+		revertFileInfos();
 		revertChart();
 		var form = new FormData($("#submit-file")[0]);
 		$.ajax({
@@ -191,6 +191,13 @@ $(document).ready(function() {
 			data: form,
 			processData: false,
 			contentType: false,
+			beforeSend: function(){
+				$(".data.data-pace").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+				$(".data.data-elevation-gain").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+				$(".data.data-elevation-loss").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+				$(".data.data-total-time").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+				$(".data.data-distance").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+			},
 			success: function(response){
 				response = $.parseJSON(response);
 				if (response.error) {
@@ -204,29 +211,28 @@ $(document).ready(function() {
 			}
 		})
 	});
-	$("#download-file-trigger").click(function(){
-		if ($("select").val() != 0) {
-			var form = new FormData($("#submit-file")[0]);
-			form.append('extension_to_download', $("select").val());
-			$.ajax({
-				url: 'tracklogPhpAjax.php',
-				type: 'POST',
-				processData: false,
-				contentType: false,
-				data: form,
-				success: function(response){
-					response = $.parseJSON(response);
-					window.open(response.download_file_path, "_blank");
-					$("select").val(0);
-				}
-			})
-		}else{
-			console.log("choose a file extension to download!");
-			$("#file-chooser-text").html("<span style='color:#F76868'>Choose a file extension to download!</span><br><span> Click to change file.</span>")
-		}
-	})
+$("#download-file-trigger").click(function(){
+	if ($("select").val() != 0) {
+		var form = new FormData($("#submit-file")[0]);
+		form.append('extension_to_download', $("select").val());
+		$.ajax({
+			url: 'tracklogPhpAjax.php',
+			type: 'POST',
+			processData: false,
+			contentType: false,
+			data: form,
+			success: function(response){
+				response = $.parseJSON(response);
+				window.open(response.download_file_path, "_blank");
+				$("select").val(0);
+			}
+		})
+	}else{
+		console.log("choose a file extension to download!");
+		$("#file-chooser-text").html("<span style='color:#F76868'>Choose a file extension to download!</span><br><span> Click to change file.</span>")
+	}
+})
 });
-
 function updateInfoBoard(data){
 	if (data.data_pace[0] == "success") {
 		$(".data.data-pace").html(data.data_pace[1]);
@@ -252,10 +258,8 @@ function updateInfoBoard(data){
 		$(".title.data-total-time").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_total_time[1] +"</span></div>");
 		$(".data.data-total-time").html("--:--:--");
 	}
-
 	$(".data.data-distance").html(data.data_total_distance + " KM");		
 }
-
 function updateMapWithKml(kml){
 	var kmlLayer = new google.maps.KmlLayer({
 		url: kml,
@@ -264,7 +268,6 @@ function updateMapWithKml(kml){
 		map: new google.maps.Map(document.getElementById('map'))
 	});
 }
-
 function updateCharts(distances, elevations, paces){
 	$.each(chart.series, function(index, el) {
 		// update the series of the X axis
@@ -288,19 +291,23 @@ function updateCharts(distances, elevations, paces){
 	});
 	chart.redraw();
 }
-
 function updateFileChooser(file_path){
 	$("#download-file").attr('data-file-path', file_path);
 	$("#file-chooser").css('width', '60%');
 	$("#file-chooser-text").html("Click to change file");
 	$("#download").css('display', 'inline');
 }
-function revertFileChooser(){
+function revertFileInfos(){
 	$("#download-file").attr('data-file-path', "");
 	$("#file-chooser").css('width', '100%');
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").css('display', 'none');
 	$(".tooltip").remove();
+	$(".data.data-pace").html("0:00");
+	$(".data.data-elevation-gain").html("000 M");
+	$(".data.data-elevation-loss").html("000 M");
+	$(".data.data-total-time").html("00:00:00");
+	$(".data.data-distance").html("0.0 M");
 }
 function revertChart(){
 	$.each(chart.series, function(index, el) {

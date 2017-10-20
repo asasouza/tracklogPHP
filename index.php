@@ -182,35 +182,42 @@ $(document).ready(function() {
 		$("input[type=file]").click();
 	});
 	$("input[type=file]").change(function() {
-		revertFileInfos();
-		revertChart();
-		var form = new FormData($("#submit-file")[0]);
-		$.ajax({
-			url: 'tracklogPhpAjax.php',
-			type: 'POST',
-			data: form,
-			processData: false,
-			contentType: false,
-			beforeSend: function(){
-				$(".data.data-pace").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
-				$(".data.data-elevation-gain").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
-				$(".data.data-elevation-loss").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
-				$(".data.data-total-time").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
-				$(".data.data-distance").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
-			},
-			success: function(response){
-				response = $.parseJSON(response);
-				if (response.error) {
-					$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
-				}else{
-					updateInfoBoard(response.info_board);					
-					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
-					updateFileChooser(response.data_kml);
-					updateMapWithKml(response.data_kml);
+		if ($("input[type=file]").val() != "") {
+			revertFileInfos();
+			revertChart();
+			var form = new FormData($("#submit-file")[0]);
+			$.ajax({
+				url: 'tracklogPhpAjax.php',
+				type: 'POST',
+				data: form,
+				processData: false,
+				contentType: false,
+				beforeSend: function(){
+					$(".data.data-pace").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+					$(".data.data-elevation-gain").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+					$(".data.data-elevation-loss").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+					$(".data.data-total-time").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+					$(".data.data-distance").html("<i class='fa fa-circle-o-notch fa-spin'></i>");
+					chart.showLoading("<i class='fa fa-circle-o-notch fa-spin'></i>");
+				},
+				success: function(response){
+					response = $.parseJSON(response);
+					if (response.error) {
+						revertFileInfos();
+						revertChart();
+						chart.hideLoading();
+						$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
+					}else{
+						chart.hideLoading();
+						updateInfoBoard(response.info_board);						
+						updateCharts(response.data_distances, response.data_elevations, response.data_paces);
+						updateFileChooser(response.data_kml);
+						updateMapWithKml(response.data_kml);
+					}
 				}
-			}
-		})
-	});
+			});
+}
+});
 $("#download-file-trigger").click(function(){
 	if ($("select").val() != 0) {
 		var form = new FormData($("#submit-file")[0]);

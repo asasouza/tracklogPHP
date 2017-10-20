@@ -7,14 +7,11 @@
 	<meta name="description" content="Tracklog converter">
 	<meta name="keywords" content="PHP,GPS,Tracklog,Converter">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="https://code.highcharts.com/highcharts.js"></script>
-
-
 </head>
 
 <body>
@@ -28,21 +25,17 @@
 	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
-
 	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
 	.tooltip .tooltiptext {background-color: #E1DCDC; border-radius: 6px; bottom:100%; left: 50%; margin-left:-60px; padding: 5px 0; position: absolute; text-align: center; visibility: hidden; width: 130px; z-index: 1;}
 	.tooltip:hover .tooltiptext {visibility: visible;}
-
 	</style>
-
 
 	<div id="content" style="margin:auto; width:80%;">
 		<div id="map" style="height:calc(100vw / 4); width:100%;"></div>
 		<div style="margin: 10px auto 10px auto; width:100%;">
 			<div id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer; float:left; padding:5px; text-align:center; width:100%;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
-			</div>
-			
+			</div>		
 			<div id="download" style="float:right; display:none; margin:5px auto 6px auto; text-align:center; width:37%;">
 				<form action="javascript:" id="download-file" style="margin:0px;" data-file-path="">
 					<select style="border-radius:6px; font-family: 'Roboto Mono', 'Roboto', monospace; font-size: 15px; height: 30px; width: 70%;">
@@ -56,13 +49,10 @@
 					<button id="download-file-trigger" style="border-radius:6px; cursor:pointer; font-family:'Roboto Mono','Roboto',monospace; font-size:15px; height:30px; width: 27%;">Download</button>
 				</form>
 			</div>
-
 			<form id="submit-file" enctype="multipart/form-data" style="display:none">
 				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
 			</form>
 		</div>
-		
-
 		<div id="info-board" style="margin:10px; width:100%;">
 			<div class="info col-5">
 				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
@@ -85,18 +75,15 @@
 				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
 		</div>
-
-
 		<div id="charts" style="width:100%;"></div>
 	</div>
-
 
 	<script type="text/javascript">	
 	var chart = new Highcharts.chart("charts", {
 		chart:{
 			type:"line",
 			zoomType:"x",
-		},
+		},		
 		title:{
 			text:"",
 		},
@@ -148,6 +135,7 @@
 				valueSuffix:" min/km",
 			},
 			color: "#3FF862",
+			zIndex: 1,
 		}, 
 		{
 			name:"Elevation",
@@ -157,7 +145,8 @@
 			tooltip:{
 				valueSuffix:" m",
 			},
-			color: Highcharts.getOptions().colors[0],
+			color: "#C6C6C6",
+			zIndex: 0,
 		}],
 		plotOptions: {
 			area: {
@@ -169,8 +158,8 @@
 						y2: 1
 					},
 					stops: [
-					[0, Highcharts.getOptions().colors[0]],
-					[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+					[0, "#C6C6C6"],
+					[1, Highcharts.Color("#C6C6C6").setOpacity(0).get('rgba')]
 					]
 				},
 				threshold: null,
@@ -179,9 +168,7 @@
 			line: {
 				turboThreshold: 0,
 			},
-
 		},
-
 	});
 
 function initMap(){
@@ -189,15 +176,14 @@ function initMap(){
 		center: {lat: 0, lng: 0},
 		zoom: 1
 	});
-}
-
+};
 $(document).ready(function() {
 	$("#file-chooser").click(function(){
 		$("input[type=file]").click();
-	})
-
+	});
 	$("input[type=file]").change(function() {
 		revertFileChooser();
+		revertChart();
 		var form = new FormData($("#submit-file")[0]);
 		$.ajax({
 			url: 'tracklogPhpAjax.php',
@@ -216,9 +202,8 @@ $(document).ready(function() {
 					updateMapWithKml(response.data_kml);
 				}
 			}
-		})			
+		})
 	});
-
 	$("#download-file-trigger").click(function(){
 		if ($("select").val() != 0) {
 			var form = new FormData($("#submit-file")[0]);
@@ -237,6 +222,7 @@ $(document).ready(function() {
 			})
 		}else{
 			console.log("choose a file extension to download!");
+			$("#file-chooser-text").html("<span style='color:#F76868'>Choose a file extension to download!</span><br><span> Click to change file.</span>")
 		}
 	})
 });
@@ -314,6 +300,14 @@ function revertFileChooser(){
 	$("#file-chooser").css('width', '100%');
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").css('display', 'none');
+	$(".tooltip").remove();
+}
+function revertChart(){
+	$.each(chart.series, function(index, el) {
+		this.xAxis.setCategories(["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"], false);
+		this.update({data: [0]}, false);
+	});
+	chart.redraw();
 }
 
 </script>

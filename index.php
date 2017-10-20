@@ -81,9 +81,8 @@
 			</div>
 		</div>
 
-
-		<div class="row mb-2">
-			<div class="col" id="charts"></div>
+		<div class="row justify-content-center">
+			<div class="col m-1 p-0" id="charts"></div>
 		</div>
 	</div>
 

@@ -21,19 +21,15 @@
 	i{margin: 5px;}
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
-	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
+	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; opacity:1; position: relative;}
 	.tooltip .tooltiptext {background-color: #E1DCDC; border-radius: 6px; bottom:100%; left: 50%; margin-left:-60px; padding: 5px 0; position: absolute; text-align: center; visibility: hidden; width: 130px; z-index: 1;}
 	.tooltip:hover .tooltiptext {visibility: visible;}
 	</style>
 
 	<div class="container">
-		
-
 		<div class="row">
 			<div class="w-100 h-50" id="map"></div>
 		</div>
-
-
 		<div class="row align-items-center mt-2 mb-2">
 			<div class="col text-center w-100 p-1" id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
@@ -55,8 +51,6 @@
 					<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
 				</form>
 		</div>
-
-
 		<div class="row align-items-center justify-content-center text-center mb-2">
 			<div class="col info m-1">
 				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
@@ -68,7 +62,7 @@
 			</div>
 			<div class="col info m-1">
 				<div class="title data-pace"><i class="fa fa-tachometer"></i>Pace</div>
-				<div class="data data-pace"><b>0:00</b></div>
+				<div class="data data-pace"><b>0:00/KM</b></div>
 			</div>
 			<div class="d-lg-none d-xl-none w-100"></div>
 			<div class="col info m-1">
@@ -80,7 +74,6 @@
 				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
 		</div>
-
 		<div class="row justify-content-center">
 			<div class="col m-1 p-0" id="charts"></div>
 		</div>
@@ -279,7 +272,7 @@ $("#download-file-trigger").click(function(){
 });
 function updateInfoBoard(data){
 	if (data.data_pace[0] == "success") {
-		$(".data.data-pace").html(data.data_pace[1]);
+		$(".data.data-pace").html(data.data_pace[1] + "/KM");
 	}else{
 		$(".title.data-pace").append(" <div class='tooltip'><b>?</b><span class='tooltiptext'>"+ data.data_pace[1] +"</span></div>");
 		$(".data.data-pace").html("--:--");
@@ -347,7 +340,7 @@ function revertFileInfos(){
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").removeClass("d-block").addClass("d-none");
 	$(".tooltip").remove();
-	$(".data.data-pace").html("0:00");
+	$(".data.data-pace").html("0:00/KM");
 	$(".data.data-elevation-gain").html("000 M");
 	$(".data.data-elevation-loss").html("000 M");
 	$(".data.data-total-time").html("00:00:00");

@@ -1,7 +1,7 @@
 <?php
 //sempre tem que ter o nome 'test' na frente do teste;
-//comanda php phpunit\phpunit.phar --bootstrap autoloader.php --testdox phpunit\kmlTest.php
-//comanda php phpunit\phpunit.phar --bootstrap autoloader.php phpunit
+//comanda php unit_tests\phpunit.phar --bootstrap lib\tracklogPhp.main.php --testdox unit_tests\kmlTest.php
+//comanda php unit_tests\phpunit.phar --bootstrap lib\tracklogPhp.main.php unit_tests
 
 // assertEquals(esperado, atual);
 

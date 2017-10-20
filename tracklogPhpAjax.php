@@ -1,4 +1,5 @@
 <?php
+//include the loader 
 require_once("lib/tracklogPhp.main.php");
 if (isset($_FILES["tracklogFile"])) {	
 	$extensions = ['kml', 'tcx', 'gpx', 'csv', 'js'];
@@ -12,6 +13,8 @@ if (isset($_FILES["tracklogFile"])) {
 			echo json_encode($response);
 			exit;
 		}
+		//if the user want do download the file
+		//else get the informations and send to UI.
 		if (isset($_POST["extension_to_download"])) {
 			$extension_to_download = strtolower($_POST["extension_to_download"]);
 			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
@@ -51,7 +54,8 @@ if (isset($_FILES["tracklogFile"])) {
 		exit;
 	}	
 }else{
-	echo "no";
+	$response["error"] = "No file submited.";
+	echo json_encode($response);	
 }
 
 ?>

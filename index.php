@@ -19,11 +19,6 @@
 	<style type="text/css">
 	body{font-family: 'Roboto Mono', 'Roboto', monospace;}
 	i{margin: 5px;}
-	/*.col-5{float:left;margin:5px;width:19%;}
-	.col-4{float:left;box-sizing:border-box;padding:5px;width:25%;}
-	.col-3{float:left;box-sizing:border-box;padding:5px;width:33%;}
-	.col-2{float:left;box-sizing:border-box;padding:5px;width:50%;}
-	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}*/
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
 	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
@@ -35,7 +30,7 @@
 		
 
 		<div class="row">
-			<div class="w-100 h-100" id="map"></div>
+			<div class="w-100 h-50" id="map"></div>
 		</div>
 
 
@@ -43,7 +38,7 @@
 			<div class="col text-center w-100 p-1" id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
 			</div>		
-			<div class="col-6 w-100 text-center" id="download" style="display:none;">
+			<div class="col-6 w-100 text-center d-none" id="download">
 				<form action="javascript:" id="download-file" data-file-path="">
 					<select class="form-control col" style="font-family: 'Roboto Mono', 'Roboto', monospace;">
 						<option value="0">Convert to another extension</option>
@@ -56,30 +51,31 @@
 					<button class="btn btn-default col" id="download-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace;">Download</button>
 				</form>
 			</div>
-			<form id="submit-file" enctype="multipart/form-data" style="display:none">
-				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
-			</form>
+				<form class="d-none" id="submit-file" enctype="multipart/form-data">
+					<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
+				</form>
 		</div>
 
 
-		<div class="row  align-items-center justify-content-center text-center mb-2">
-			<div class="col info mx-1">
+		<div class="row align-items-center justify-content-center text-center mb-2">
+			<div class="col info m-1">
 				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
 				<div class="data data-distance">0.0 KM</div>
 			</div>
-			<div class="col info mx-1">
+			<div class="col info m-1">
 				<div class="title data-total-time"><i class="fa fa-clock-o"></i>Total Time</div>
 				<div class="data data-total-time"><b>00:00:00</b></div>
 			</div>
-			<div class="col info mx-1">
+			<div class="col info m-1">
 				<div class="title data-pace"><i class="fa fa-tachometer"></i>Pace</div>
 				<div class="data data-pace"><b>0:00</b></div>
 			</div>
-			<div class="col info mx-1">
+			<div class="d-lg-none d-xl-none w-100"></div>
+			<div class="col info m-1">
 				<div class="title data-elevation-gain"><i class="fa fa-arrow-up"></i>Elevation Gain</div>
 				<div class="data data-elevation-gain"><b>000 M</b></div>
 			</div>
-			<div class="col info mx-1">
+			<div class="col info m-1">
 				<div class="title data-elevation-loss"><i class="fa fa-arrow-down"></i>Elevation Loss</div>
 				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
@@ -278,7 +274,6 @@ $("#download-file-trigger").click(function(){
 			}
 		})
 	}else{
-		console.log("choose a file extension to download!");
 		$("#file-chooser-text").html("<span style='color:#F76868'>Choose a file extension to download!</span><br><span> Click to change file.</span>")
 	}
 })
@@ -345,13 +340,13 @@ function updateFileChooser(file_path){
 	$("#download-file").attr('data-file-path', file_path);
 	$("#file-chooser").removeClass('w-100').addClass("w-75");
 	$("#file-chooser-text").html("Click to change file");
-	$("#download").css('display', 'inline');
+	$("#download").removeClass("d-none").addClass("d-block");
 }
 function revertFileInfos(){
 	$("#download-file").attr('data-file-path', "");
 	$("#file-chooser").removeClass('w-75').addClass("w-100");
 	$("#file-chooser-text").html("Click to choose a tracklog file");
-	$("#download").css('display', 'none');
+	$("#download").removeClass("d-block").addClass("d-none");
 	$(".tooltip").remove();
 	$(".data.data-pace").html("0:00");
 	$(".data.data-elevation-gain").html("000 M");

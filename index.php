@@ -102,40 +102,37 @@
 		},
 		xAxis: {
 			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0"],
+			tickInterval: 200,
 		},
 		yAxis:[{
-			type:"datetime",
+			reversed: true,
 			grideLineWidth: 0,
 			labels:{
 				format:"{value}m/km",
-				style:{
-					// color: "#000",
-				},
+				formatter: function(){
+					this.value = new Date(this.value*1000).toISOString().substr(12, 7) + "/km";
+					return this.value;
+				}
 			},
 			title:{
 				text: 'Pace',
-				// style: "#000",
 			},
 			opposite: true,
 		},{
 			labels:{
 				format:"{value}m",
-				style:{
-					// color: "#000",
-				}
 			},
 			title:{
 				text: 'Elevation',
-				// style: "#000",
 			},
 		}],
 		tooltip:{
 			shared: true,
 			formatter: function(){
-				var tooltip = "Distance : <b>"+this.x+"</b>";
+				var tooltip = "Distance : <b>"+this.x+"</b> m";
 				$.each(this.points, function(){
 					if (this.series.name == "Pace") {
-						tooltip += "<br>"+this.series.name+" : "+ new Date(this.y*1000).toISOString().substr(14, 5) + " min/km";
+						tooltip += "<br>"+this.series.name+" : "+ new Date(this.y*1000).toISOString().substr(12, 7) + "/km";
 					}else{
 						tooltip += "<br>"+this.series.name+" : "+ this.y + " m";	
 					}						
@@ -145,11 +142,12 @@
 		},
 		series: [{	
 			name:"Pace",
-			type:"spline",
+			type:"line",
 			data: [0, 0, 0, 0, 0, 0],
 			tooltip:{
 				valueSuffix:" min/km",
-			}
+			},
+			color: "#3FF862",
 		}, 
 		{
 			name:"Elevation",
@@ -158,7 +156,8 @@
 			data: [0, 0, 0, 0, 0, 0],
 			tooltip:{
 				valueSuffix:" m",
-			}
+			},
+			color: Highcharts.getOptions().colors[0],
 		}],
 		plotOptions: {
 			area: {
@@ -173,15 +172,6 @@
 					[0, Highcharts.getOptions().colors[0]],
 					[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
 					]
-				},
-				marker: {
-					radius: 2
-				},
-				lineWidth: 1,
-				states: {
-					hover: {
-						lineWidth: 1
-					}
 				},
 				threshold: null,
 				turboThreshold: 0,
@@ -216,15 +206,14 @@ $(document).ready(function() {
 			processData: false,
 			contentType: false,
 			success: function(response){
-				// console.log(response);
 				response = $.parseJSON(response);
 				if (response.error) {
 					$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
 				}else{
-					updateInfoBoard(response.info_board);
-					updateMapWithKml(response.data_kml);
+					updateInfoBoard(response.info_board);					
 					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
 					updateFileChooser(response.data_kml);
+					updateMapWithKml(response.data_kml);
 				}
 			}
 		})			
@@ -241,10 +230,7 @@ $(document).ready(function() {
 				contentType: false,
 				data: form,
 				success: function(response){
-					// console.log(response);
 					response = $.parseJSON(response);
-					// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
-					// $("#download-file").click();
 					window.open(response.download_file_path, "_blank");
 					$("select").val(0);
 				}
@@ -294,32 +280,25 @@ function updateMapWithKml(kml){
 }
 
 function updateCharts(distances, elevations, paces){
-
-	
-	// chart.series[0].update({id: "distances", data: distances}, true);
-	// chart.series[0].update({id: "elevations", data: elevations}, true);
-	// chart.series[0].update({id: "paces", data: paces}, true);
-	// chart.addSeries(elevations, false);
-	// chart.addSeries(paces, false);
-	// chart.redraw()
-	// chart.series[1].update({data: elevations}, true);	
-	// chart.addSeries({
-		// type: 'area',
-		// data: elevations
-	// });
-	// chart.redraw();
-	// console.log(chart.series);
 	$.each(chart.series, function(index, el) {
-		// this.update({data: elevations});
+		// update the series of the X axis
 		this.xAxis.setCategories(distances, false);
-		console.log(distances);
-		if (this.name == "Elevation") {
+		// update the series of the ELEVATIONS Y axis, if response is sucess
+		if (elevations[0] == "success" && this.name == "Elevation") {
 			this.update({data: elevations[1]}, false);
-			console.log(elevations);
 		}else{
+			if (elevations[0] == "error") {
+				this.update({data: [0]}, false);
+			};
+		}
+		// update the series of the PACE Y axis, if response is sucess
+		if(paces[0] == "success" && this.name == "Pace"){
 			this.update({data: paces[1]}, false);
-			console.log(paces);
-		};
+		}else{
+			if (paces[0] == "error") {
+				this.update({data: [0]}, false);
+			};
+		}
 	});
 	chart.redraw();
 }

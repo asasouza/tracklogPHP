@@ -6,8 +6,8 @@ class KML extends Tracklog{
 			$this->validate($file);
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('kml', 'http://www.opengis.net/kml/2.2');
+			$xml->registerXPathNamespace('kml', 'http://earth.google.com/kml/2.0');
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
-
 			if (!empty($content = $xml->xpath('//kml:LineString/kml:coordinates')) && strlen($content[0]) > 0) {
 				foreach ($content as $linestring) {
 					$linestring = preg_split('/\s+/', trim($linestring));					

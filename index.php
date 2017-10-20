@@ -7,13 +7,11 @@
 	<meta name="description" content="Tracklog converter">
 	<meta name="keywords" content="PHP,GPS,Tracklog,Converter">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-
+	<script src="https://code.highcharts.com/highcharts.js"></script>
 </head>
 
 <body>
@@ -27,21 +25,17 @@
 	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
-
 	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
 	.tooltip .tooltiptext {background-color: #E1DCDC; border-radius: 6px; bottom:100%; left: 50%; margin-left:-60px; padding: 5px 0; position: absolute; text-align: center; visibility: hidden; width: 130px; z-index: 1;}
 	.tooltip:hover .tooltiptext {visibility: visible;}
-
 	</style>
-
 
 	<div id="content" style="margin:auto; width:80%;">
 		<div id="map" style="height:calc(100vw / 4); width:100%;"></div>
 		<div style="margin: 10px auto 10px auto; width:100%;">
 			<div id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer; float:left; padding:5px; text-align:center; width:100%;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
-			</div>
-			
+			</div>		
 			<div id="download" style="float:right; display:none; margin:5px auto 6px auto; text-align:center; width:37%;">
 				<form action="javascript:" id="download-file" style="margin:0px;" data-file-path="">
 					<select style="border-radius:6px; font-family: 'Roboto Mono', 'Roboto', monospace; font-size: 15px; height: 30px; width: 70%;">
@@ -55,13 +49,10 @@
 					<button id="download-file-trigger" style="border-radius:6px; cursor:pointer; font-family:'Roboto Mono','Roboto',monospace; font-size:15px; height:30px; width: 27%;">Download</button>
 				</form>
 			</div>
-
 			<form id="submit-file" enctype="multipart/form-data" style="display:none">
 				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
 			</form>
 		</div>
-		
-
 		<div id="info-board" style="margin:10px; width:100%;">
 			<div class="info col-5">
 				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
@@ -84,94 +75,115 @@
 				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
 		</div>
-
-
-		<canvas id="charts" style="width:100%;"></canvas>
+		<div id="charts" style="width:100%;"></div>
 	</div>
 
-
 	<script type="text/javascript">	
-	var chart = new Chart.Line($("#charts"), {
-		data: {
-			labels: ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-			datasets: [{
-				label: "Pace",
-				yAxisID: "pace",
-				borderColor: '#95F079',
-				backgroundColor: "#FFFFFF",
-				data: [0, 0, 0, 0, 0, 0, 0],
-			}, 
-			{
-				label: "Elevation",
-				yAxisID: "elevation",
-				borderColor: '#749FE0',
-				data: [0, 0, 0, 0, 0, 0, 0],
-			}]
+	var chart = new Highcharts.chart("charts", {
+		chart:{
+			type:"line",
+			zoomType:"x",
+		},		
+		title:{
+			text:"",
 		},
-		options: {
-			responsive: true,
-			scales: {
-				yAxes: [{
-					type: "linear",
-					display: true,
-					position: "left",
-					id: "elevation",					
-				}, {
-					type: "linear",
-					display: true,
-					position: "right",
-					id: "pace",
-					ticks: {
-						reverse: true,
-						userCallback: function(v){return convert_to_date(v)},
-						stepSize: 30,
-					},
-					gridLines: {
-						drawOnChartArea: false,
-					},
-				}],
-				xAxes:[{
-					// type: "linear",
-					// position: "bottom",
-					// display: true,
-					// scaleLabel: {
-						// display: true,
-					// },
-					// ticks: {
-						// autoSkip: true,
-						// stepSize: 1000,
-						// unitStepSize: 1000,
-					// }
-				}]
-			},
-			tooltips:{
-				callbacks:{
-					label: function(tooltipItem, data){
-						return data.datasets[tooltipItem.datasetIndex].label + ":" + convert_to_date(tooltipItem.yLabel);
-					}
+		xAxis: {
+			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0"],
+			tickInterval: 200,
+		},
+		yAxis:[{
+			reversed: true,
+			grideLineWidth: 0,
+			labels:{
+				format:"{value}m/km",
+				formatter: function(){
+					this.value = new Date(this.value*1000).toISOString().substr(12, 7) + "/km";
+					return this.value;
 				}
+			},
+			title:{
+				text: 'Pace',
+			},
+			opposite: true,
+		},{
+			labels:{
+				format:"{value}m",
+			},
+			title:{
+				text: 'Elevation',
+			},
+		}],
+		tooltip:{
+			shared: true,
+			formatter: function(){
+				var tooltip = "Distance : <b>"+this.x+"</b> m";
+				$.each(this.points, function(){
+					if (this.series.name == "Pace") {
+						tooltip += "<br>"+this.series.name+" : "+ new Date(this.y*1000).toISOString().substr(12, 7) + "/km";
+					}else{
+						tooltip += "<br>"+this.series.name+" : "+ this.y + " m";	
+					}						
+				});
+				return tooltip;
 			}
-		}
-	});	
-
-function convert_to_date(time){
-	return new Date(time*1000).toISOString().substr(12, 7);
-}
+		},
+		series: [{	
+			name:"Pace",
+			type:"line",
+			data: [0, 0, 0, 0, 0, 0],
+			tooltip:{
+				valueSuffix:" min/km",
+			},
+			color: "#3FF862",
+			zIndex: 1,
+		}, 
+		{
+			name:"Elevation",
+			type:"area",
+			yAxis: 1,
+			data: [0, 0, 0, 0, 0, 0],
+			tooltip:{
+				valueSuffix:" m",
+			},
+			color: "#C6C6C6",
+			zIndex: 0,
+		}],
+		plotOptions: {
+			area: {
+				fillColor: {
+					linearGradient: {
+						x1: 0,
+						y1: 0,
+						x2: 0,
+						y2: 1
+					},
+					stops: [
+					[0, "#C6C6C6"],
+					[1, Highcharts.Color("#C6C6C6").setOpacity(0).get('rgba')]
+					]
+				},
+				threshold: null,
+				turboThreshold: 0,
+			},
+			line: {
+				turboThreshold: 0,
+			},
+		},
+	});
 
 function initMap(){
 	var map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: 0, lng: 0},
 		zoom: 1
 	});
-}
-
+};
 $(document).ready(function() {
 	$("#file-chooser").click(function(){
 		$("input[type=file]").click();
-	})
-
+	});
 	$("input[type=file]").change(function() {
 		revertFileChooser();
+		revertChart();
 		var form = new FormData($("#submit-file")[0]);
 		$.ajax({
 			url: 'tracklogPhpAjax.php',
@@ -180,20 +192,18 @@ $(document).ready(function() {
 			processData: false,
 			contentType: false,
 			success: function(response){
-				console.log(response);
 				response = $.parseJSON(response);
 				if (response.error) {
 					$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
 				}else{
-					updateInfoBoard(response.info_board);
-					updateMapWithKml(response.data_kml);
+					updateInfoBoard(response.info_board);					
 					updateCharts(response.data_distances, response.data_elevations, response.data_paces);
 					updateFileChooser(response.data_kml);
+					updateMapWithKml(response.data_kml);
 				}
 			}
-		})			
+		})
 	});
-
 	$("#download-file-trigger").click(function(){
 		if ($("select").val() != 0) {
 			var form = new FormData($("#submit-file")[0]);
@@ -205,16 +215,14 @@ $(document).ready(function() {
 				contentType: false,
 				data: form,
 				success: function(response){
-					console.log(response);
 					response = $.parseJSON(response);
-					// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
-					// $("#download-file").click();
 					window.open(response.download_file_path, "_blank");
 					$("select").val(0);
 				}
 			})
 		}else{
 			console.log("choose a file extension to download!");
+			$("#file-chooser-text").html("<span style='color:#F76868'>Choose a file extension to download!</span><br><span> Click to change file.</span>")
 		}
 	})
 });
@@ -258,15 +266,27 @@ function updateMapWithKml(kml){
 }
 
 function updateCharts(distances, elevations, paces){
-	json = {labels: distances, datasets:[]};
-	if (paces[0] == "success") {
-		json.datasets.push({label: "Pace", yAxisID: "pace", backgroundColor: "transparent", borderColor: "#95F079", data: paces[1]});
-	};
-	if (elevations[0] == "success") {
-		json.datasets.push({label: "Elevation", yAxisID: "elevation", backgroundColor:"#BAC8D7", borderColor: "#749FE0", data: elevations[1]});
-	};	
-	chart.data = json;
-	chart.update();
+	$.each(chart.series, function(index, el) {
+		// update the series of the X axis
+		this.xAxis.setCategories(distances, false);
+		// update the series of the ELEVATIONS Y axis, if response is sucess
+		if (elevations[0] == "success" && this.name == "Elevation") {
+			this.update({data: elevations[1]}, false);
+		}else{
+			if (elevations[0] == "error") {
+				this.update({data: [0]}, false);
+			};
+		}
+		// update the series of the PACE Y axis, if response is sucess
+		if(paces[0] == "success" && this.name == "Pace"){
+			this.update({data: paces[1]}, false);
+		}else{
+			if (paces[0] == "error") {
+				this.update({data: [0]}, false);
+			};
+		}
+	});
+	chart.redraw();
 }
 
 function updateFileChooser(file_path){
@@ -280,6 +300,14 @@ function revertFileChooser(){
 	$("#file-chooser").css('width', '100%');
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").css('display', 'none');
+	$(".tooltip").remove();
+}
+function revertChart(){
+	$.each(chart.series, function(index, el) {
+		this.xAxis.setCategories(["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"], false);
+		this.update({data: [0]}, false);
+	});
+	chart.redraw();
 }
 
 </script>

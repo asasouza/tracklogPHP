@@ -88,7 +88,7 @@ abstract class Tracklog {
 		if($this->hasElevation()){
 			$elevations;
 			foreach ($this->trackData as $trackPoint) {
-				$elevations[] = $trackPoint->getElevation();
+				$elevations[] = floatval($trackPoint->getElevation());
 			}
 			return $elevations;
 		}else{

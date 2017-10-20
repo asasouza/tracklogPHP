@@ -101,7 +101,7 @@
 			text:"",
 		},
 		xAxis: {
-			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
+			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0"],
 		},
 		yAxis:[{
 			type:"datetime",
@@ -111,11 +111,6 @@
 				style:{
 					// color: "#000",
 				},
-				formatter: function(){
-					var time = this.value;
-					var time = new Date(time*1000).toISOString().substr(12, 7);
-					return time;
-				}
 			},
 			title:{
 				text: 'Pace',
@@ -136,11 +131,22 @@
 		}],
 		tooltip:{
 			shared: true,
+			formatter: function(){
+				var tooltip = "Distance : <b>"+this.x+"</b>";
+				$.each(this.points, function(){
+					if (this.series.name == "Pace") {
+						tooltip += "<br>"+this.series.name+" : "+ new Date(this.y*1000).toISOString().substr(14, 5) + " min/km";
+					}else{
+						tooltip += "<br>"+this.series.name+" : "+ this.y + " m";	
+					}						
+				});
+				return tooltip;
+			}
 		},
 		series: [{	
 			name:"Pace",
 			type:"spline",
-			data: [432570,],
+			data: [0, 0, 0, 0, 0, 0],
 			tooltip:{
 				valueSuffix:" min/km",
 			}
@@ -149,7 +155,7 @@
 			name:"Elevation",
 			type:"area",
 			yAxis: 1,
-			data: [0, 50, 60, 70, 80, 90, 0],
+			data: [0, 0, 0, 0, 0, 0],
 			tooltip:{
 				valueSuffix:" m",
 			}
@@ -177,8 +183,13 @@
 						lineWidth: 1
 					}
 				},
-				threshold: null
-			}
+				threshold: null,
+				turboThreshold: 0,
+			},
+			line: {
+				turboThreshold: 0,
+			},
+
 		},
 
 	});
@@ -205,7 +216,7 @@ $(document).ready(function() {
 			processData: false,
 			contentType: false,
 			success: function(response){
-				console.log(response);
+				// console.log(response);
 				response = $.parseJSON(response);
 				if (response.error) {
 					$("#file-chooser-text").html("<span style='color:#F76868'>"+response.error+"</span><br><span> Please, click to choose another file.</span>")
@@ -230,7 +241,7 @@ $(document).ready(function() {
 				contentType: false,
 				data: form,
 				success: function(response){
-					console.log(response);
+					// console.log(response);
 					response = $.parseJSON(response);
 					// var a = $("body").append("<a id='download-file' href='"+response.download_file_path+"' download></a>");
 					// $("#download-file").click();
@@ -283,18 +294,34 @@ function updateMapWithKml(kml){
 }
 
 function updateCharts(distances, elevations, paces){
-	series = {series:[]};
-	xAxis = {categories: distances};
-	if (paces[0] == "success") {
-		series.series.push({name: "Pace", type:"spline", tooltip:{valueSuffix:" min/km"}, data: paces[1]});
-	};
 
-	if (elevations[0] == "success") {
-		series.series.push({name: "Elevation", type:"area",tooltip:{valueSuffix:" m"}, data: elevations[1]});
-	};
-
-	chart.series = series;
-	chart.xAxis = xAxis;
+	
+	// chart.series[0].update({id: "distances", data: distances}, true);
+	// chart.series[0].update({id: "elevations", data: elevations}, true);
+	// chart.series[0].update({id: "paces", data: paces}, true);
+	// chart.addSeries(elevations, false);
+	// chart.addSeries(paces, false);
+	// chart.redraw()
+	// chart.series[1].update({data: elevations}, true);	
+	// chart.addSeries({
+		// type: 'area',
+		// data: elevations
+	// });
+	// chart.redraw();
+	// console.log(chart.series);
+	$.each(chart.series, function(index, el) {
+		// this.update({data: elevations});
+		this.xAxis.setCategories(distances, false);
+		console.log(distances);
+		if (this.name == "Elevation") {
+			this.update({data: elevations[1]}, false);
+			console.log(elevations);
+		}else{
+			this.update({data: paces[1]}, false);
+			console.log(paces);
+		};
+	});
+	chart.redraw();
 }
 
 function updateFileChooser(file_path){

@@ -7,22 +7,23 @@
 	<meta name="description" content="Tracklog converter">
 	<meta name="keywords" content="PHP,GPS,Tracklog,Converter">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 	<script src="https://use.fontawesome.com/ead9cb7aca.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
-	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="https://code.highcharts.com/highcharts.js"></script>
 </head>
 
 <body>
 	<style type="text/css">
-	html{font-family: 'Roboto Mono', 'Roboto', monospace;}
+	body{font-family: 'Roboto Mono', 'Roboto', monospace;}
 	i{margin: 5px;}
-	.col-5{float:left;margin:5px;width:19%;}
+	/*.col-5{float:left;margin:5px;width:19%;}
 	.col-4{float:left;box-sizing:border-box;padding:5px;width:25%;}
 	.col-3{float:left;box-sizing:border-box;padding:5px;width:33%;}
 	.col-2{float:left;box-sizing:border-box;padding:5px;width:50%;}
-	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}
+	.col-1{float:left;box-sizing:border-box;padding:5px;width:100%;}*/
 	.info{border-radius: 5px; background-color: #f5f5f5; text-align: center;}
 	.data{font-weight: bold;}
 	.tooltip {cursor:default; border-bottom: 1px dotted black; display: inline-block; position: relative;}
@@ -30,15 +31,21 @@
 	.tooltip:hover .tooltiptext {visibility: visible;}
 	</style>
 
-	<div id="content" style="margin:auto; width:80%;">
-		<div id="map" style="height:calc(100vw / 4); width:100%;"></div>
-		<div style="margin: 10px auto 10px auto; width:100%;">
-			<div id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer; float:left; padding:5px; text-align:center; width:100%;">
+	<div class="container">
+		
+
+		<div class="row">
+			<div class="w-100 h-100" id="map"></div>
+		</div>
+
+
+		<div class="row align-items-center mt-2 mb-2">
+			<div class="col text-center w-100 p-1" id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
 			</div>		
-			<div id="download" style="float:right; display:none; margin:5px auto 6px auto; text-align:center; width:37%;">
-				<form action="javascript:" id="download-file" style="margin:0px;" data-file-path="">
-					<select style="border-radius:6px; font-family: 'Roboto Mono', 'Roboto', monospace; font-size: 15px; height: 30px; width: 70%;">
+			<div class="col-6 w-100 text-center" id="download" style="display:none;">
+				<form action="javascript:" id="download-file" data-file-path="">
+					<select class="form-control col" style="font-family: 'Roboto Mono', 'Roboto', monospace;">
 						<option value="0">Convert to another extension</option>
 						<option>KML</option>
 						<option>TCX</option>
@@ -46,36 +53,42 @@
 						<option>GeoJson</option>
 						<option>CSV</option>
 					</select>
-					<button id="download-file-trigger" style="border-radius:6px; cursor:pointer; font-family:'Roboto Mono','Roboto',monospace; font-size:15px; height:30px; width: 27%;">Download</button>
+					<button class="btn btn-default col" id="download-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace;">Download</button>
 				</form>
 			</div>
 			<form id="submit-file" enctype="multipart/form-data" style="display:none">
 				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
 			</form>
 		</div>
-		<div id="info-board" style="margin:10px; width:100%;">
-			<div class="info col-5">
+
+
+		<div class="row  align-items-center justify-content-center text-center mb-2">
+			<div class="col info mx-1">
 				<div class="title data-distance"><i class="fa fa-globe"></i>Distance</div>
 				<div class="data data-distance">0.0 KM</div>
 			</div>
-			<div class="info col-5">
+			<div class="col info mx-1">
 				<div class="title data-total-time"><i class="fa fa-clock-o"></i>Total Time</div>
 				<div class="data data-total-time"><b>00:00:00</b></div>
 			</div>
-			<div class="info col-5">
+			<div class="col info mx-1">
 				<div class="title data-pace"><i class="fa fa-tachometer"></i>Pace</div>
 				<div class="data data-pace"><b>0:00</b></div>
 			</div>
-			<div class="info col-5">
+			<div class="col info mx-1">
 				<div class="title data-elevation-gain"><i class="fa fa-arrow-up"></i>Elevation Gain</div>
 				<div class="data data-elevation-gain"><b>000 M</b></div>
 			</div>
-			<div class="info col-5">
+			<div class="col info mx-1">
 				<div class="title data-elevation-loss"><i class="fa fa-arrow-down"></i>Elevation Loss</div>
 				<div class="data data-elevation-loss"><b>000 M</b></div>
 			</div>
 		</div>
-		<div id="charts" style="width:100%;"></div>
+
+
+		<div class="row mb-2">
+			<div class="col" id="charts"></div>
+		</div>
 	</div>
 
 	<script type="text/javascript">	
@@ -168,7 +181,37 @@
 			line: {
 				turboThreshold: 0,
 			},
-		},
+		},		
+		responsive: {
+			rules: [{
+				condition: {
+					maxWidth: 500
+				},
+				chartOptions: {
+					legend: {
+						align: 'center',
+						verticalAlign: 'bottom',
+						layout: 'horizontal'
+					},
+					yAxis: {
+						labels: {
+							align: 'left',
+							x: 0,
+							y: -5
+						},
+						title: {
+							text: null
+						}
+					},
+					subtitle: {
+						text: null
+					},
+					credits: {
+						enabled: false
+					}
+				}
+			}]
+		}
 	});
 
 function initMap(){
@@ -300,13 +343,13 @@ function updateCharts(distances, elevations, paces){
 }
 function updateFileChooser(file_path){
 	$("#download-file").attr('data-file-path', file_path);
-	$("#file-chooser").css('width', '60%');
+	$("#file-chooser").removeClass('w-100').addClass("w-75");
 	$("#file-chooser-text").html("Click to change file");
 	$("#download").css('display', 'inline');
 }
 function revertFileInfos(){
 	$("#download-file").attr('data-file-path', "");
-	$("#file-chooser").css('width', '100%');
+	$("#file-chooser").removeClass('w-75').addClass("w-100");
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").css('display', 'none');
 	$(".tooltip").remove();

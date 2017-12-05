@@ -1,6 +1,19 @@
 <?php
+/**
+* Class that represents a GPX Tracklog file.
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 class KML extends Tracklog{
 
+	/**
+	*Constructs the object based on a KML file and populates the $trackData array.
+	*
+	*@param $file The path of the file to be parsed.
+	*
+	*@return A KML object.
+	*/
 	public function __construct($file){
 		try {
 			$this->validate($file);
@@ -41,6 +54,13 @@ class KML extends Tracklog{
 		}
 	}
 
+	/**
+	*Write the XML of a KML file based on the $trackData array.
+	*
+	*@param $file_path (optional) Path to save the created file.
+	*
+	*@return Returns a string containing the content of the created file.
+	*/
 	protected function write($file_path = null){
 		$kml = new SimpleXMLElement('<kml/>');	
 		$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
@@ -94,6 +114,7 @@ class KML extends Tracklog{
 		return $dom->saveXML();
 	}
 
+	/** Validates a KML file based on the oficial XSD schema of the format and the extension GX from Google. */
 	protected function validate($file){
 		set_error_handler(array('Tracklog', 'error_handler'));
 		$dom = new DOMDocument;

@@ -47,9 +47,9 @@
 					<button class="btn btn-default col" id="download-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace;">Download</button>
 				</form>
 			</div>
-				<form class="d-none" id="submit-file" enctype="multipart/form-data">
-					<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
-				</form>
+			<form class="d-none" id="submit-file" enctype="multipart/form-data">
+				<input accept=".kml, .gpx, .tcx, .csv, .js" name="tracklogFile" type="file">
+			</form>
 		</div>
 		<div class="row align-items-center justify-content-center text-center mb-2">
 			<div class="col info m-1">
@@ -82,7 +82,7 @@
 	<script type="text/javascript">	
 	var chart = new Highcharts.chart("charts", {
 		chart:{
-			type:"line",
+			type:"spline",
 			zoomType:"x",
 		},		
 		title:{
@@ -90,7 +90,22 @@
 		},
 		xAxis: {
 			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0"],
-			tickInterval: 200,
+			labels:{
+				format:"{value} km",
+				formatter: function(){
+					this.value = (this.value/1000).toFixed(2) + " km";
+					return this.value;
+				}
+			},
+			tickPositioner: function () {
+				var positions = [];
+				for (var i = 0; i < this.categories.length; i++) {
+					if (parseFloat(this.categories[i]/1000).toFixed(2) % 1 == 0) {
+						positions.push(i);
+					};
+				};
+				return positions;
+			}
 		},
 		yAxis:[{
 			reversed: true,
@@ -117,7 +132,7 @@
 		tooltip:{
 			shared: true,
 			formatter: function(){
-				var tooltip = "Distance : <b>"+this.x+"</b> m";
+				var tooltip = "Distance : <b>"+(this.x/1000).toFixed(2)+"</b> km";
 				$.each(this.points, function(){
 					if (this.series.name == "Pace") {
 						tooltip += "<br>"+this.series.name+" : "+ new Date(this.y*1000).toISOString().substr(12, 7) + "/km";
@@ -130,7 +145,7 @@
 		},
 		series: [{	
 			name:"Pace",
-			type:"line",
+			type:"spline",
 			data: [0, 0, 0, 0, 0, 0],
 			tooltip:{
 				valueSuffix:" min/km",

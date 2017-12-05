@@ -1,7 +1,17 @@
 <?php
+/**
+* Class that represents a track
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 abstract class Tracklog {
 
+	/**
+	*An array of TrackPoints objects.
+	*/
 	protected $trackData = array();
+
 	protected $trackName;
 
 	protected abstract function __construct($file);
@@ -11,16 +21,13 @@ abstract class Tracklog {
 	protected abstract function validate($file);
 
 	public function error_handler($errno, $message){
-		// if (!(error_reporting() & $errno)) {
-		// 	return;
-		// }
-		// echo $message;
-		// throw new TracklogPhpException();
 	}
 
+	/**
+	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
+	*/
 	protected function populateDistance(){
 		$distance = 0;
-
 		$this->trackData[0]->setDistance($distance);
 		for ($i=0; $i < count($this->trackData)-1; $i++) { 			
 			$distance += $this->haversineFormula($this->trackData[$i]->getLatitude(), 
@@ -31,6 +38,16 @@ abstract class Tracklog {
 		}
 	}
 
+	/**
+	* Formula to calculate the distance between two coordinates pair (latitude, longitude)
+	*
+	*@param $latB The initial latitude.
+	*@param $lonB The initial longitude.
+	*@param $latE The ending latitude.
+	*@param $lonE The ending longitude.
+	*
+	*@return The distance between the points in meters.
+	*/
 	private function haversineFormula($latB, $lonB, $latE, $lonE){
 		$earthRadius = 6371000;
 		$latB = deg2rad($latB);
@@ -56,6 +73,9 @@ abstract class Tracklog {
 		return !is_null($this->trackData[0]->getDistance());
 	}
 
+	/**
+	*Returns all the trackpoints of $trackData in a array
+	*/
 	public function getPoints(){
 		$points;
 		foreach ($this->trackData as $key => $trackPoint) {
@@ -68,6 +88,9 @@ abstract class Tracklog {
 		return $points;
 	}
 
+	/**
+	*Returns all the latitudes data of $trackData in a array
+	*/
 	public function getLatitudes(){
 		$latitudes;
 		foreach ($this->trackData as $trackPoint) {
@@ -76,6 +99,9 @@ abstract class Tracklog {
 		return $latitudes;
 	}
 
+	/**
+	*Returns all the longitudes data of $trackData in a array
+	*/
 	public function getLongitudes(){
 		$longitudes;
 		foreach ($this->trackData as $trackPoint) {
@@ -84,6 +110,9 @@ abstract class Tracklog {
 		return $longitudes;
 	}
 
+	/**
+	*Returns all the elevations data of $trackData in a array
+	*/
 	public function getElevations(){
 		if($this->hasElevation()){
 			$elevations;
@@ -96,6 +125,9 @@ abstract class Tracklog {
 		}
 	}
 
+	/**
+	*Returns all the time data of $trackData in a array
+	*/
 	public function getTimes(){
 		if ($this->hasTime()) {
 			$time;
@@ -108,6 +140,9 @@ abstract class Tracklog {
 		}		
 	}
 
+	/**
+	*Returns all the distances data of $trackData in a array
+	*/
 	public function getDistances(){
 		$distances;
 		foreach ($this->trackData as $trackPoint) {
@@ -116,6 +151,12 @@ abstract class Tracklog {
 		return $distances;
 	}
 
+	/**
+	*Returns the pace for each trackPoint of the tracklog, according to a determinate distance to calculate.
+	*@param $format_output The format of representation of the pace time "timestap | seconds".
+	*@param $distanceToCalc The reference distance to calculate the pace.
+	*@return An array of paces.
+	*/
 	public function getPaces( $format_output = "timestamp", $distanceToCalc = 100){
 		$paces = array();
 		$distances = $this->getDistances();
@@ -157,6 +198,13 @@ abstract class Tracklog {
 		return $paces;
 	}
 
+	/**
+	*Returns the total distance of the tracklog.
+	*
+	*@param $unit Metric unit to be returned "meters | kilometers | miles".
+	*
+	*@return The total distance of the tracklog in float.
+	*/
 	public function getTotalDistance($unit = "meters"){
 		$totalDistance = $this->trackData[count($this->trackData)-1]->getDistance();
 		switch ($unit) {
@@ -183,6 +231,7 @@ abstract class Tracklog {
 		}
 	}
 
+	/** Returns the pace of the track. */
 	public function getPace(){
 		if($this->hasTime()){
 			$time = new DateTime($this->getTotalTime());
@@ -198,7 +247,14 @@ abstract class Tracklog {
 		}
 	}
 
-	public function getTotalTime($format = null){
+	/**
+	* Returns the total time of the tracklog.
+	*
+	*@param $unit The time unit to be returned "seconds | minutes | hours".
+	*
+	*@return The total time to complete the tracklog according to the $unit parameter.
+	*/
+	public function getTotalTime($unit = null){
 		if($this->hasTime()){
 			$dateDiff = new DateTime('0000-00-00 00:00:00');
 			for ($i=0; $i < count($this->trackData)-1; $i++) { 
@@ -210,7 +266,7 @@ abstract class Tracklog {
 			$hours = $dateDiff->format('H');
 			$minutes = $dateDiff->format('i');
 			$seconds = $dateDiff->format('s');
-			switch ($format) {
+			switch ($unit) {
 				case 'seconds':
 				return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');
 				break;
@@ -229,8 +285,52 @@ abstract class Tracklog {
 		}
 	}
 
-	public function getMarkers(){}	
+	public function getTrackName(){
+		if (isset($this->trackName)) {
+			return $this->trackName;
+		}else{
+			return "TracklogPhpFile";
+		}		
+	}
 
+	/** Returns the elevation gain of the track in meters */
+	public function getElevationGain(){
+		if ($this->hasElevation()) {
+			$elevationGain = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
+					$elevationGain += $this->trackData[$i+1]->getElevation() - $this->trackData[$i]->getElevation();
+				}
+			}
+			return $elevationGain;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}
+	}
+
+	/** Returns the elevation loss of the track in meters */
+	public function getElevationLoss(){
+		if ($this->hasElevation()) {
+			$elevationLoss = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
+					$elevationLoss += $this->trackData[$i]->getElevation() - $this->trackData[$i+1]->getElevation();
+				}
+			}
+			return $elevationLoss;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}		
+	}
+
+	/**
+	*Converts the data from $trackData into other formats.
+	*
+	*@param $output The tracklog format to be converted "KML | GPX | TCX | GeoJson | CSV".
+	*@param $file_path (optional) Path to save the converted file.
+	*
+	*@return Returns a string containing the content of the converted file.
+	*/
 	public function out($output, $file_path = null){
 		$output = strtoupper($output);
 		switch ($output) {
@@ -255,44 +355,5 @@ abstract class Tracklog {
 		}
 	}
 
-	public function getTrackName(){
-		if (isset($this->trackName)) {
-			return $this->trackName;
-		}else{
-			return "TracklogPhpFile";
-		}		
-	}
-
-	public function getElevationGain(){
-		if ($this->hasElevation()) {
-			$elevationGain = 0;
-			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
-					$elevationGain += $this->trackData[$i+1]->getElevation() - $this->trackData[$i]->getElevation();
-				}
-			}
-			return $elevationGain;
-		}else{
-			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
-			
-		}
-		
-	}
-
-	public function getElevationLoss(){
-		if ($this->hasElevation()) {
-			$elevationLoss = 0;
-			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
-					$elevationLoss += $this->trackData[$i]->getElevation() - $this->trackData[$i+1]->getElevation();
-				}
-			}
-			return $elevationLoss;	
-		}else{
-			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
-		}
-		
-	}
 }
-
 ?>

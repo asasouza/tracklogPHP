@@ -1,4 +1,10 @@
 <?php
+/**
+* An object that represents a trackpoint element
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 class TrackPoint{
 	private $latitude;
 	private $longitude;
@@ -6,6 +12,12 @@ class TrackPoint{
 	private $time = null;
 	private $distance = null;
 
+	/**
+	*Verify if the variable is a float
+	*
+	*@param $float A SimpleXmlObject from the XML file;
+	*@return boolean
+	*/
 	private function isFloat($float){
 		return ($float == (string)(float)$float || (is_numeric($float) && (string)(float)$float != 0));
 	}
@@ -13,15 +25,19 @@ class TrackPoint{
 	public function getLatitude(){
 		return $this->latitude;
 	}
+
 	public function getLongitude(){
 		return $this->longitude;
 	}
+
 	public function getElevation(){
 		return $this->elevation;
 	}
+
 	public function getTime(){
 		return $this->time;
 	}
+
 	public function getDistance(){
 		return $this->distance;
 	}
@@ -58,7 +74,7 @@ class TrackPoint{
 			throw new TracklogPhpException("Invalid time format");			
 		}		
 	}
-
+	
 	public function setDistance($distance){
 		if ($this->isFloat($distance)) {
 			$this->distance = number_format((float) $distance, 3, '.', '');;
@@ -66,5 +82,6 @@ class TrackPoint{
 			throw new TracklogPhpException("Invalid distance format");			
 		}
 	}
+
 }
 ?>

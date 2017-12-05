@@ -1,7 +1,19 @@
 <?php 
-
+/**
+* Class that represents a TCX Tracklog file.
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 class TCX extends Tracklog{
 	
+	/**
+	*Constructs the object based on a TCX file and populates the $trackData array.
+	*
+	*@param $file The path of the file to be parsed.
+	*
+	*@return A TCX object.
+	*/
 	public function __construct($file){
 		try {
 			$this->validate($file);
@@ -28,6 +40,13 @@ class TCX extends Tracklog{
 		}
 	}
 
+	/**
+	*Write the XML of a TCX file based on the $trackData array.
+	*
+	*@param $file_path (optional) Path to save the created file.
+	*
+	*@return Returns a string containing the content of the created file.
+	*/
 	protected function write($file_path = null){
 		$tcx = new SimpleXMLElement('<TrainingCenterDatabase/>');
 		$tcx->addAttribute('xmlns', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
@@ -68,6 +87,7 @@ class TCX extends Tracklog{
 		return $dom->saveXML();
 	}
 
+	/** Validates a TCX file based on the oficial XSD schema of the format. */
 	protected function validate($file){
 		set_error_handler(array('Tracklog', 'error_handler'));
 		$dom = new DOMDocument;

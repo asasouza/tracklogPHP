@@ -1,5 +1,19 @@
 <?php 
+/**
+* Class that represents a CSV Tracklog file.
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 class CSV extends Tracklog{
+
+	/**
+	*Constructs the object based on a CSV file and populates the $trackData array.
+	*
+	*@param $file The path of the file to be parsed.
+	*
+	*@return A CSV object.
+	*/
 	public function __construct($file){
 		try {
 			$this->validate($file);
@@ -7,7 +21,8 @@ class CSV extends Tracklog{
 			$csv = trim($csv);
 			$content = preg_split('/\s+/', $csv);
 			$index = explode(',', $content[0]);
-			//without header expects the parameters follow the order latitude, longitude, elevation, time.
+			//Checks if the file has a header, if not expects the 
+			//parameters must follow the order Latitude, Longitude, Elevation and Time.
 			if (strpos($content[0], 'Lon') !== false) {
 				$latIndex = $lonIndex = $eleIndex = $timeIndex = '';
 				foreach ($index as $key => $value) {
@@ -19,12 +34,12 @@ class CSV extends Tracklog{
 				unset($content[0]);
 				if (!empty($content)) {
 					foreach ($content as $key => $value) {
-						$coordinates = explode(',', $value);
+						$pointData = explode(',', $value);
 						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($coordinates[$latIndex]);
-						$trackPoint->setLongitude($coordinates[$lonIndex]);
-						isset($coordinates[$eleIndex]) ? $trackPoint->setElevation($coordinates[$eleIndex]) : 0;
-						isset($coordinates[$timeIndex]) ? $trackPoint->setTime($coordinates[$timeIndex]) : 0;
+						$trackPoint->setLatitude($pointData[$latIndex]);
+						$trackPoint->setLongitude($pointData[$lonIndex]);
+						isset($pointData[$eleIndex]) ? $trackPoint->setElevation($pointData[$eleIndex]) : 0;
+						isset($pointData[$timeIndex]) ? $trackPoint->setTime($pointData[$timeIndex]) : 0;
 						array_push($this->trackData, $trackPoint);
 					}
 				}else{
@@ -33,12 +48,12 @@ class CSV extends Tracklog{
 			}else{
 				if (!empty($content)) {
 					foreach ($content as $key => $value) {
-						$coordinates = explode(',', $value);
+						$pointData = explode(',', $value);
 						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($coordinates[0]);
-						$trackPoint->setLongitude($coordinates[1]);
-						isset($coordinates[2]) ? $trackPoint->setElevation($coordinates[2]) : 0;
-						isset($coordinates[3]) ? $trackPoint->setTime($coordinates[3]) : 0;
+						$trackPoint->setLatitude($pointData[0]);
+						$trackPoint->setLongitude($pointData[1]);
+						isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+						isset($pointData[3]) ? $trackPoint->setTime($pointData[3]) : 0;
 						array_push($this->trackData, $trackPoint);
 					}
 				}else{
@@ -52,6 +67,13 @@ class CSV extends Tracklog{
 		}
 	}
 
+	/**
+	*Write the CSV file based on the $trackData array.
+	*
+	*@param $file_path (optional) Path to save the created file.
+	*
+	*@return Returns a string containing the content of the created file.
+	*/
 	protected function write($file_path = null){
 		$trackData = 'Latitude,Longitude';
 		$trackData .= $this->hasElevation() ? ',Elevation' : '';
@@ -74,6 +96,7 @@ class CSV extends Tracklog{
 		return $trackData;
 	}
 
+	/** Validates a CSV file expecting at less two columns, that represent latitude and longitude. */
 	protected function validate($file){
 		set_error_handler(array('Tracklog', 'error_handler'));
 		if (!file_exists($file)) {

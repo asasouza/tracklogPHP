@@ -1,5 +1,22 @@
 <?php
+/**
+* Class that represents a GeoJson Tracklog file.
+*
+*@author Alex Sandro de Araujo Souza - @asasouza
+*@version 1.0 2017/12/05
+*/
 class GeoJson extends Tracklog{
+
+	/**
+	*Constructs the object based on a JS file and populates the $trackData array.
+	*The json file must be in one the follows schemas, both supported by the GeoJson documentation. 
+	* {"data":{"trackData":[[{"lon":00.00000,"lat":00.0000,"ele":00.0}]]}}
+	* {"features": ["geometry": {"coordinates": [[[00.00000, 00.0000, 00.0]]]}]}
+	*
+	*@param $file The path of the file to be parsed.
+	*
+	*@return A GeoJson object.
+	*/		
 	public function __construct($file){
 		try {
 			$this->validate($file);
@@ -45,6 +62,13 @@ class GeoJson extends Tracklog{
 		}
 	}
 
+	/**
+	*Write the GeoJson file based on the $trackData array.
+	*
+	*@param $file_path (optional) Path to save the created file.
+	*
+	*@return Returns a string containing the content of the created file.
+	*/
 	protected function write($file_path = null){
 		$json;
 		foreach ($this->trackData as $key => $trackPoint) {
@@ -61,6 +85,7 @@ class GeoJson extends Tracklog{
 		return $json;
 	}
 
+	/** Validates a GeoJson file expecting it follows the constructor function schemas */
 	protected function validate($file){
 		set_error_handler(array('Tracklog', 'error_handler'));
 		if (!file_exists($file)) {

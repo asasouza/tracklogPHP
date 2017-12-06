@@ -161,40 +161,58 @@ abstract class Tracklog {
 		$paces = array();
 		$distances = $this->getDistances();
 		$times = $this->getTimes();
-		$distanceDiff = 0;
-		$timeDiff = new DateTime('0000-00-00 00:00:00');
 		for ($i=0; $i < count($distances) - 1; $i++) {
-			$dateB = new DateTime($this->trackData[$i]->getTime());
-			$dateE = new DateTime($this->trackData[$i+1]->getTime());
-			$timeDiff->add($dateB->diff($dateE));
-			$distanceDiff += $distances[$i + 1] - $distances[$i];
-			if ($distanceDiff >= $distanceToCalc) {
-				$timeInSeconds = $timeDiff->format("h") * 3600;
-				$timeInSeconds += $timeDiff->format("i") * 60;
-				$timeInSeconds += $timeDiff->format("s");
-				$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
-				switch ($format_output) {
-					case 'timestamp':
-					array_push($paces, gmdate("0000-00-00TH:i:sZ", $pacePerDistance));
-					break;
-					case 'seconds':
-					array_push($paces, $pacePerDistance);
-					break;
-					default:
-					throw new TracklogPhpException("Invalid output format", 1);
-					break;					
-				}
-				
-				$distanceDiff = 0;
-				$timeDiff = new DateTime('0000-00-00 00:00:00');
-			}else{
-				isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
-			}
+			$distanceDiff = 0;
+			$timeBeggining = new DateTime($this->trackData[$i]->getTime());
+			$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
+
+			$timeDiff = $timeBeggining->diff($timeEnding);
+
+			$distanceDiff = $distances[$i + 1] - $distances[$i];
+			
+			$timeDiff = ($timeDiff->h*3600) + ($timeDiff->i*60) + $timeDiff->s;
+
+			$pace = number_format(($distanceDiff/1000) / ($timeDiff/3600),2);
+
+			array_push($paces, $pace);
+
+			// 3600 segundos --- 1hr
+			// 10 segundos --- x = 0,00277777777777777777777777777778;
+			// 1000 metros --- 1km
+			// 9.647 metros --- x = 0,009647
+			// 3 min/km -- 20km/h
+			// x min/km -- 3.47km/h
+			// $timeInSeconds = $timeDiff->format("h") * 3600 . "<br>";
+			// $timeInSeconds += $timeDiff->format("i") * 60;
+			// $timeInSeconds += $timeDiff->format("s");			
+			// echo $pacePerDistance = $timeInSeconds * (1000/$distanceToCalc) . "<br>";
+			// if ($distanceDiff >= $distanceToCalc) {
+			// 	$timeInSeconds = $timeDiff->format("h") * 3600;
+			// 	$timeInSeconds += $timeDiff->format("i") * 60;
+			// 	$timeInSeconds += $timeDiff->format("s");
+			// 	$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
+			// 	switch ($format_output) {
+			// 		case 'timestamp':
+			// 		array_push($paces, gmdate("0000-00-00TH:i:sZ", $pacePerDistance));
+			// 		break;
+			// 		case 'seconds':
+			// 		array_push($paces, $pacePerDistance);
+			// 		break;
+			// 		default:
+			// 		throw new TracklogPhpException("Invalid output format", 1);
+			// 		break;					
+			// 	}
+
+			// 	$distanceDiff = 0;
+			// 	$timeDiff = new DateTime('0000-00-00 00:00:00');
+			// }else{
+			// 	isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
+			// }
 		}
-		$arrayDiff = count($distances)-count($paces);
-		for ($i=0; $i < $arrayDiff; $i++) {
-			$paces[] = $paces[count($paces)-1];
-		}
+		// $arrayDiff = count($distances)-count($paces);
+		// for ($i=0; $i < $arrayDiff; $i++) {
+		// 	$paces[] = $paces[count($paces)-1];
+		// }
 		return $paces;
 	}
 
@@ -240,6 +258,8 @@ abstract class Tracklog {
 			$second = $time->format('s') / 60;
 			$totalTime = $hour + $minute + $second;
 			$pace = $totalTime / $this->getTotalDistance('kilometers');
+			echo $pace;
+			//transform the float pace into a valid time unit.
 			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
 			return number_format($pace, 2, ":", "");
 		}else{

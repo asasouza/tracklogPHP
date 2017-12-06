@@ -152,68 +152,50 @@ abstract class Tracklog {
 	}
 
 	/**
-	*Returns the pace for each trackPoint of the tracklog, according to a determinate distance to calculate.
-	*@param $format_output The format of representation of the pace time "timestap | seconds".
-	*@param $distanceToCalc The reference distance to calculate the pace.
+	*Returns the pace for each trackPoint of the tracklog.
+	*
 	*@return An array of paces.
 	*/
-	public function getPaces( $format_output = "timestamp", $distanceToCalc = 100){
-		$paces = array();
-		$distances = $this->getDistances();
-		$times = $this->getTimes();
-		for ($i=0; $i < count($distances) - 1; $i++) {
-			$distanceDiff = 0;
-			$timeBeggining = new DateTime($this->trackData[$i]->getTime());
-			$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
-
-			$timeDiff = $timeBeggining->diff($timeEnding);
-
-			$distanceDiff = $distances[$i + 1] - $distances[$i];
-			
-			$timeDiff = ($timeDiff->h*3600) + ($timeDiff->i*60) + $timeDiff->s;
-
-			$pace = number_format(($distanceDiff/1000) / ($timeDiff/3600),2);
-
-			array_push($paces, $pace);
-
-			// 3600 segundos --- 1hr
-			// 10 segundos --- x = 0,00277777777777777777777777777778;
-			// 1000 metros --- 1km
-			// 9.647 metros --- x = 0,009647
-			// 3 min/km -- 20km/h
-			// x min/km -- 3.47km/h
-			// $timeInSeconds = $timeDiff->format("h") * 3600 . "<br>";
-			// $timeInSeconds += $timeDiff->format("i") * 60;
-			// $timeInSeconds += $timeDiff->format("s");			
-			// echo $pacePerDistance = $timeInSeconds * (1000/$distanceToCalc) . "<br>";
-			// if ($distanceDiff >= $distanceToCalc) {
-			// 	$timeInSeconds = $timeDiff->format("h") * 3600;
-			// 	$timeInSeconds += $timeDiff->format("i") * 60;
-			// 	$timeInSeconds += $timeDiff->format("s");
-			// 	$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
-			// 	switch ($format_output) {
-			// 		case 'timestamp':
-			// 		array_push($paces, gmdate("0000-00-00TH:i:sZ", $pacePerDistance));
-			// 		break;
-			// 		case 'seconds':
-			// 		array_push($paces, $pacePerDistance);
-			// 		break;
-			// 		default:
-			// 		throw new TracklogPhpException("Invalid output format", 1);
-			// 		break;					
-			// 	}
-
-			// 	$distanceDiff = 0;
-			// 	$timeDiff = new DateTime('0000-00-00 00:00:00');
-			// }else{
-			// 	isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
-			// }
+	public function getPaces(){
+		if ($this->hasTime()) {
+			$paces = array();
+			for ($i=0; $i < count($this->trackData) - 1; $i++) {
+				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
+				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
+				$timeDiff = $timeBeggining->diff($timeEnding);
+				$timeDiff = ($timeDiff->h*60) + ($timeDiff->i) + ($timeDiff->s/60); // minutes
+				$distanceDiff = $this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance(); //meters
+				$pace = number_format(($timeDiff) / ($distanceDiff/1000),2); //minutes per kilometer
+				$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace);
+				array_push($paces, $pace);	
+			}
+			return $paces;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
-		// $arrayDiff = count($distances)-count($paces);
-		// for ($i=0; $i < $arrayDiff; $i++) {
-		// 	$paces[] = $paces[count($paces)-1];
-		// }
-		return $paces;
+	}
+
+	/**
+	*Returns the average speed for each trackPoint of the tracklog.
+	*
+	*@return An array of averageSpeeds.
+	*/
+	public function getAverageSpeeds(){
+		if ($this->hasTime()) {
+			$speeds = array();
+			for ($i=0; $i < count($this->trackData) - 1; $i++) {
+				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
+				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
+				$timeDiff = $timeBeggining->diff($timeEnding);
+				$timeDiff = ($timeDiff->h) + ($timeDiff->i/60) + ($timeDiff->s/3600); //hours
+				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance())/1000; //kilometers
+				$speed = number_format(($distanceDiff) / ($timeDiff),2); //kilometers per hour
+				array_push($speeds, $speed);	
+			}
+			return $speeds;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
 	}
 
 	/**
@@ -249,7 +231,7 @@ abstract class Tracklog {
 		}
 	}
 
-	/** Returns the pace of the track. */
+	/** Returns the average pace of the track. */
 	public function getPace(){
 		if($this->hasTime()){
 			$time = new DateTime($this->getTotalTime());
@@ -258,10 +240,24 @@ abstract class Tracklog {
 			$second = $time->format('s') / 60;
 			$totalTime = $hour + $minute + $second;
 			$pace = $totalTime / $this->getTotalDistance('kilometers');
-			echo $pace;
 			//transform the float pace into a valid time unit.
 			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
 			return number_format($pace, 2, ":", "");
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
+	/** Returns the average speed of the track. */
+	public function getAverageSpeed(){
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+			$hour = $time->format('H');
+			$minute = $time->format('i') / 60;
+			$second = $time->format('s') /3600;
+			$totalTime = $hour + $minute + $second; //hours
+			$speed = $this->getTotalDistance('kilometers') / $totalTime;
+			return number_format($speed, 2);;
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}

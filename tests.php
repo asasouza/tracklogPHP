@@ -20,8 +20,8 @@ $kml = new GPX("C:/xampp\htdocs/tracklogPHP/test_files\gpx/test_correct.gpx");
 // echo $kml->getElevationLoss() . "<br>";
 // echo count($kml->getPoints('kilometers'));
 // echo count($kml->getPaces());
-print_r($kml->getPaces());
-// echo $kml->getPace();
+print_r($kml->getPace());
+print_r($kml->getAverageSpeed());
 
 // echo count($gpx->getPoints('kilometers')) . "<br>";
 // echo count($csv->getPoints('kilometers')) . "<br>";

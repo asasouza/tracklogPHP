@@ -8,7 +8,7 @@ require_once('lib/tracklogPhp.main.php');
 // $file = "test_files/external_files_avbox/errado - elevacao - cachoeira-do-gato-e-praia-do-gato-ilhabela-tracklog-cachoeira-do-gato";
 // $file = "test_files/external_files_avbox/corrida-rustica-ilhabela-ponta-das-canas-corrida-rustica-ilhabela-ponta-das-canas-10km";
 
-$kml = new GPX("C:/xampp\htdocs/tracklogPHP/test_files\gpx/test_correct.gpx");
+$kml = new GPX("C:\Users\Alex Sandro A. Sozua\Downloads\Evening_Run.gpx");
 // $gpx = new GPX($file.'.gpx');
 // $csv = new CSV($file.'.csv');
 // $tcx = new TCX($file.'.tcx');
@@ -20,8 +20,20 @@ $kml = new GPX("C:/xampp\htdocs/tracklogPHP/test_files\gpx/test_correct.gpx");
 // echo $kml->getElevationLoss() . "<br>";
 // echo count($kml->getPoints('kilometers'));
 // echo count($kml->getPaces());
-print_r($kml->getPace());
-print_r($kml->getAverageSpeed());
+// print_r($kml->getPaces());
+// print_r($kml->getAverageSpeed());
+
+$paces = $kml->getPaces("seconds");
+$pace = 0;
+for ($i=0; $i < count($paces); $i++) { 
+	if ($i%5 != 0 || $i == 0) {
+		$pace += $paces[$i];
+	}else{
+		$pace += $paces[$i];
+		echo number_format(($pace/5)/60,2,",","") . "<br>";
+		$pace = 0;
+	}
+}
 
 // echo count($gpx->getPoints('kilometers')) . "<br>";
 // echo count($csv->getPoints('kilometers')) . "<br>";

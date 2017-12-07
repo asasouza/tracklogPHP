@@ -26,10 +26,12 @@ if (isset($_FILES["tracklogFile"])) {
 			try {
 				$response["info_board"]["data_total_time"] = ["success", $tracklog->getTotalTime()];
 				$response["info_board"]["data_pace"] = ["success", $tracklog->getPace()];
-				$response["data_paces"] = ["success", $tracklog->getPaces("seconds", 200)];
+				$response["data_paces"] = ["success", $tracklog->getPaces("seconds", true)];
+				$response["data_speeds"] = ["success", $tracklog->getAverageSpeeds()];
 			} catch (Exception $e) {
 				$response["info_board"]["data_total_time"] = ["error", $e->getMessage()];
 				$response["info_board"]["data_pace"] = ["error", $e->getMessage()];
+				$response["data_paces"] = ["error", $e->getMessage()];
 				$response["data_paces"] = ["error", $e->getMessage()];
 			}
 			try {

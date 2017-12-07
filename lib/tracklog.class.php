@@ -152,50 +152,100 @@ abstract class Tracklog {
 	}
 
 	/**
-	*Returns the pace for each trackPoint of the tracklog, according to a determinate distance to calculate.
-	*@param $format_output The format of representation of the pace time "timestap | seconds".
-	*@param $distanceToCalc The reference distance to calculate the pace.
+	*Returns the pace for each trackPoint of the tracklog in minutes or seconds per kilometer.
+	*
+	*@param $unit Time unity "seconds | minutes";
+	*@param $averaged Changes the returned array to normalize the data in an average metric.
+	*
 	*@return An array of paces.
 	*/
-	public function getPaces( $format_output = "timestamp", $distanceToCalc = 100){
-		$paces = array();
-		$distances = $this->getDistances();
-		$times = $this->getTimes();
-		$distanceDiff = 0;
-		$timeDiff = new DateTime('0000-00-00 00:00:00');
-		for ($i=0; $i < count($distances) - 1; $i++) {
-			$dateB = new DateTime($this->trackData[$i]->getTime());
-			$dateE = new DateTime($this->trackData[$i+1]->getTime());
-			$timeDiff->add($dateB->diff($dateE));
-			$distanceDiff += $distances[$i + 1] - $distances[$i];
-			if ($distanceDiff >= $distanceToCalc) {
-				$timeInSeconds = $timeDiff->format("h") * 3600;
-				$timeInSeconds += $timeDiff->format("i") * 60;
-				$timeInSeconds += $timeDiff->format("s");
-				$pacePerDistance = $timeInSeconds * (1000/$distanceToCalc);
-				switch ($format_output) {
-					case 'timestamp':
-					array_push($paces, gmdate("0000-00-00TH:i:sZ", $pacePerDistance));
+	public function getPaces($unit = "minutes", $average = false){
+		if ($this->hasTime()) {
+			$paces = array();
+			for ($i=0; $i < count($this->trackData) - 1; $i++) {
+				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
+				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
+				$timeDiff = $timeBeggining->diff($timeEnding);
+				$timeDiff = ($timeDiff->h*60) + ($timeDiff->i) + ($timeDiff->s/60); //time in minutes
+				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance()) /1000; //distance in kilometers;
+				($distanceDiff != 0 ) ? $pace = ($timeDiff) / ($distanceDiff) : $pace = 0; //minutes per kilometer
+				switch ($unit) {
+					case 'minutes':
+					$pace = number_format(((($pace - intval($pace)) * 60) / 100) + intval($pace),2);
 					break;
 					case 'seconds':
-					array_push($paces, $pacePerDistance);
+					$pace = $pace * 60;
 					break;
 					default:
-					throw new TracklogPhpException("Invalid output format", 1);
-					break;					
+					throw new TracklogPhpException("Unit format not recognized");
+					break;
 				}
-				
-				$distanceDiff = 0;
-				$timeDiff = new DateTime('0000-00-00 00:00:00');
+				array_push($paces, $pace);
+			}
+			if ($average) {
+				return $this->normalizeArray($paces);
 			}else{
-				isset($paces[count($paces)-1]) ? $paces[] = $paces[count($paces)-1] : 0;
+				return $paces;
+			}			
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
+	/**
+	*Returns the average speed for each trackPoint of the tracklog in kilometers per hour.
+	*
+	*@return An array of averageSpeeds.
+	*/
+	public function getAverageSpeeds(){
+		if ($this->hasTime()) {
+			$speeds = array();
+			for ($i=0; $i < count($this->trackData) - 1; $i++) {
+				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
+				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
+				$timeDiff = $timeBeggining->diff($timeEnding);
+				$timeDiff = ($timeDiff->h) + ($timeDiff->i/60) + ($timeDiff->s/3600); //time in hours
+				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance())/1000; //kilometers
+				($timeDiff != 0 ) ? $speed = number_format(($distanceDiff) / ($timeDiff),2) : $speed = 0; //kilometers per hour
+				array_push($speeds, $speed);	
+			}
+			return $speeds;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
+	/** 
+	*Returns an array of average values according to their closests siblings
+	*
+	*@param $array Array to be normalized by the values inside of it.
+	*@param $range The range to calculate the average value.
+	*
+	*@return An array of same lenght with normalized values.
+	*/
+	private function normalizeArray($array, $range = 25){
+		$normalizedArray = [];
+		$rule = intval($range/2); //rule to get the values of closests elements in the array
+		for ($i=0; $i < count($array); $i++) { 
+			$sum = 0;
+			if ($i < $rule) { //if these are the first values
+				for ($y=0; $y < $range; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
+			}elseif ($i >= count($array)-$rule) { // if these are the last values
+				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
+			}else{
+				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
 			}
 		}
-		$arrayDiff = count($distances)-count($paces);
-		for ($i=0; $i < $arrayDiff; $i++) {
-			$paces[] = $paces[count($paces)-1];
-		}
-		return $paces;
+		return $normalizedArray;	
 	}
 
 	/**
@@ -231,17 +281,27 @@ abstract class Tracklog {
 		}
 	}
 
-	/** Returns the pace of the track. */
+	/** Returns the average pace of the track in minutes per kilometer. */
 	public function getPace(){
 		if($this->hasTime()){
 			$time = new DateTime($this->getTotalTime());
-			$hour = $time->format('H') * 60;
-			$minute = $time->format('i');
-			$second = $time->format('s') / 60;
-			$totalTime = $hour + $minute + $second;
+			$totalTime = ($time->format('H') * 60) + $time->format('i') + ($time->format('s') / 60); //time in minutes
 			$pace = $totalTime / $this->getTotalDistance('kilometers');
+			//transform the float pace into a valid time unit.
 			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
 			return number_format($pace, 2, ":", "");
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
+	/** Returns the average speed of the track in kilometers per hour. */
+	public function getAverageSpeed(){
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+			$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
+			$speed = $this->getTotalDistance('kilometers') / $totalTime;
+			return number_format($speed, 2);;
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}

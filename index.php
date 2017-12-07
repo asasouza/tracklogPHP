@@ -89,21 +89,20 @@
 			text:"",
 		},
 		xAxis: {
-			categories: ["0.0", "0.0","0.0","0.0","0.0","0.0"],
 			labels:{
 				format:"{value} km",
 				formatter: function(){
-					this.value = (this.value/1000).toFixed(2) + " km";
+					this.value = (this.value/1000).toFixed() + " km";
 					return this.value;
 				}
 			},
 			tickPositioner: function () {
 				var positions = [];
 				for (var i = 0; i < this.categories.length; i++) {
-					if (parseFloat(this.categories[i]/1000).toFixed(2) % 1 == 0) {
+					if (parseFloat(this.categories[i]/1000).toFixed(2) % 1 == 0 && parseFloat(this.categories[i]/1000).toFixed(2) != parseFloat(this.categories[i+1]/1000).toFixed(2)) {
 						positions.push(i);
 					};
-				};
+				};	
 				return positions;
 			}
 		},
@@ -113,8 +112,10 @@
 			labels:{
 				format:"{value}m/km",
 				formatter: function(){
-					this.value = new Date(this.value*1000).toISOString().substr(12, 7) + "/km";
-					return this.value;
+					if (!isNaN(this.value)) {
+						this.value = new Date(this.value*1000).toISOString().substr(12, 7) + "/km";
+						return this.value;
+					};
 				}
 			},
 			title:{

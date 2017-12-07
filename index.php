@@ -247,6 +247,7 @@ $(document).ready(function() {
 					chart.showLoading("<i class='fa fa-circle-o-notch fa-spin'></i>");
 				},
 				success: function(response){
+					console.log(response);
 					response = $.parseJSON(response);
 					if (response.error) {
 						revertFileInfos();

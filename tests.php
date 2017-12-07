@@ -18,22 +18,36 @@ $kml = new GPX("C:\Users\Alex Sandro A. Sozua\Downloads\Evening_Run.gpx");
 // echo count($kml->getPoints('kilometers')) . "<br>";
 // echo $kml->getElevationGain() . "<br>";
 // echo $kml->getElevationLoss() . "<br>";
-// echo count($kml->getPoints('kilometers'));
+// echo count($kml->getPoints());
 // echo count($kml->getPaces());
 // print_r($kml->getPaces());
 // print_r($kml->getAverageSpeed());
 
-$paces = $kml->getPaces("seconds");
-$pace = 0;
-for ($i=0; $i < count($paces); $i++) { 
-	if ($i%5 != 0 || $i == 0) {
-		$pace += $paces[$i];
-	}else{
-		$pace += $paces[$i];
-		echo number_format(($pace/5)/60,2,",","") . "<br>";
-		$pace = 0;
-	}
+$paces = $kml->getPaces("minutes", true);
+foreach ($paces as $key => $value) {
+	echo number_format($value,2,",","") . "<br>";
 }
+
+// for ($i=0; $i < count($paces); $i++) {
+// 	if(isset($paces[$i-1]) && isset($paces[$i-2]) && isset($paces[$i+1]) && isset($paces[$i+2])){
+// 		echo number_format((($paces[$i-1]+$paces[$i-2]+$paces[$i]+$paces[$i+1]+$paces[$i+2])/5)/60, 2, ",", "") . "<br>";
+// 	}elseif ($i == 0) {
+// 		echo number_format((($paces[$i+1]+$paces[$i+2]+$paces[$i]+$paces[$i+3]+$paces[$i+4])/5)/60, 2, ",", "") . "<br>";
+// 	}elseif ($i == 1) {
+// 		echo number_format((($paces[$i-1]+$paces[$i+1]+$paces[$i]+$paces[$i+2]+$paces[$i+3])/5)/60, 2, ",", "") . "<br>";
+// 	}elseif ($i == count($paces)-1) {
+// 		echo number_format((($paces[$i-1]+$paces[$i-2]+$paces[$i]+$paces[$i-3]+$paces[$i-4])/5)/60, 2, ",", "") . "<br>";
+// 	}elseif ($i == count($paces)-2) {
+// 		echo number_format((($paces[$i+1]+$paces[$i-1]+$paces[$i]+$paces[$i-2]+$paces[$i-3])/5)/60, 2, ",", "") . "<br>";
+// 	}
+// 	// if ($i%5 != 0 || $i == 0) {
+// 	// 	$pace += $paces[$i];
+// 	// }else{
+// 	// 	$pace += $paces[$i];
+// 	// 	echo number_format(($pace/5)/60,2,",","") . "<br>";
+// 	// 	$pace = 0;
+// 	// }
+// }
 
 // echo count($gpx->getPoints('kilometers')) . "<br>";
 // echo count($csv->getPoints('kilometers')) . "<br>";

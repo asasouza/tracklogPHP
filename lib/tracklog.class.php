@@ -152,11 +152,14 @@ abstract class Tracklog {
 	}
 
 	/**
-	*Returns the pace for each trackPoint of the tracklog in minutes per kilometer.
+	*Returns the pace for each trackPoint of the tracklog in minutes or seconds per kilometer.
+	*
+	*@param $unit Time unity "seconds | minutes";
+	*@param $averaged Changes the returned array to normalize the data in an average metric.
 	*
 	*@return An array of paces.
 	*/
-	public function getPaces($unit = "minutes"){
+	public function getPaces($unit = "minutes", $average = false){
 		if ($this->hasTime()) {
 			$paces = array();
 			for ($i=0; $i < count($this->trackData) - 1; $i++) {
@@ -164,22 +167,26 @@ abstract class Tracklog {
 				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
 				$timeDiff = $timeBeggining->diff($timeEnding);
 				$timeDiff = ($timeDiff->h*60) + ($timeDiff->i) + ($timeDiff->s/60); //time in minutes
-				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance()) /1000; //distance in kilometers
-				$pace = ($timeDiff) / ($distanceDiff); //minutes per kilometer
+				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance()) /1000; //distance in kilometers;
+				($distanceDiff != 0 ) ? $pace = ($timeDiff) / ($distanceDiff) : $pace = 0; //minutes per kilometer
 				switch ($unit) {
 					case 'minutes':
-						$pace = number_format(((($pace - intval($pace)) * 60) / 100) + intval($pace),2, ":", "");
-						break;
+					$pace = number_format(((($pace - intval($pace)) * 60) / 100) + intval($pace),2);
+					break;
 					case 'seconds':
-						$pace = $pace * 60;
-						break;
+					$pace = $pace * 60;
+					break;
 					default:
-						throw new TracklogPhpException("Unit format not recognized");
-						break;
+					throw new TracklogPhpException("Unit format not recognized");
+					break;
 				}
-				array_push($paces, $pace);	
+				array_push($paces, $pace);
 			}
-			return $paces;
+			if ($average) {
+				return $this->normalizeArray($paces);
+			}else{
+				return $paces;
+			}			
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
@@ -199,13 +206,48 @@ abstract class Tracklog {
 				$timeDiff = $timeBeggining->diff($timeEnding);
 				$timeDiff = ($timeDiff->h) + ($timeDiff->i/60) + ($timeDiff->s/3600); //time in hours
 				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance())/1000; //kilometers
-				$speed = number_format(($distanceDiff) / ($timeDiff),2); //kilometers per hour
+				($timeDiff != 0 ) ? $speed = number_format(($distanceDiff) / ($timeDiff),2) : $speed = 0; //kilometers per hour
 				array_push($speeds, $speed);	
 			}
 			return $speeds;	
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
+	}
+
+	/** 
+	*Returns an array of average values according to their closests siblings
+	*
+	*@param $array Array to be normalized by the values inside of it.
+	*@param $range The range to calculate the average value.
+	*
+	*@return An array of same lenght with normalized values.
+	*/
+	private function normalizeArray($array, $range = 25){
+		$normalizedArray = [];
+		$rule = intval($range/2);
+
+		for ($i=0; $i < count($array); $i++) { 
+			$sum = 0;
+			if ($i < $rule) {
+				for ($y=0; $y < $range; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
+
+			}elseif ($i >= count($array)-$rule) {
+				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
+			}else{
+				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
+					$sum += $array[$y];
+				}
+				array_push($normalizedArray, $sum/$range);
+			}
+		}
+		return $normalizedArray;	
 	}
 
 	/**

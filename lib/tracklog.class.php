@@ -225,17 +225,15 @@ abstract class Tracklog {
 	*/
 	private function normalizeArray($array, $range = 25){
 		$normalizedArray = [];
-		$rule = intval($range/2);
-
+		$rule = intval($range/2); //rule to get the values of closests elements in the array
 		for ($i=0; $i < count($array); $i++) { 
 			$sum = 0;
-			if ($i < $rule) {
+			if ($i < $rule) { //if these are the first values
 				for ($y=0; $y < $range; $y++) { 
 					$sum += $array[$y];
 				}
 				array_push($normalizedArray, $sum/$range);
-
-			}elseif ($i >= count($array)-$rule) {
+			}elseif ($i >= count($array)-$rule) { // if these are the last values
 				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
 					$sum += $array[$y];
 				}

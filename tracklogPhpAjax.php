@@ -17,7 +17,7 @@ if (isset($_FILES["tracklogFile"])) {
 		//else get the informations and send to UI.
 		if (isset($_POST["extension_to_download"])) {
 			$extension_to_download = strtolower($_POST["extension_to_download"]);
-			$path = str_replace(" ", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
+			$path = preg_replace("( |:|\.|ª|º|&|¨|#|@)", "", "tmp_files/".date("Y-m-d").$tracklog->getTrackName());
 			$tracklog->out($extension_to_download, $path);
 			($extension_to_download == "geojson") ? $extension_to_download = "js" : 0;
 			$response["download_file_path"] = "http://".$_SERVER["HTTP_HOST"]."/".$path.".".$extension_to_download;

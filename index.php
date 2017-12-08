@@ -36,7 +36,7 @@
 			</div>		
 			<div class="col-6 w-100 text-center d-none" id="download">
 				<form action="javascript:" id="download-file" data-file-path="">
-					<select class="form-control col" style="font-family: 'Roboto Mono', 'Roboto', monospace;">
+					<select class="form-control col-6" style="font-family: 'Roboto Mono', 'Roboto', monospace; float:left;">
 						<option value="0">Convert to another extension</option>
 						<option>KML</option>
 						<option>TCX</option>
@@ -44,7 +44,8 @@
 						<option>GeoJson</option>
 						<option>CSV</option>
 					</select>
-					<button class="btn btn-default col" id="download-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace;">Download</button>
+					<button class="btn btn-default col-6" id="convert-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace; cursor:pointer">Convert!</button>
+					<a href="" class="btn btn-success col mt-1" id="link-download-file" style="display:none;" download>Download!</a>
 				</form>
 			</div>
 			<form class="d-none" id="submit-file" enctype="multipart/form-data">
@@ -269,7 +270,7 @@ $(document).ready(function() {
 			});
 }
 });
-$("#download-file-trigger").click(function(){
+$("#convert-file-trigger").click(function(){
 	if ($("select").val() != 0) {
 		var form = new FormData($("#submit-file")[0]);
 		form.append('extension_to_download', $("select").val());
@@ -281,7 +282,8 @@ $("#download-file-trigger").click(function(){
 			data: form,
 			success: function(response){
 				response = $.parseJSON(response);
-				window.open(response.download_file_path, "_blank");
+				$("#link-download-file").attr('href', response.download_file_path);
+				$("#link-download-file").fadeIn('fast');
 				$("select").val(0);
 			}
 		})
@@ -356,6 +358,8 @@ function updateFileChooser(file_path){
 }
 function revertFileInfos(){
 	$("#download-file").attr('data-file-path', "");
+	$("#link-download-file").attr('href', "");
+	$("#link-download-file").css('display', 'none');
 	$("#file-chooser").removeClass('w-75').addClass("w-100");
 	$("#file-chooser-text").html("Click to choose a tracklog file");
 	$("#download").removeClass("d-block").addClass("d-none");

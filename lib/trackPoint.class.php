@@ -52,7 +52,7 @@ class TrackPoint{
 
 	public function setLongitude($longitude){
 		if ($this->isFloat($longitude) && $longitude >= -180 && $longitude <= 180) {
-			$this->longitude = number_format((float) $longitude, 7);;
+			$this->longitude = number_format((float) $longitude, 7);
 		}else{
 			throw new TracklogPhpException("Invalid longitude point format.");
 		}
@@ -60,7 +60,7 @@ class TrackPoint{
 
 	public function setElevation($elevation){
 		if ($this->isFloat($elevation)) {
-			$this->elevation = number_format((float) $elevation, 6);;
+			$this->elevation = number_format((float) $elevation, 6, ".","");
 		}else{
 			throw new TracklogPhpException("Invalid elevation point format.");
 		}		

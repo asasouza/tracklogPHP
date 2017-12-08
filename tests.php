@@ -8,7 +8,7 @@ require_once('lib/tracklogPhp.main.php');
 // $file = "test_files/external_files_avbox/errado - elevacao - cachoeira-do-gato-e-praia-do-gato-ilhabela-tracklog-cachoeira-do-gato";
 // $file = "test_files/external_files_avbox/corrida-rustica-ilhabela-ponta-das-canas-corrida-rustica-ilhabela-ponta-das-canas-10km";
 
-$kml = new GPX("C:\Users\Alex Sandro A. Sozua\Downloads\Evening_Run.gpx");
+$kml = new KML("C:\Users\Alex Sandro A. Sozua\Downloads/travessia-marinzinho-x-marins-marinzinho-x-marins-by-boney1.kml");
 // $gpx = new GPX($file.'.gpx');
 // $csv = new CSV($file.'.csv');
 // $tcx = new TCX($file.'.tcx');
@@ -19,14 +19,16 @@ $kml = new GPX("C:\Users\Alex Sandro A. Sozua\Downloads\Evening_Run.gpx");
 // echo $kml->getElevationGain() . "<br>";
 // echo $kml->getElevationLoss() . "<br>";
 // echo count($kml->getPoints());
+print_r($kml->getPoints());
+print_r($kml->getElevations());
 // echo count($kml->getPaces());
 // print_r($kml->getPaces());
 // print_r($kml->getAverageSpeed());
 
-$paces = $kml->getPaces("minutes", true);
-foreach ($paces as $key => $value) {
-	echo number_format($value,2,",","") . "<br>";
-}
+// $paces = $kml->getPaces("minutes", true);
+// foreach ($paces as $key => $value) {
+// 	echo number_format($value,2,",","") . "<br>";
+// }
 
 // for ($i=0; $i < count($paces); $i++) {
 // 	if(isset($paces[$i-1]) && isset($paces[$i-2]) && isset($paces[$i+1]) && isset($paces[$i+2])){

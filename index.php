@@ -98,11 +98,15 @@
 			},
 			tickPositioner: function () {
 				var positions = [];
+				var distances = [];
 				for (var i = 0; i < this.categories.length; i++) {
-					if (parseFloat(this.categories[i]/1000).toFixed(2) % 1 == 0 && parseFloat(this.categories[i]/1000).toFixed(2) != parseFloat(this.categories[i+1]/1000).toFixed(2)) {
-						positions.push(i);
+					if (parseFloat(this.categories[i]/1000).toFixed() % 1 == 0) {
+						distances[i] = (parseInt(this.categories[i]/1000).toFixed());	
 					};
-				};	
+				};
+				for(var i = distances[0]; i <= distances[distances.length-1]; i++){
+					positions.push(distances.indexOf(i.toString()));
+				}				
 				return positions;
 			}
 		},

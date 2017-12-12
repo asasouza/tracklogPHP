@@ -7,6 +7,7 @@ if (isset($_FILES["tracklogFile"])) {
 	if (in_array($extension, $extensions)) {
 		$file_path = $_FILES["tracklogFile"]["tmp_name"];
 		try {
+			($extension == "js") ? $extension = "geojson" : 0;
 			$tracklog = new $extension($file_path);	
 		} catch (Exception $e) {
 			$response["error"] = $e->getMessage();

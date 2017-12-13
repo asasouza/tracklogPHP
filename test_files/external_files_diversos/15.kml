@@ -1,0 +1,138 @@
+<?xml version="1.0" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+ <Document>
+  <Style id="kmlLineStyle">
+   <LineStyle>
+    <color>
+     7f0000ff
+    </color>
+    <width>
+     4
+    </width>
+   </LineStyle>
+  </Style>
+  <Placemark>
+   <name>
+<![CDATA[Old New York Historical Trail]]>   </name>
+   <styleUrl>
+    #kmlLineStyle
+   </styleUrl>
+   <LineString>
+    <altitudeMode>
+     clampToGround
+    </altitudeMode>
+    <tessellate>
+     1
+    </tessellate>
+    <coordinates>
+     -73.987,40.72985,0 -73.98737,40.73001,0 -73.98965,40.72987,0 -73.98988,40.72955,0 -73.99049,40.72979,0 -73.99075,40.72977,0 -73.99278,40.73008,0 -73.99881,40.72304,0 -74.00812,40.712,0 -74.00812,40.712,0 -74.00818,40.71203,0 -74.00961,40.71271,0 -74.00966,40.71273,0 -74.01009,40.71209,0 -74.01047,40.71153,0 -74.0091,40.71092,0 -74.00906,40.7109,0 -74.01111,40.70856,0 -74.01194,40.70745,0 -74.01382,40.70525,0 -74.01382,40.70525,0 -74.01394,40.70509,0 -74.01401,40.70481,0 -74.01417,40.70458,0 -74.01418,40.70453,0 -74.0144,40.70364,0 -74.01461,40.70372,0 -74.01494,40.70375,0 -74.01521,40.70371,0 -74.01524,40.70361,0 -74.01555,40.70335,0 -74.01555,40.70335,0 -74.01587,40.70333,0 -74.01613,40.70339,0 -74.0164,40.70313,0 -74.01673,40.70303,0 -74.01693,40.70304,0 -74.01712,40.70311,0 -74.01733,40.70347,0 -74.0172,40.7037,0 -74.01691,40.70386,0 -74.01635,40.70399,0 -74.01635,40.70399,0 -74.01637,40.70388,0 -74.0163,40.70378,0 -74.01538,40.70416,0 -74.01521,40.70387,0 -74.01521,40.70371,0 -74.01494,40.70375,0 -74.01461,40.70372,0 -74.0144,40.70364,0 -74.01446,40.70317,0 -74.01441,40.70317,0 -74.01441,40.70317,0 -74.013,40.70312,0 -74.01159,40.70342,0 -74.01155,40.70343,0 -74.0116,40.70357,0 -74.01158,40.70408,0 -74.01144,40.70582,0 -74.01071,40.70715,0 -74.00937,40.70861,0 -74.00888,40.70905,0 -74.00888,40.70905,0 -74.00773,40.71023,0 -74.00551,40.70909,0 -74.00508,40.70877,0 -74.00314,40.70625,0 -74.00232,40.70671,0 -74.00307,40.70629,0 -74.00314,40.70625,0 -74.00508,40.70877,0 -74.00551,40.70909,0 -74.00773,40.71023,0 -74.00767,40.71029,0 -74.00767,40.71029,0 -74.00737,40.71059,0 -74.00646,40.71126,0 -74.00578,40.7117,0 -74.0058,40.71172,0 -74.00603,40.71204,0 -74.00564,40.71215,0 -74.00587,40.71228,0 
+    </coordinates>
+   </LineString>
+  </Placemark>
+  <Style id="Mile_2">
+   <IconStyle>
+    <Icon>
+     <href>
+<![CDATA[http://api.mapmyfitness.com/vx/map_marker_image/0/?format=png&txt=2]]>     </href>
+    </Icon>
+   </IconStyle>
+  </Style>
+  <Placemark>
+   <styleUrl>
+    #Mile_2
+   </styleUrl>
+   <Point>
+    <coordinates>
+     -74.00812,40.712,0
+    </coordinates>
+   </Point>
+   <name>
+    Mile 2
+   </name>
+  </Placemark>
+  <Style id="Mile_3">
+   <IconStyle>
+    <Icon>
+     <href>
+<![CDATA[http://api.mapmyfitness.com/vx/map_marker_image/0/?format=png&txt=3]]>     </href>
+    </Icon>
+   </IconStyle>
+  </Style>
+  <Placemark>
+   <styleUrl>
+    #Mile_3
+   </styleUrl>
+   <Point>
+    <coordinates>
+     -74.01673,40.70303,0
+    </coordinates>
+   </Point>
+   <name>
+    Mile 3
+   </name>
+  </Placemark>
+  <Style id="Mile_4">
+   <IconStyle>
+    <Icon>
+     <href>
+<![CDATA[http://api.mapmyfitness.com/vx/map_marker_image/0/?format=png&txt=4]]>     </href>
+    </Icon>
+   </IconStyle>
+  </Style>
+  <Placemark>
+   <styleUrl>
+    #Mile_4
+   </styleUrl>
+   <Point>
+    <coordinates>
+     -74.00551,40.70909,0
+    </coordinates>
+   </Point>
+   <name>
+    Mile 4
+   </name>
+  </Placemark>
+  <Style id="start_marker">
+   <IconStyle>
+    <Icon>
+     <href>
+<![CDATA[https://mmf.cachefly.net/d/mapping_api/stable/img/markers/start.png]]>     </href>
+    </Icon>
+   </IconStyle>
+  </Style>
+  <Placemark>
+   <styleUrl>
+    #start_marker
+   </styleUrl>
+   <Point>
+    <coordinates>
+     -73.987,40.72985,0
+    </coordinates>
+   </Point>
+   <name>
+    Old New York Historical Trail
+   </name>
+  </Placemark>
+  <Style id="finish_marker">
+   <IconStyle>
+    <Icon>
+     <href>
+<![CDATA[https://mmf.cachefly.net/d/mapping_api/stable/img/markers/stop.png]]>     </href>
+    </Icon>
+   </IconStyle>
+  </Style>
+  <Placemark>
+   <styleUrl>
+    #finish_marker
+   </styleUrl>
+   <Point>
+    <coordinates>
+     -74.00587,40.71228,0
+    </coordinates>
+   </Point>
+   <name>
+    Old New York Historical Trail
+   </name>
+  </Placemark>
+ </Document>
+</kml>

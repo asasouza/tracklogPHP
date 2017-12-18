@@ -28,7 +28,11 @@ foreach ($files as $key => $file) {
 				<tr>
 					<td>Distância Total</td>
 					<td><?php echo $tracklog->getTotalDistance("kilometers") ?></td>
-				</tr>				
+				</tr>
+				<tr>
+					<td><b>Distância Total Ponto Inicial e Final</b></td>
+					<td><?php echo $tracklog->getTotalDistanceFirstAndLast() ?></td>
+				</tr>
 				<?php try {	?>
 						<tr>
 							<td>Tempo Total</td>
@@ -67,8 +71,16 @@ foreach ($files as $key => $file) {
 							<td><?php echo $tracklog->getElevationGain() ?></td>
 						</tr>
 						<tr>
+							<td><b>Subida Acumulada em Inteiros</b></td>
+							<td><?php echo $tracklog->getElevationGainInts() ?></td>
+						</tr>
+						<tr>
 							<td>Descida Acumulada</td>
 							<td><?php echo $tracklog->getElevationLoss() ?></td>
+						</tr>
+						<tr>
+							<td><b>Descida Acumulada em Inteiros</b></td>
+							<td><?php echo $tracklog->getElevationLossInts() ?></td>
 						</tr>
 					<?php } catch (Exception $e) { ?>
 						<tr>

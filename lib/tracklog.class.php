@@ -24,6 +24,44 @@ abstract class Tracklog {
 	}
 
 	/**
+	* Methods written for tests
+	*/
+	public function getTotalDistanceFirstAndLast(){
+		return $this->haversineFormula($this->trackData[0]->getLatitude(), 
+			$this->trackData[0]->getLongitude(), 
+			$this->trackData[count($this->trackData)-1]->getLatitude(), 
+			$this->trackData[count($this->trackData)-1]->getLongitude());
+	}
+	public function getElevationGainInts(){
+		if ($this->hasElevation()) {
+			$elevationGain = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
+					$elevationGain += intval($this->trackData[$i+1]->getElevation()) - intval($this->trackData[$i]->getElevation());
+				}
+			}
+			return $elevationGain;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}
+	}
+	public function getElevationLossInts(){
+		if ($this->hasElevation()) {
+			$elevationLoss = 0;
+			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
+					$elevationLoss += intval($this->trackData[$i]->getElevation()) - intval($this->trackData[$i+1]->getElevation());
+				}
+			}
+			return $elevationLoss;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}		
+	}
+
+	/** End tests methods */
+
+	/**
 	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
 	*/
 	protected function populateDistance(){

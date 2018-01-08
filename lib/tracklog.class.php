@@ -73,6 +73,39 @@ abstract class Tracklog {
 		return $angle * $earthRadius;
 	}
 
+	/** 
+	*Returns an array of average values according to their closests siblings
+	*
+	*@param $array Array to be smoothed by the values inside of it.
+	*
+	*@return An array of same lenght with smoothed values.
+	*/
+	private function smoothingArray($array){
+		$range = intval(sqrt(count($array)));
+		$smoothedArray = [];
+		$rule = intval($range/2); //rule to get the values of closests elements in the array
+		for ($i=0; $i < count($array); $i++) { 
+			$sum = 0;
+			if ($i < $rule) { //if these are the first values
+				for ($y=0; $y < $range; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}elseif ($i >= count($array)-$rule) { // if these are the last values
+				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}else{
+				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}
+		}
+		return $smoothedArray;	
+	}
+
 	/**
 	*Returns all the trackpoints of $trackData in a array
 	*/
@@ -151,6 +184,20 @@ abstract class Tracklog {
 		return $distances;
 	}
 
+	/** Returns the average pace of the track in minutes per kilometer. */
+	public function getPace(){
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+			$totalTime = ($time->format('H') * 60) + $time->format('i') + ($time->format('s') / 60); //time in minutes
+			$pace = $totalTime / $this->getTotalDistance('kilometers');
+			//transform the float pace into a valid time unit.
+			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
+			return number_format($pace, 2, ":", "");
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
 	/**
 	*Returns the pace for each trackPoint of the tracklog in minutes or seconds per kilometer.
 	*
@@ -192,6 +239,18 @@ abstract class Tracklog {
 		}
 	}
 
+	/** Returns the average speed of the track in kilometers per hour. */
+	public function getAverageSpeed(){
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+			$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
+			$speed = $this->getTotalDistance('kilometers') / $totalTime;
+			return number_format($speed, 2);;
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
+		}
+	}
+
 	/**
 	*Returns the average speed for each trackPoint of the tracklog in kilometers per hour.
 	*
@@ -221,39 +280,6 @@ abstract class Tracklog {
 		}
 	}
 
-	/** 
-	*Returns an array of average values according to their closests siblings
-	*
-	*@param $array Array to be smoothed by the values inside of it.
-	*
-	*@return An array of same lenght with smoothed values.
-	*/
-	private function smoothingArray($array){
-		$range = intval(sqrt(count($array)));
-		$smoothedArray = [];
-		$rule = intval($range/2); //rule to get the values of closests elements in the array
-		for ($i=0; $i < count($array); $i++) { 
-			$sum = 0;
-			if ($i < $rule) { //if these are the first values
-				for ($y=0; $y < $range; $y++) { 
-					$sum += $array[$y];
-				}
-				array_push($smoothedArray, $sum/$range);
-			}elseif ($i >= count($array)-$rule) { // if these are the last values
-				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
-					$sum += $array[$y];
-				}
-				array_push($smoothedArray, $sum/$range);
-			}else{
-				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
-					$sum += $array[$y];
-				}
-				array_push($smoothedArray, $sum/$range);
-			}
-		}
-		return $smoothedArray;	
-	}
-
 	/**
 	*Returns the total distance of the tracklog.
 	*
@@ -276,40 +302,6 @@ abstract class Tracklog {
 			default:
 			throw new TracklogPhpException("Unit format not recognized");			
 			break;
-		}
-	}
-
-	public function getMaxElevation(){
-		if($this->hasElevation()){
-			return max($this->getElevations());
-		}else{
-			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
-		}
-	}
-
-	/** Returns the average pace of the track in minutes per kilometer. */
-	public function getPace(){
-		if($this->hasTime()){
-			$time = new DateTime($this->getTotalTime());
-			$totalTime = ($time->format('H') * 60) + $time->format('i') + ($time->format('s') / 60); //time in minutes
-			$pace = $totalTime / $this->getTotalDistance('kilometers');
-			//transform the float pace into a valid time unit.
-			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
-			return number_format($pace, 2, ":", "");
-		}else{
-			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
-		}
-	}
-
-	/** Returns the average speed of the track in kilometers per hour. */
-	public function getAverageSpeed(){
-		if($this->hasTime()){
-			$time = new DateTime($this->getTotalTime());
-			$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
-			$speed = $this->getTotalDistance('kilometers') / $totalTime;
-			return number_format($speed, 2);;
-		}else{
-			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
 	}
 
@@ -357,6 +349,14 @@ abstract class Tracklog {
 		}else{
 			return "TracklogPhpFile";
 		}		
+	}
+
+	public function getMaxElevation(){
+		if($this->hasElevation()){
+			return max($this->getElevations());
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
+		}
 	}
 
 	/** Returns the elevation gain of the track in meters */

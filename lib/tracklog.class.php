@@ -38,6 +38,18 @@ abstract class Tracklog {
 		}
 	}
 
+	protected function hasTime(){
+		return !is_null($this->trackData[0]->getTime());
+	}
+
+	protected function hasElevation(){
+		return !is_null($this->trackData[0]->getElevation());
+	}
+
+	protected function hasDistance(){
+		return !is_null($this->trackData[0]->getDistance());
+	}
+
 	/**
 	* Formula to calculate the distance between two coordinates pair (latitude, longitude)
 	*
@@ -59,18 +71,6 @@ abstract class Tracklog {
 		$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
 			cos($latB) * cos($latE) * pow(sin($lonDelta / 2), 2)));
 		return $angle * $earthRadius;
-	}
-
-	protected function hasTime(){
-		return !is_null($this->trackData[0]->getTime());
-	}
-
-	protected function hasElevation(){
-		return !is_null($this->trackData[0]->getElevation());
-	}
-
-	protected function hasDistance(){
-		return !is_null($this->trackData[0]->getDistance());
 	}
 
 	/**
@@ -155,11 +155,11 @@ abstract class Tracklog {
 	*Returns the pace for each trackPoint of the tracklog in minutes or seconds per kilometer.
 	*
 	*@param $unit Time unity "seconds | minutes";
-	*@param $averaged Changes the returned array to normalize the data in an average metric.
+	*@param $smoothed Changes the returned array to smoothed data in an average metric.
 	*
 	*@return An array of paces.
 	*/
-	public function getPaces($unit = "minutes", $average = false){
+	public function getPaces($unit = "minutes", $smoothed = false){
 		if ($this->hasTime()) {
 			$paces = array();
 			for ($i=0; $i < count($this->trackData) - 1; $i++) {
@@ -182,11 +182,11 @@ abstract class Tracklog {
 				}
 				array_push($paces, $pace);
 			}
-			if ($average) {
-				return $this->normalizeArray($paces);
+			if ($smoothed) {
+				return $this->smoothingArray($paces);
 			}else{
 				return $paces;
-			}			
+			}
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
@@ -195,9 +195,11 @@ abstract class Tracklog {
 	/**
 	*Returns the average speed for each trackPoint of the tracklog in kilometers per hour.
 	*
+	*@param $smoothed Changes the returned array to smoothed data in an average metric.
+	*
 	*@return An array of averageSpeeds.
 	*/
-	public function getAverageSpeeds(){
+	public function getAverageSpeeds($smoothed = false){
 		if ($this->hasTime()) {
 			$speeds = array();
 			for ($i=0; $i < count($this->trackData) - 1; $i++) {
@@ -209,7 +211,11 @@ abstract class Tracklog {
 				($timeDiff != 0 ) ? $speed = number_format(($distanceDiff) / ($timeDiff),2) : $speed = 0; //kilometers per hour
 				array_push($speeds, $speed);	
 			}
-			return $speeds;	
+			if ($smoothed) {
+				return $this->smoothingArray($speeds);
+			}else{
+				return $speeds;	
+			}			
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
@@ -218,13 +224,13 @@ abstract class Tracklog {
 	/** 
 	*Returns an array of average values according to their closests siblings
 	*
-	*@param $array Array to be normalized by the values inside of it.
-	*@param $range The range to calculate the average value.
+	*@param $array Array to be smoothed by the values inside of it.
 	*
-	*@return An array of same lenght with normalized values.
+	*@return An array of same lenght with smoothed values.
 	*/
-	private function normalizeArray($array, $range = 25){
-		$normalizedArray = [];
+	private function smoothingArray($array){
+		$range = intval(sqrt(count($array)));
+		$smoothedArray = [];
 		$rule = intval($range/2); //rule to get the values of closests elements in the array
 		for ($i=0; $i < count($array); $i++) { 
 			$sum = 0;
@@ -232,20 +238,20 @@ abstract class Tracklog {
 				for ($y=0; $y < $range; $y++) { 
 					$sum += $array[$y];
 				}
-				array_push($normalizedArray, $sum/$range);
+				array_push($smoothedArray, $sum/$range);
 			}elseif ($i >= count($array)-$rule) { // if these are the last values
 				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
 					$sum += $array[$y];
 				}
-				array_push($normalizedArray, $sum/$range);
+				array_push($smoothedArray, $sum/$range);
 			}else{
 				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
 					$sum += $array[$y];
 				}
-				array_push($normalizedArray, $sum/$range);
+				array_push($smoothedArray, $sum/$range);
 			}
 		}
-		return $normalizedArray;	
+		return $smoothedArray;	
 	}
 
 	/**

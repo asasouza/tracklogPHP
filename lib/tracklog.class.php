@@ -54,7 +54,7 @@ abstract class Tracklog {
 	}
 
 	public function lowPass($array){
-		$alpha = 0.6;
+		$alpha = 0.1;
 		$smoothedArray = [];
 		array_push($smoothedArray, $array[0]);
 		for ($i=1; $i < count($array); $i++) { 

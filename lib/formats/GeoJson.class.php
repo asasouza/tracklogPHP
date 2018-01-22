@@ -70,18 +70,19 @@ class GeoJson extends Tracklog{
 	*@return Returns a string containing the content of the created file.
 	*/
 	protected function write($file_path = null){
-		$json;
-		foreach ($this->trackData as $key => $trackPoint) {
-			$json[$key]['lon'] = $trackPoint->getLongitude();
-			$json[$key]['lat'] = $trackPoint->getLatitude();
-			$this->hasElevation() ? $json[$key]['ele'] = $trackPoint->getElevation() : 0;
+		$trackPoints = array();
+		foreach ($this->trackData as $trackPoint) {
+			$arrayData = [$trackPoint->getLongitude(), $trackPoint->getLatitude()];
+			$this->hasElevation() ? array_push($arrayData, $trackPoint->getElevation()) : 0;
+			array_push($trackPoints, $arrayData);
 		}
-		$trackData = ['trackData' => [$json]];
-		$data = ['data' => $trackData];
-		$json = json_encode($data);
+		$json = ["type" => "FeatureCollection", "features" => [["type" => "Feature", "geometry" => ["type"=>"MultiLineString", "coordinates"=>[$trackPoints] ]]]];
+		$json = json_encode($json);
+
 		if (!is_null($file_path)) {
 			file_put_contents($file_path.".js", $json);
 		}
+
 		return $json;
 	}
 

@@ -13,7 +13,7 @@
       <text>五台山～四台穿越～2016-06-11 04:16 on GPSies.com</text>
       <type>trackOnWeb</type>
     </link>
-    <time>2017-12-11T23:32:56Z</time>
+    <time>2018-01-23T23:57:07Z</time>
     <extensions>
       <gpsies:property>one-way trip</gpsies:property>
       <gpsies:trackLengthMeter>64823.80207611838</gpsies:trackLengthMeter>
@@ -23,12 +23,6 @@
       <gpsies:maxHeightMeter>3058.0</gpsies:maxHeightMeter>
     </extensions>
   </metadata>
-  <wpt lat="39.04777591" lon="113.6010993">
-    <ele>1989.0000</ele>
-    <name>检票口</name>
-    <sym>Waypoint</sym>
-    <type>Generic</type>
-  </wpt>
   <trk>
     <name>五台山～四台穿越～2016-06-11 04:16 on GPSies.com</name>
     <link href="http://www.gpsies.com/map.do?fileId=ywcowmmhkmnwytse">

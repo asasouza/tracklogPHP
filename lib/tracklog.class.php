@@ -54,7 +54,7 @@ abstract class Tracklog {
 	}
 
 	public function lowPass($array){
-		$alpha = 0.1;
+		$alpha = 0.2;
 		$smoothedArray = [];
 		array_push($smoothedArray, $array[0]);
 		for ($i=1; $i < count($array); $i++) { 
@@ -461,10 +461,11 @@ abstract class Tracklog {
 	/** Returns the elevation gain of the track in meters */
 	public function getElevationGain(){
 		if ($this->hasElevation()) {
+			$elevations = $this->lowPass($this->getElevations());
 			$elevationGain = 0;
-			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
-					$elevationGain += $this->trackData[$i+1]->getElevation() - $this->trackData[$i]->getElevation();
+			for ($i = 0; $i < count($elevations)-1; $i++) { 
+				if ($elevations[$i] < $elevations[$i+1]) {
+					$elevationGain += $elevations[$i+1] - $elevations[$i];
 				}
 			}
 			return $elevationGain;
@@ -476,10 +477,11 @@ abstract class Tracklog {
 	/** Returns the elevation loss of the track in meters */
 	public function getElevationLoss(){
 		if ($this->hasElevation()) {
+			$elevations = $this->lowPass($this->getElevations());
 			$elevationLoss = 0;
 			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
-					$elevationLoss += $this->trackData[$i]->getElevation() - $this->trackData[$i+1]->getElevation();
+				if ($elevations[$i] > $elevations[$i+1]) {
+					$elevationLoss += $elevations[$i] - $elevations[$i+1];
 				}
 			}
 			return $elevationLoss;	

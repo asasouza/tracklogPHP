@@ -1,6 +1,13 @@
 <?php
 require_once('lib/tracklogPhp.main.php');
 
+
+// $kml = new GPX('test_files/external_files_diversos/10.gpx');
+
+// echo $kml->getElevationGain()."<br>";
+// 
+// echo $kml->getElevationLoss()."<br>";
+
 $gpx = new GPX("test_files/gpx/test_correct.gpx");
 
 // $data = $gpx->getPaces("seconds");

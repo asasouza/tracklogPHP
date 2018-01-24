@@ -461,7 +461,8 @@ abstract class Tracklog {
 	/** Returns the elevation gain of the track in meters */
 	public function getElevationGain(){
 		if ($this->hasElevation()) {
-			$elevations = $this->lowPass($this->getElevations());
+			// $elevations = $this->lowPass($this->getElevations());
+			$elevations = $this->getElevations();
 			$elevationGain = 0;
 			for ($i = 0; $i < count($elevations)-1; $i++) { 
 				if ($elevations[$i] < $elevations[$i+1]) {
@@ -477,7 +478,8 @@ abstract class Tracklog {
 	/** Returns the elevation loss of the track in meters */
 	public function getElevationLoss(){
 		if ($this->hasElevation()) {
-			$elevations = $this->lowPass($this->getElevations());
+			// $elevations = $this->lowPass($this->getElevations());
+			$elevations = $this->getElevations();
 			$elevationLoss = 0;
 			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
 				if ($elevations[$i] > $elevations[$i+1]) {

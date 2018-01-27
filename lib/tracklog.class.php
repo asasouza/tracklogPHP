@@ -30,7 +30,7 @@ abstract class Tracklog {
 		foreach ($this->trackData as $trackSegment) {
 			$distance = 0;
 			$trackSegment[0]->setDistance($distance);
-			for ($i=0; $i < count($this->trackData)-1; $i++) { 			
+			for ($i=0; $i < count($trackSegment)-1; $i++) { 			
 				$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
 					$trackSegment[$i]->getLongitude(), 
 					$trackSegment[$i+1]->getLatitude(), 

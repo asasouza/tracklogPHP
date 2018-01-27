@@ -63,15 +63,15 @@ class TCX extends Tracklog{
 		$lap->addChild('TotalTimeSeconds', ($this->hasTime()) ? $this->getTotalTime('seconds') : 0.0);
 		$lap->addChild('DistanceMeters', $this->getTotalDistance('meters'));
 		$begginPosition = $lap->addChild('BeginPosition');
-		$begginPosition->addChild('LatitudeDegrees', $this->trackData[0]->getLatitude());
-		$begginPosition->addChild('LongitudeDegrees', $this->trackData[0]->getLongitude());
+		$begginPosition->addChild('LatitudeDegrees', $this->trackData[0][0]->getLatitude());
+		$begginPosition->addChild('LongitudeDegrees', $this->trackData[0][0]->getLongitude());
 		$endPosition = $lap->addChild('EndPosition');
-		$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1]->getLatitude());
-		$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1]->getLongitude());
+		$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLatitude());
+		$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLongitude());
 		$lap->addChild('Intensity', 'Active');
-		foreach ($this->trackData as $track) {
+		foreach ($this->trackData as $trackSegment) {
 			$track = $course->addChild('Track');
-			foreach ($track as $trackPoint) {
+			foreach ($trackSegment as $trackPoint) {
 				$trackpoint = $track->addChild('Trackpoint');
 				$this->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
 				$position = $trackpoint->addChild('Position');

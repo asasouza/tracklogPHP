@@ -74,21 +74,36 @@ abstract class Tracklog {
 	}
 
 	/** 
-	*Returns an array of smoothed values according to their closests siblings
+	*Returns an array of average values according to their closests siblings
 	*
 	*@param $array Array to be smoothed by the values inside of it.
-	*@param $alpha The smoothing factor of the code.
 	*
 	*@return An array of same lenght with smoothed values.
 	*/
-	private function smoothArray($array, $alpha = 0.3){
+	private function smoothingArray($array){
+		$range = intval(sqrt(count($array)));
 		$smoothedArray = [];
-		array_push($smoothedArray, $array[0]);
-		for ($i=1; $i < count($array); $i++) { 
-			$smoothed = $smoothedArray[$i-1]+($array[$i]-$smoothedArray[$i-1])*$alpha;
-			array_push($smoothedArray, $smoothed);
+		$rule = intval($range/2); //rule to get the values of closests elements in the array
+		for ($i=0; $i < count($array); $i++) { 
+			$sum = 0;
+			if ($i < $rule) { //if these are the first values
+				for ($y=0; $y < $range; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}elseif ($i >= count($array)-$rule) { // if these are the last values
+				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}else{
+				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}
 		}
-		return $smoothedArray;
+		return $smoothedArray;	
 	}
 
 	/**
@@ -215,7 +230,7 @@ abstract class Tracklog {
 				array_push($paces, $pace);
 			}
 			if ($smoothed) {
-				return $this->smoothArray($paces);
+				return $this->smoothingArray($paces);
 			}else{
 				return $paces;
 			}
@@ -256,7 +271,7 @@ abstract class Tracklog {
 				array_push($speeds, $speed);	
 			}
 			if ($smoothed) {
-				return $this->smoothArray($speeds);
+				return $this->smoothingArray($speeds);
 			}else{
 				return $speeds;	
 			}			

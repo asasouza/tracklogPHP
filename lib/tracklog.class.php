@@ -8,7 +8,7 @@
 abstract class Tracklog {
 
 	/**
-	*An array of TrackPoints objects.
+	*An array of track segments, contaning TrackPoints objects.
 	*/
 	protected $trackData = array();
 
@@ -27,27 +27,29 @@ abstract class Tracklog {
 	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
 	*/
 	protected function populateDistance(){
-		$distance = 0;
-		$this->trackData[0]->setDistance($distance);
-		for ($i=0; $i < count($this->trackData)-1; $i++) { 			
-			$distance += $this->haversineFormula($this->trackData[$i]->getLatitude(), 
-				$this->trackData[$i]->getLongitude(), 
-				$this->trackData[$i+1]->getLatitude(), 
-				$this->trackData[$i+1]->getLongitude());			
-			$this->trackData[$i+1]->setDistance((string) $distance);
+		foreach ($this->trackData as $trackSegment) {
+			$distance = 0;
+			$trackSegment[0]->setDistance($distance);
+			for ($i=0; $i < count($this->trackData)-1; $i++) { 			
+				$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
+					$trackSegment[$i]->getLongitude(), 
+					$trackSegment[$i+1]->getLatitude(), 
+					$trackSegment[$i+1]->getLongitude());			
+				$trackSegment[$i+1]->setDistance((string) $distance);
+			}	
 		}
 	}
 
 	protected function hasTime(){
-		return !is_null($this->trackData[0]->getTime());
+		return !is_null($this->trackData[0][0]->getTime());
 	}
 
 	protected function hasElevation(){
-		return !is_null($this->trackData[0]->getElevation());
+		return !is_null($this->trackData[0][0]->getElevation());
 	}
 
 	protected function hasDistance(){
-		return !is_null($this->trackData[0]->getDistance());
+		return !is_null($this->trackData[0][0]->getDistance());
 	}
 
 	/**
@@ -111,12 +113,14 @@ abstract class Tracklog {
 	*/
 	public function getPoints(){
 		$points;
-		foreach ($this->trackData as $key => $trackPoint) {
-			$points[$key]['latitude'] = $trackPoint->getLatitude();
-			$points[$key]['longitude'] = $trackPoint->getLongitude();
-			$points[$key]['elevation'] = $trackPoint->getElevation();
-			$points[$key]['time'] = $trackPoint->getTime();
-			$points[$key]['distance'] = $trackPoint->getDistance();
+		foreach ($this->trackData as $trackSegment) {
+			foreach ($trackSegment as $key => $trackPoint) {
+				$points[$key]['latitude'] = $trackPoint->getLatitude();
+				$points[$key]['longitude'] = $trackPoint->getLongitude();
+				$points[$key]['elevation'] = $trackPoint->getElevation();
+				$points[$key]['time'] = $trackPoint->getTime();
+				$points[$key]['distance'] = $trackPoint->getDistance();	
+			}
 		}
 		return $points;
 	}
@@ -126,8 +130,10 @@ abstract class Tracklog {
 	*/
 	public function getLatitudes(){
 		$latitudes;
-		foreach ($this->trackData as $trackPoint) {
-			$latitudes[] = $trackPoint->getLatitude();
+		foreach ($this->trackData as $trackSegment) {
+			foreach ($trackSegment as $trackPoint) {
+				$latitudes[] = $trackPoint->getLatitude();
+			}			
 		}
 		return $latitudes;
 	}
@@ -137,8 +143,10 @@ abstract class Tracklog {
 	*/
 	public function getLongitudes(){
 		$longitudes;
-		foreach ($this->trackData as $trackPoint) {
-			$longitudes[] = $trackPoint->getLongitude();
+		foreach ($this->trackData as $trackSegment) {
+			foreach ($trackSegment as $trackPoint) {
+				$longitudes[] = $trackPoint->getLongitude();
+			}			
 		}
 		return $longitudes;
 	}
@@ -149,8 +157,10 @@ abstract class Tracklog {
 	public function getElevations(){
 		if($this->hasElevation()){
 			$elevations;
-			foreach ($this->trackData as $trackPoint) {
-				$elevations[] = floatval($trackPoint->getElevation());
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$elevations[] = floatval($trackPoint->getElevation());
+				}				
 			}
 			return $elevations;
 		}else{
@@ -164,8 +174,10 @@ abstract class Tracklog {
 	public function getTimes(){
 		if ($this->hasTime()) {
 			$time;
-			foreach ($this->trackData as $trackPoint) {
-				$time[] = $trackPoint->getTime();
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$time[] = $trackPoint->getTime();
+				}				
 			}
 			return $time;	
 		}else{
@@ -178,8 +190,10 @@ abstract class Tracklog {
 	*/
 	public function getDistances(){
 		$distances;
-		foreach ($this->trackData as $trackPoint) {
-			$distances[] = $trackPoint->getDistance();
+		foreach ($this->trackData as $trackSegment) {
+			foreach ($trackSegment as $trackPoint) {
+				$distances[] = $trackPoint->getDistance();
+			}			
 		}
 		return $distances;
 	}
@@ -209,12 +223,13 @@ abstract class Tracklog {
 	public function getPaces($unit = "minutes", $smoothed = false){
 		if ($this->hasTime()) {
 			$paces = array();
-			for ($i=0; $i < count($this->trackData) - 1; $i++) {
-				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
-				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
-				$timeDiff = $timeBeggining->diff($timeEnding);
+			foreach ($this->trackData as $trackSegment) {
+				for ($i=0; $i < count($trackSegment) - 1; $i++) {
+					$timeBeggining = new DateTime($trackSegment[$i]->getTime());
+					$timeEnding = new DateTime($trackSegment[$i+1]->getTime());
+					$timeDiff = $timeBeggining->diff($timeEnding);
 				$timeDiff = ($timeDiff->h*60) + ($timeDiff->i) + ($timeDiff->s/60); //time in minutes
-				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance()) /1000; //distance in kilometers;
+				$distanceDiff = ($trackSegment[$i + 1]->getDistance() - $trackSegment[$i]->getDistance()) /1000; //distance in kilometers;
 				($distanceDiff != 0 ) ? $pace = ($timeDiff) / ($distanceDiff) : $pace = 0; //minutes per kilometer
 				switch ($unit) {
 					case 'minutes':
@@ -228,6 +243,7 @@ abstract class Tracklog {
 					break;
 				}
 				array_push($paces, $pace);
+				}	
 			}
 			if ($smoothed) {
 				return $this->smoothingArray($paces);
@@ -239,10 +255,10 @@ abstract class Tracklog {
 		}
 	}
 
-	/** Returns the average speed of the track in kilometers per hour. */
-	public function getAverageSpeed(){
-		if($this->hasTime()){
-			$time = new DateTime($this->getTotalTime());
+/** Returns the average speed of the track in kilometers per hour. */
+public function getAverageSpeed(){
+	if($this->hasTime()){
+		$time = new DateTime($this->getTotalTime());
 			$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
 			$speed = $this->getTotalDistance('kilometers') / $totalTime;
 			return number_format($speed, 2);;
@@ -261,15 +277,17 @@ abstract class Tracklog {
 	public function getAverageSpeeds($smoothed = false){
 		if ($this->hasTime()) {
 			$speeds = array();
-			for ($i=0; $i < count($this->trackData) - 1; $i++) {
-				$timeBeggining = new DateTime($this->trackData[$i]->getTime());
-				$timeEnding = new DateTime($this->trackData[$i+1]->getTime());
-				$timeDiff = $timeBeggining->diff($timeEnding);
+			foreach ($this->trackData as $trackSegment) {
+				for ($i=0; $i < count($trackSegment) - 1; $i++) {
+					$timeBeggining = new DateTime($trackSegment[$i]->getTime());
+					$timeEnding = new DateTime($trackSegment[$i+1]->getTime());
+					$timeDiff = $timeBeggining->diff($timeEnding);
 				$timeDiff = ($timeDiff->h) + ($timeDiff->i/60) + ($timeDiff->s/3600); //time in hours
-				$distanceDiff = ($this->trackData[$i + 1]->getDistance() - $this->trackData[$i]->getDistance())/1000; //kilometers
+				$distanceDiff = ($trackSegment[$i + 1]->getDistance() - $trackSegment[$i]->getDistance())/1000; //kilometers
 				($timeDiff != 0 ) ? $speed = number_format(($distanceDiff) / ($timeDiff),2) : $speed = 0; //kilometers per hour
 				array_push($speeds, $speed);	
 			}
+		}
 			if ($smoothed) {
 				return $this->smoothingArray($speeds);
 			}else{
@@ -288,16 +306,19 @@ abstract class Tracklog {
 	*@return The total distance of the tracklog in float.
 	*/
 	public function getTotalDistance($unit = "meters"){
-		$totalDistance = $this->trackData[count($this->trackData)-1]->getDistance();
+		$totalDistance = 0;
+		foreach ($this->trackData as $trackSegment) {
+			$totalDistance += $trackSegment[count($trackSegment)-1]->getDistance();	
+		}
 		switch ($unit) {
 			case 'meters':
-			return number_format($totalDistance, 2, '.', '');
+			return number_format($totalDistance, 2);
 			break;
 			case 'kilometers':
-			return number_format($totalDistance/1000, 2, '.', '');
+			return number_format($totalDistance/1000, 2);
 			break;
 			case 'miles':
-			return number_format($totalDistance/1609.34, 2, '.', '');
+			return number_format($totalDistance/1609.34, 2);
 			break;
 			default:
 			throw new TracklogPhpException("Unit format not recognized");			
@@ -315,11 +336,13 @@ abstract class Tracklog {
 	public function getTotalTime($unit = null){
 		if($this->hasTime()){
 			$dateDiff = new DateTime('0000-00-00 00:00:00');
-			for ($i=0; $i < count($this->trackData)-1; $i++) { 
-				$dateB = new DateTime($this->trackData[$i]->getTime());
-				$dateE = new DateTime($this->trackData[$i+1]->getTime());
-				$difference = $dateB->diff($dateE);	
-				$dateDiff->add($difference);
+			foreach ($this->trackData as $trackSegment) {
+				for ($i=0; $i < count($trackSegment)-1; $i++) { 
+					$dateB = new DateTime($trackSegment[$i]->getTime());
+					$dateE = new DateTime($trackSegment[$i+1]->getTime());
+					$difference = $dateB->diff($dateE);	
+					$dateDiff->add($difference);
+				}
 			}
 			$hours = $dateDiff->format('H');
 			$minutes = $dateDiff->format('i');

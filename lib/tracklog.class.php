@@ -23,6 +23,105 @@ abstract class Tracklog {
 	public function error_handler($errno, $message){
 	}
 
+
+
+	//Inicio testes de suavização
+
+	public function movingAverage($array){
+		intval(sqrt(count($array))) % 2 != 0 ? $range = intval(sqrt(count($array))) : $range = intval(sqrt(count($array))) + 1;
+		$smoothedArray = [];
+		$rule = intval($range/2); //rule to get the values of closests elements in the array
+		for ($i=0; $i < count($array); $i++) { 
+			$sum = 0;
+			if ($i <= $rule) { //if these are the first values
+				for ($y=0; $y < $range; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}elseif ($i >= count($array)-$rule) { // if these are the last values
+				for ($y = count($array)-$range; $y < count($array) ; $y++) { 
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}else{
+				for($y = ($i-$rule); $y <= ($i + $rule); $y++){
+					$sum += $array[$y];
+				}
+				array_push($smoothedArray, $sum/$range);
+			}
+		}
+		return $smoothedArray;	
+	}
+
+	public function lowPass($array){
+		$alpha = 0.2;
+		$smoothedArray = [];
+		array_push($smoothedArray, $array[0]);
+		for ($i=1; $i < count($array); $i++) { 
+			$smoothed = $smoothedArray[$i-1]+($array[$i]-$smoothedArray[$i-1])*$alpha;
+			array_push($smoothedArray, $smoothed);
+		}
+		return $smoothedArray;
+	}
+
+	public function qFilter($array){
+		$ufilter = $this->uFilter($array);
+		$lfilter = $this->lFilter($array);
+		$smoothedArray = [];
+		for ($i=0; $i < count($ufilter); $i++) { 
+			$smoothed = $ufilter[$i] + $lfilter[$i] - $array[$i];
+			array_push($smoothedArray, $smoothed);
+		}
+		return $smoothedArray;
+	}
+
+	public function uFilter($array){
+		$width = 1; //mudar width
+		$smoothedArray = [];
+
+		for ($i=0; $i < count($array); $i++) { 
+			if ($i < $width) { //if the firts values
+				array_push($smoothedArray, $array[$i]);
+			}	
+			elseif ($i >= count($array)-$width) { //if the lasts values
+				array_push($smoothedArray, $array[$i]);
+			}else{
+				//width 1
+				$smoothed = min( max($array[$i-1], $array[$i]), max($array[$i], $array[$i+1]));
+
+				//width 2
+				// $smoothed = min( max($array[$i-2], $array[$i-1], $array[$i]), max($array[$i-1], $array[$i], $array[$i+1]) ,max($array[$i], $array[$i+1], $array[$i+2]));
+				array_push($smoothedArray, $smoothed);
+			}
+		}
+		return $smoothedArray;
+	}
+
+	public function lFilter($array){
+		$width = 1; //mudar width
+		$smoothedArray = [];
+
+		for ($i=0; $i < count($array); $i++) { 
+			if ($i < $width) { //if the firts values
+				array_push($smoothedArray, $array[$i]);
+			}	
+			elseif ($i >= count($array)-$width) { //if the lasts values
+				array_push($smoothedArray, $array[$i]);
+			}else{
+				//width 1
+				$smoothed = max( min($array[$i-1], $array[$i]), min($array[$i], $array[$i+1]));
+
+				// width 2
+				// $smoothed = max( min($array[$i-2], $array[$i-1], $array[$i]), min($array[$i-1], $array[$i], $array[$i+1]) ,min($array[$i], $array[$i+1], $array[$i+2]));
+				array_push($smoothedArray, $smoothed);
+			}
+		}
+		return $smoothedArray;
+	}
+
+	// Fim testes de suavização
+
+
 	/**
 	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
 	*/
@@ -362,10 +461,12 @@ abstract class Tracklog {
 	/** Returns the elevation gain of the track in meters */
 	public function getElevationGain(){
 		if ($this->hasElevation()) {
+			// $elevations = $this->lowPass($this->getElevations());
+			$elevations = $this->getElevations();
 			$elevationGain = 0;
-			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() < $this->trackData[$i+1]->getElevation() ) {
-					$elevationGain += $this->trackData[$i+1]->getElevation() - $this->trackData[$i]->getElevation();
+			for ($i = 0; $i < count($elevations)-1; $i++) { 
+				if ($elevations[$i] < $elevations[$i+1]) {
+					$elevationGain += $elevations[$i+1] - $elevations[$i];
 				}
 			}
 			return $elevationGain;
@@ -377,10 +478,12 @@ abstract class Tracklog {
 	/** Returns the elevation loss of the track in meters */
 	public function getElevationLoss(){
 		if ($this->hasElevation()) {
+			// $elevations = $this->lowPass($this->getElevations());
+			$elevations = $this->getElevations();
 			$elevationLoss = 0;
 			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
-				if ($this->trackData[$i]->getElevation() > $this->trackData[$i+1]->getElevation() ) {
-					$elevationLoss += $this->trackData[$i]->getElevation() - $this->trackData[$i+1]->getElevation();
+				if ($elevations[$i] > $elevations[$i+1]) {
+					$elevationLoss += $elevations[$i] - $elevations[$i+1];
 				}
 			}
 			return $elevationLoss;	

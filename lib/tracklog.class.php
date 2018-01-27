@@ -81,7 +81,7 @@ abstract class Tracklog {
 	*
 	*@return An array of same lenght with smoothed values.
 	*/
-	private function smoothArray($array, $alpha = 0.4){
+	private function smoothArray($array, $alpha = 0.3){
 		$smoothedArray = [];
 		array_push($smoothedArray, $array[0]);
 		for ($i=1; $i < count($array); $i++) { 

@@ -29,7 +29,7 @@ abstract class Tracklog {
 	protected function populateDistance(){
 		foreach ($this->trackData as $trackSegment) {
 			$distance = 0;
-			$trackSegment[0]->setDistance($distance);
+			// $trackSegment[0]->setDistance($distance);
 			for ($i=0; $i < count($trackSegment)-1; $i++) { 			
 				$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
 					$trackSegment[$i]->getLongitude(), 
@@ -243,8 +243,8 @@ abstract class Tracklog {
 					break;
 				}
 				array_push($paces, $pace);
-				}	
-			}
+			}	
+		}
 			if ($smoothed) {
 				return $this->smoothingArray($paces);
 			}else{
@@ -256,12 +256,12 @@ abstract class Tracklog {
 	}
 
 /** Returns the average speed of the track in kilometers per hour. */
-public function getAverageSpeed(){
-	if($this->hasTime()){
-		$time = new DateTime($this->getTotalTime());
-			$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
-			$speed = $this->getTotalDistance('kilometers') / $totalTime;
-			return number_format($speed, 2);;
+	public function getAverageSpeed(){
+		if($this->hasTime()){
+			$time = new DateTime($this->getTotalTime());
+					$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
+					$speed = $this->getTotalDistance('kilometers') / $totalTime;
+					return number_format($speed, 2);;
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
@@ -286,8 +286,8 @@ public function getAverageSpeed(){
 				$distanceDiff = ($trackSegment[$i + 1]->getDistance() - $trackSegment[$i]->getDistance())/1000; //kilometers
 				($timeDiff != 0 ) ? $speed = number_format(($distanceDiff) / ($timeDiff),2) : $speed = 0; //kilometers per hour
 				array_push($speeds, $speed);	
+				}
 			}
-		}
 			if ($smoothed) {
 				return $this->smoothingArray($speeds);
 			}else{
@@ -312,13 +312,13 @@ public function getAverageSpeed(){
 		}
 		switch ($unit) {
 			case 'meters':
-			return number_format($totalDistance, 2);
+			return number_format($totalDistance, 2, ",", "");
 			break;
 			case 'kilometers':
-			return number_format($totalDistance/1000, 2);
+			return number_format($totalDistance/1000, 2, ",", "");
 			break;
 			case 'miles':
-			return number_format($totalDistance/1609.34, 2);
+			return number_format($totalDistance/1609.34, 2, ",", "");
 			break;
 			default:
 			throw new TracklogPhpException("Unit format not recognized");			
@@ -405,7 +405,7 @@ public function getAverageSpeed(){
 			// $elevations = $this->lowPass($this->getElevations());
 			$elevations = $this->getElevations();
 			$elevationLoss = 0;
-			for ($i = 0; $i < count($this->trackData)-1; $i++) { 
+			for ($i = 0; $i < count($elevations)-1; $i++) { 
 				if ($elevations[$i] > $elevations[$i+1]) {
 					$elevationLoss += $elevations[$i] - $elevations[$i+1];
 				}

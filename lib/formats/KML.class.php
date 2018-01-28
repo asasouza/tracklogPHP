@@ -20,7 +20,7 @@ class KML extends Tracklog{
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('kml', $xml->getNamespaces()[""]);
 			$xml->registerXPathNamespace('gx', 'http://www.google.com/kml/ext/2.2');
-			if (!empty($content = $xml->xpath('//kml:LineString')) && strlen($content[0]) > 0) {
+			if (!empty($content = $xml->xpath('//kml:LineString')) && strlen($content[0]->coordinates) > 0) {
 				foreach ($content as $trackSegment) {
 					$trackData = array();
 					foreach ($trackSegment->coordinates as $linestring) {

@@ -38,7 +38,7 @@ class CSV extends Tracklog{
 					$timeIndex = is_int(strpos(strtolower($value), 'time')) ? $key : $timeIndex;
 				}
 				unset($content[0][0]);
-				if (!empty($content)) {
+				if (!empty($content[0])) {
 					foreach ($content as $trackSegment) {
 						$trackData = array();
 						foreach ($trackSegment as $pointData) {
@@ -56,7 +56,7 @@ class CSV extends Tracklog{
 					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 				}
 			}else{
-				if (!empty($content)) {
+				if (!empty($content[0])) {
 					foreach ($content as $trackSegment) {
 						$trackData = array();
 						foreach ($trackSegment as $pointData) {
@@ -66,7 +66,7 @@ class CSV extends Tracklog{
 							$trackPoint->setLongitude($pointData[1]);
 							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
 							isset($pointData[3]) ? $trackPoint->setTime($pointData[3]) : 0;
-							array_push($this->trackData, $trackPoint);
+							array_push($trackData, $trackPoint);
 						}
 						array_push($this->trackData, $trackData);	
 					}					

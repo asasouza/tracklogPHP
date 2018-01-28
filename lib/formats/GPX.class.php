@@ -19,7 +19,7 @@ class GPX extends Tracklog{
 			$this->validate($file);
 			$xml = simplexml_load_file($file);
 			$xml->registerXPathNamespace('gpx', 'http://www.topografix.com/GPX/1/1');
-			if(!empty($content = $xml->xpath('//gpx:trkseg'))){
+			if(!empty($content = $xml->xpath('//gpx:trkseg')) && !empty($content[0])){
 				foreach ($content as $trackSegment) {
 					$trackData = array();
 					foreach ($trackSegment as $pointData) {

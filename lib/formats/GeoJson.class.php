@@ -42,15 +42,17 @@ class GeoJson extends Tracklog{
 			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
 				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
 				if (!empty($content[0])) {
-					foreach ($content as $linestring) {
-						foreach ($linestring as $pointData) {
+					foreach ($content as $trackSegment) {
+						$trackData = array();
+						foreach ($trackSegment as $pointData) {
 							$trackPoint = new TrackPoint();
 							$trackPoint->setLongitude($pointData[0]);
 							$trackPoint->setLatitude($pointData[1]);							
 							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
-							array_push($this->trackData, $trackPoint);
+							array_push($trackData, $trackPoint);
 						}
-					}
+						array_push($this->trackData, $trackData);
+					}					
 					$this->populateDistance();
 					return $this;
 				}else{
@@ -70,13 +72,17 @@ class GeoJson extends Tracklog{
 	*@return Returns a string containing the content of the created file.
 	*/
 	protected function write($file_path = null){
-		$json;
-		foreach ($this->trackData as $key => $trackPoint) {
-			$json[$key]['lon'] = $trackPoint->getLongitude();
-			$json[$key]['lat'] = $trackPoint->getLatitude();
-			$this->hasElevation() ? $json[$key]['ele'] = $trackPoint->getElevation() : 0;
-		}
-		$trackData = ['trackData' => [$json]];
+		$trackData = array();
+		foreach ($this->trackData as $trackSegment) {
+			$json = [];
+			foreach ($trackSegment as $key => $trackPoint) {				
+				$json[$key]['lon'] = $trackPoint->getLongitude();
+				$json[$key]['lat'] = $trackPoint->getLatitude();
+				$this->hasElevation() ? $json[$key]['ele'] = $trackPoint->getElevation() : 0;
+			}
+			array_push($trackData, $json);
+		}		
+		$trackData = ['trackData' => [$trackData]];
 		$data = ['data' => $trackData];
 		$json = json_encode($data);
 		if (!is_null($file_path)) {
@@ -105,8 +111,8 @@ class GeoJson extends Tracklog{
 				}				
 			}elseif(isset($json->{'features'}[0]->{'geometry'}->{'coordinates'})){
 				$content = $json->{'features'}[0]->{'geometry'}->{'coordinates'};
-				foreach ($content as $linestring) {
-					foreach ($linestring as $pointData) {
+				foreach ($content as $trackSegment) {
+					foreach ($trackSegment as $pointData) {
 						if (!isset($pointData[0]) || !isset($pointData[1])) {
 							throw new TracklogPhpException("This isn't a valid " . get_class($this) . " file.");
 						}

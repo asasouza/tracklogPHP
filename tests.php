@@ -1,12 +1,12 @@
 <?php
 require_once('lib/tracklogPhp.main.php');
 
-$tcx = new GeoJSON('test_files/27.js');
+$tcx = new GeoJSON('test_files/27 (1).js');
 echo count($tcx->getPoints());
 
-echo $tcx->out("GeoJSON", "test_files/teste");
+$tcx->out("GeoJSON", "test_files/teste");
 
-$tcx = new GeoJSON('test_files/teste.kml');
+$tcx = new GeoJSON('test_files/teste.js');
 echo count($tcx->getPoints());
 
 // $extensions = ['kml', 'tcx', 'gpx', 'csv', 'js'];

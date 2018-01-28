@@ -19,43 +19,57 @@ class CSV extends Tracklog{
 			$this->validate($file);
 			$csv = file_get_contents($file);
 			$csv = trim($csv);
-			$content = preg_split('/\s+/', $csv);
-			$index = explode(',', $content[0]);
+			$content = preg_split('#\n\s*\n#Uis', $csv);
+			$array;
+			foreach ($content as $key => $trackSegment) {
+				$array[$key] = preg_split('/\s+/', trim($trackSegment));
+			}
+			$content = $array;
+			$index = $content[0][0];
+
 			//Checks if the file has a header, if not expects the 
 			//parameters must follow the order Latitude, Longitude, Elevation and Time.
-			if (strpos($content[0], 'Lon') !== false) {
+			if (strpos($index, 'Lon') !== false) {
 				$latIndex = $lonIndex = $eleIndex = $timeIndex = '';
-				foreach ($index as $key => $value) {
+				foreach (explode(',', $index) as $key => $value) {
 					$latIndex = is_int(strpos(strtolower($value), 'lat')) ? $key : $latIndex;
 					$lonIndex = is_int(strpos(strtolower($value), 'lon')) ? $key : $lonIndex;
 					$eleIndex = is_int(strpos(strtolower($value), 'ele')) ? $key : $eleIndex;
 					$timeIndex = is_int(strpos(strtolower($value), 'time')) ? $key : $timeIndex;
 				}
-				unset($content[0]);
+				unset($content[0][0]);
 				if (!empty($content)) {
-					foreach ($content as $key => $value) {
-						$pointData = explode(',', $value);
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($pointData[$latIndex]);
-						$trackPoint->setLongitude($pointData[$lonIndex]);
-						isset($pointData[$eleIndex]) ? $trackPoint->setElevation($pointData[$eleIndex]) : 0;
-						isset($pointData[$timeIndex]) ? $trackPoint->setTime($pointData[$timeIndex]) : 0;
-						array_push($this->trackData, $trackPoint);
+					foreach ($content as $trackSegment) {
+						$trackData = array();
+						foreach ($trackSegment as $pointData) {
+							$pointData = explode(',', $pointData);
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData[$latIndex]);
+							$trackPoint->setLongitude($pointData[$lonIndex]);
+							isset($pointData[$eleIndex]) ? $trackPoint->setElevation($pointData[$eleIndex]) : 0;
+							isset($pointData[$timeIndex]) ? $trackPoint->setTime($pointData[$timeIndex]) : 0;
+							array_push($trackData, $trackPoint);
+						}
+						array_push($this->trackData, $trackData);
 					}
 				}else{
 					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 				}
 			}else{
 				if (!empty($content)) {
-					foreach ($content as $key => $value) {
-						$pointData = explode(',', $value);
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($pointData[0]);
-						$trackPoint->setLongitude($pointData[1]);
-						isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
-						isset($pointData[3]) ? $trackPoint->setTime($pointData[3]) : 0;
-						array_push($this->trackData, $trackPoint);
-					}
+					foreach ($content as $trackSegment) {
+						$trackData = array();
+						foreach ($trackSegment as $pointData) {
+							$pointData = explode(',', $pointData);
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData[0]);
+							$trackPoint->setLongitude($pointData[1]);
+							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+							isset($pointData[3]) ? $trackPoint->setTime($pointData[3]) : 0;
+							array_push($this->trackData, $trackPoint);
+						}
+						array_push($this->trackData, $trackData);	
+					}					
 				}else{
 					throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 				}
@@ -78,19 +92,19 @@ class CSV extends Tracklog{
 		$trackData = 'Latitude,Longitude';
 		$trackData .= $this->hasElevation() ? ',Elevation' : '';
 		$trackData .= $this->hasTime() ? ',Time' : '';
-		$trackData .= ',Distance ';
-		foreach ($this->trackData as $trackPoint) {
-			$trackData .= $trackPoint->getLatitude().','.$trackPoint->getLongitude();
-			$trackData .= $this->hasElevation() ? ','.$trackPoint->getElevation() : '';
-			$trackData .= $this->hasTime() ? ','.$trackPoint->getTime() : '';
-			$trackData .= ','.$trackPoint->getDistance().' ';
+		$trackData .= ',Distance'."\r\n";
+		foreach ($this->trackData as $trackSegment) {
+			foreach ($trackSegment as $trackPoint) {
+				$trackData .= $trackPoint->getLatitude().','.$trackPoint->getLongitude();
+				$trackData .= $this->hasElevation() ? ','.$trackPoint->getElevation() : '';
+				$trackData .= $this->hasTime() ? ','.$trackPoint->getTime() : '';
+				$trackData .= ','.$trackPoint->getDistance()."\r\n";
+			}
+			$trackData .= "\r\n";
 		}
 		if (!empty($file_path)) {
-			$content = preg_split('/\s+/', $trackData);
 			$file = fopen($file_path.".csv", 'w');
-			foreach ($content as $value) {
-				fputcsv($file, explode(',', $value));	
-			}
+			fwrite($file, $trackData);
 			fclose($file);
 		}
 		return $trackData;

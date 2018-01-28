@@ -28,12 +28,11 @@ class TCX extends Tracklog{
 						$trackPoint->setLongitude($pointData->Position->LongitudeDegrees);
 						$trackPoint->setTime($pointData->Time);
 						!empty($pointData->AltitudeMeters) ? $trackPoint->setElevation($pointData->AltitudeMeters) : 0;
-						!empty($pointData->DistanceMeters) ? $trackPoint->setDistance($pointData->DistanceMeters) : 0;
 						array_push($trackData, $trackPoint);
 					}
 					array_push($this->trackData, $trackData);
 				}				
-				!$this->hasDistance() ? $this->populateDistance(): 0;
+				$this->populateDistance();
 				isset($xml->xpath('//tcx:Course/tcx:Name')[0]) ? $this->trackName = $xml->xpath('//tcx:Course/tcx:Name')[0] : 0;
 				return $this;
 			}else{

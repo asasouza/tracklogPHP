@@ -1,16 +1,6 @@
 <?php
 require_once('lib/tracklogPhp.main.php');
 
-$tcx = new TCX('test_files/tcx/test_correct.tcx');
-// print_r($tcx);
-// echo count($tcx->getPoints());
-// print_r($tcx->getLatitudes());
-echo $tcx->getElevationLoss();
-// $tcx->out("CSV", "test_files/teste");
-
-// $tcx = new CSV('test_files/teste.csv');
-// echo count($tcx->getPoints());
-
 // $extensions = ['kml', 'tcx', 'gpx', 'csv', 'js'];
 // $files = scandir("test_files/external_files_diversos");
 // sort($files, SORT_NUMERIC);
@@ -26,7 +16,7 @@ echo $tcx->getElevationLoss();
 // 			$tracklog = new $extension($file_path);
 			
 // 			$array[$key]["Nome"] = $file;
-// 			$array[$key]["Distance"] = number_format($tracklog->getTotalDistance("kilometers"), 2, ",", "");
+// 			$array[$key]["Distance"] = $tracklog->getTotalDistance("kilometers");
 
 // 			try {
 // 				$array[$key]["Elevacao"] = number_format($tracklog->getElevationGain(), 2, ",","") . " / " . number_format($tracklog->getElevationLoss(), 2, ",", "");

@@ -14,13 +14,8 @@ foreach ($files as $key => $file) {
 			echo "Inicio $file <br>";
 			$time_start = microtime(true);
 			$tracklog = new $extension($file_path);
-			
+
 			//Metodos não tabulados mas utilizado no controller
-			$tracklog->getTotalTime();
-			$tracklog->getPace();
-			$tracklog->getPaces("seconds", true);
-			$tracklog->getAverageSpeeds();
-			$tracklog->getElevations();
 			$tracklog->getTrackName();
 			//fim
 
@@ -30,6 +25,9 @@ foreach ($files as $key => $file) {
 			try {
 				$array[$key]["Elevacao"] = number_format($tracklog->getElevationGain(), 2, ",","") . " / " . number_format($tracklog->getElevationLoss(), 2, ",", "");
 				$array[$key]["Elevacao Máxima"] = number_format($tracklog->getMaxElevation(), 2, ",", "");
+				//Metodos não tabulados mas utilizado no controller
+				$tracklog->getElevations();
+				//fim
 			} catch (Exception $e) {
 				$array[$key]["Elevation"] = " - ";
 				$array[$key]["Elevação Máxima"] = " - ";
@@ -38,6 +36,12 @@ foreach ($files as $key => $file) {
 			try {
 				$array[$key]["Pace"] = $tracklog->getPace();
 				$array[$key]["Velocidade"] = $tracklog->getAverageSpeed();	
+				//Metodos não tabulados mas utilizado no controller
+				$tracklog->getTotalTime();
+				$tracklog->getPace();
+				$tracklog->getPaces("seconds", true);
+				$tracklog->getAverageSpeeds();
+				//fim
 			} catch (Exception $e) {
 				$array[$key]["Pace"] = " - ";
 				$array[$key]["Velocidade"] = " - ";
@@ -48,7 +52,7 @@ foreach ($files as $key => $file) {
 
 			$time_start = microtime(true);
 			$tracklog->out("TCX");
-			$array[$key]["ConversaoGPX"] = number_format((microtime(true) - $time_start), 10, ",", "");
+			$array[$key]["ConversaoTCX"] = number_format((microtime(true) - $time_start), 10, ",", "");
 
 			$time_start = microtime(true);
 			$tracklog->out("GPX");
@@ -56,15 +60,15 @@ foreach ($files as $key => $file) {
 
 			$time_start = microtime(true);
 			$tracklog->out("KML");
-			$array[$key]["ConversaoGPX"] = number_format((microtime(true) - $time_start), 10, ",", "");
+			$array[$key]["ConversaoKML"] = number_format((microtime(true) - $time_start), 10, ",", "");
 
 			$time_start = microtime(true);
 			$tracklog->out("CSV");
-			$array[$key]["ConversaoGPX"] = number_format((microtime(true) - $time_start), 10, ",", "");
+			$array[$key]["ConversaoCSV"] = number_format((microtime(true) - $time_start), 10, ",", "");
 
 			$time_start = microtime(true);
 			$tracklog->out("GeoJSON");
-			$array[$key]["ConversaoGPX"] = number_format((microtime(true) - $time_start), 10, ",", "");
+			$array[$key]["ConversaoJSON"] = number_format((microtime(true) - $time_start), 10, ",", "");
 
 		}catch(Exception $e){
 			$array[$key]["Error"] = $e->getMessage();

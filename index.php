@@ -276,7 +276,6 @@ $(document).ready(function() {
 					chart.showLoading("<i class='fa fa-circle-o-notch fa-spin'></i>");
 				},
 				success: function(response){
-					console.log(response);
 					response = $.parseJSON(response);
 					if (response.error) {
 						revertFileInfos();
@@ -359,17 +358,21 @@ function updateCharts(distances, elevations, paces){
 		if (elevations[0] == "success" && this.name == "Elevation") {
 			this.update({data: elevations[1]}, false);
 		}else{
-			if (elevations[0] == "error") {
+			if (elevations[0] == "error" && paces[0] == "error") {
 				this.update({data: []}, false);
-			};
+			}else{
+				this.update({data: [0]}, false);
+			}
 		}
 		// update the series of the PACE Y axis, if response is sucess
 		if(paces[0] == "success" && this.name == "Pace"){
 			this.update({data: paces[1]}, false);
 		}else{
-			if (paces[0] == "error") {
+			if (paces[0] == "error" && elevations[0] == "error") {
 				this.update({data: []}, false);
-			};
+			}else{
+				this.update({data: [0]}, false);
+			}
 		}
 	});
 	chart.redraw();

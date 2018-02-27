@@ -27,9 +27,8 @@ abstract class Tracklog {
 	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
 	*/
 	protected function populateDistance(){
-		foreach ($this->trackData as $trackSegment) {
-			$distance = 0;
-			// $trackSegment[0]->setDistance($distance);
+		$distance = 0;
+		foreach ($this->trackData as $key => $trackSegment) {
 			for ($i=0; $i < count($trackSegment)-1; $i++) { 			
 				$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
 					$trackSegment[$i]->getLongitude(), 
@@ -311,10 +310,7 @@ abstract class Tracklog {
 	*@return The total distance of the tracklog in float.
 	*/
 	public function getTotalDistance($unit = "meters"){
-		$totalDistance = 0;
-		foreach ($this->trackData as $trackSegment) {
-			$totalDistance += $trackSegment[count($trackSegment)-1]->getDistance();	
-		}
+		$totalDistance = $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getDistance();
 		switch ($unit) {
 			case 'meters':
 			return number_format($totalDistance, 2, ",", "");
@@ -415,7 +411,7 @@ abstract class Tracklog {
 					$elevationGain += $elevations[$i+1] - $elevations[$i];
 				}
 			}
-			return $elevationGain;
+			return number_format($elevationGain, 2, ",", "");
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
 		}
@@ -439,7 +435,7 @@ abstract class Tracklog {
 					$elevationLoss += $elevations[$i] - $elevations[$i+1];
 				}
 			}
-			return $elevationLoss;	
+			return number_format($elevationLoss, 2, ",", "");
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't have elevation data.");
 		}		

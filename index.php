@@ -13,6 +13,7 @@
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv4z_wInBt7RYjZGtDyyro_7Rpz7km8uU&callback=initMap"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/no-data-to-display.js"></script>
 </head>
 
 <body>
@@ -95,7 +96,7 @@
 				formatter: function(){
 					this.value = (this.value/1000).toFixed() + " km";
 					return this.value;
-				}
+				},
 			},
 			tickPositioner: function () {
 				var positions = [];
@@ -107,9 +108,21 @@
 				};
 				for(var i = distances[0]; i <= distances[distances.length-1]; i++){
 					positions.push(distances.indexOf(i.toString()));
-				}				
-				return positions;
-			}
+				}
+				if (positions.length > 15) {
+					var reducedPositions = [];
+					for (var i = 0; i < positions.length; i++) {
+						if (i%5 == 0) {
+							reducedPositions.push(positions[i]);
+						};
+					};
+					return reducedPositions;
+				}else{
+					return positions;
+				}
+				
+			},
+
 		},
 		yAxis:[{
 			reversed: true,
@@ -190,7 +203,17 @@
 			line: {
 				turboThreshold: 0,
 			},
-		},		
+		},
+		lang: {
+			noData: "Sorry, this file don't have any time ou elevation data to display."
+		},
+		noData: {
+			style: {
+				fontWeight: 'bold',
+				fontSize: '15px',
+				color: '#303030'
+			}
+		},
 		responsive: {
 			rules: [{
 				condition: {
@@ -253,6 +276,7 @@ $(document).ready(function() {
 					chart.showLoading("<i class='fa fa-circle-o-notch fa-spin'></i>");
 				},
 				success: function(response){
+					console.log(response);
 					response = $.parseJSON(response);
 					if (response.error) {
 						revertFileInfos();
@@ -336,7 +360,7 @@ function updateCharts(distances, elevations, paces){
 			this.update({data: elevations[1]}, false);
 		}else{
 			if (elevations[0] == "error") {
-				this.update({data: [0]}, false);
+				this.update({data: []}, false);
 			};
 		}
 		// update the series of the PACE Y axis, if response is sucess
@@ -344,7 +368,7 @@ function updateCharts(distances, elevations, paces){
 			this.update({data: paces[1]}, false);
 		}else{
 			if (paces[0] == "error") {
-				this.update({data: [0]}, false);
+				this.update({data: []}, false);
 			};
 		}
 	});

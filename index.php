@@ -109,7 +109,7 @@
 				for(var i = distances[0]; i <= distances[distances.length-1]; i++){
 					positions.push(distances.indexOf(i.toString()));
 				}
-				if (positions.length > 15) {
+				if (positions.length > 15 && positions.length < 100) {
 					var reducedPositions = [];
 					for (var i = 0; i < positions.length; i++) {
 						if (i%5 == 0) {
@@ -118,7 +118,17 @@
 					};
 					return reducedPositions;
 				}else{
-					return positions;
+					if (positions.length >= 100) {
+						var reducedPositions = [];
+						for (var i = 0; i < positions.length; i++) {
+							if (i%10 == 0) {
+								reducedPositions.push(positions[i]);
+							};
+						};
+						return reducedPositions;
+					}else{
+						return positions;
+					}
 				}
 				
 			},

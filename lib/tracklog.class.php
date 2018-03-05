@@ -399,11 +399,11 @@ abstract class Tracklog {
 			$elevations = $this->getElevations();
 			$points = count($elevations);
 			if ($points > 1500) {
-				$elevations = $this->lowPass($elevations, 0.5);
-			}elseif ($points > 150 && $points < 1500) {
-				$elevations = $this->lowPass($elevations, 0.55);
-			}else{
 				$elevations = $this->lowPass($elevations, 0.3);
+			}elseif ($points > 500 && $points < 1500) {
+				$elevations = $this->lowPass($elevations, 0.2);
+			}else{
+				$elevations = $this->lowPass($elevations, 0.1);
 			}
 			$elevationGain = 0;
 			for ($i = 0; $i < count($elevations)-1; $i++) { 
@@ -423,11 +423,11 @@ abstract class Tracklog {
 			$elevations = $this->getElevations();
 			$points = count($elevations);
 			if ($points > 1500) {
-				$elevations = $this->lowPass($elevations, 0.5);
-			}elseif ($points > 150 && $points < 1500) {
-				$elevations = $this->lowPass($elevations, 0.55);
-			}else{
 				$elevations = $this->lowPass($elevations, 0.3);
+			}elseif ($points > 500 && $points < 1500) {
+				$elevations = $this->lowPass($elevations, 0.2);
+			}else{
+				$elevations = $this->lowPass($elevations, 0.1);
 			}
 			$elevationLoss = 0;
 			for ($i = 0; $i < count($elevations)-1; $i++) { 

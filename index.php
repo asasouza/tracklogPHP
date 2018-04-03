@@ -35,9 +35,9 @@
 			<div class="col text-center w-100 p-1" id="file-chooser" style="border: dashed 5px #cecece; color:#ccc; cursor:pointer;">
 				<span id="file-chooser-text" style="text-decoration:underline; color:#bbb;">Click to choose a tracklog file</span>
 			</div>		
-			<div class="col-6 w-100 text-center d-none" id="download">
+			<div class="col-6 w-100 text-center d-none" id="download" style="padding-right: 3;">
 				<form action="javascript:" id="download-file" data-file-path="">
-					<select class="form-control col-6" style="font-family: 'Roboto Mono', 'Roboto', monospace; float:left;">
+					<select class="form-control col-12" style="font-family: 'Roboto Mono', 'Roboto', monospace; float:left;">
 						<option value="0">Convert to another extension</option>
 						<option>KML</option>
 						<option>TCX</option>
@@ -45,7 +45,7 @@
 						<option>GeoJson</option>
 						<option>CSV</option>
 					</select>
-					<button class="btn btn-default col-6" id="convert-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace; cursor:pointer">Convert!</button>
+					<button class="btn btn-default col-12" id="convert-file-trigger" style="font-family:'Roboto Mono','Roboto',monospace; cursor:pointer">Convert!</button>
 					<a href="" class="btn btn-success col mt-1" id="link-download-file" style="display:none;" download>Download!</a>
 				</form>
 			</div>

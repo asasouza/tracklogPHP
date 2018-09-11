@@ -32,12 +32,29 @@ class GPX extends Tracklog{
 					}
 					array_push($this->trackData, $trackData);
 				}
+				/** Populate the distance atrribute of the trackpoints */
 				$this->populateDistance();
+
+				/** Get the name of the track. */
 				isset($xml->xpath('//gpx:trk/gpx:name')[0]) ? $this->trackName = $xml->xpath('//gpx:trk/gpx:name')[0] : 0;
+
+				/** Get the markers of the track */
+				if (!empty($markers = $xml->xpath('//gpx:wpt'))) {
+					foreach ($markers as $marker) {
+						$trackPoint = new TrackPoint();
+						$trackPoint->setLatitude($marker['lat']);
+						$trackPoint->setLongitude($marker['lon']);
+						!empty($marker->name) ? $trackPoint->setName($marker->name[0]) : 0;
+						!empty($marker->ele) ? $trackPoint->setElevation($marker->ele) : 0;
+						!empty($marker->time) ? $trackPoint->setTime($marker->time) : 0;
+						array_push($this->trackMarkers, $trackPoint);
+					}
+				}
+
 				return $this;
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");			
-			}			
+			}
 		} catch (TracklogPhpException $e) {
 			throw $e;			
 		}		
@@ -61,6 +78,17 @@ class GPX extends Tracklog{
 			$metadata = $gpx->addChild('metadata');				
 			$time = $metadata->addChild('time', $this->trackData[0][0]->getTime());				
 		}
+		if (!empty($this->trackMarkers)) {
+			foreach ($this->trackMarkers as $marker) {
+				$wpt = $gpx->addChild('wpt');
+				$wpt->addAttribute('lat', $marker->getLatitude());
+				$wpt->addAttribute('lon', $marker->getLongitude());
+				$this->hasElevation() ? $wpt->addChild('ele', $marker->getElevation()) : 0;
+				$this->hasTime() ? $wpt->addChild('time', $marker->getTime()) : 0;
+				!is_null($marker) ? $wpt->addChild('name', $marker->getName()) : 0;
+			}
+		}
+
 		$trk = $gpx->addChild('trk');
 		if (isset($this->trackName)) {
 			$trk->addChild('name', $this->trackName);

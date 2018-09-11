@@ -14,6 +14,8 @@ abstract class Tracklog {
 
 	protected $trackName;
 
+	protected $trackMarkers = array();
+
 	protected abstract function __construct($file);
 
 	protected abstract function write();
@@ -200,6 +202,13 @@ abstract class Tracklog {
 			}			
 		}
 		return $distances;
+	}
+
+	/**
+	*Returns all the track markers data in a array
+	*/
+	public function getMarkers() {
+		return $this->trackMarkers;
 	}
 
 	/** Returns the average pace of the track in minutes per kilometer. */

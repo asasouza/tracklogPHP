@@ -11,6 +11,7 @@ class TrackPoint{
 	private $elevation = null;
 	private $time = null;
 	private $distance = null;
+	private $name = null;
 
 	/**
 	*Verify if the variable is a float
@@ -40,6 +41,10 @@ class TrackPoint{
 
 	public function getDistance(){
 		return $this->distance;
+	}
+
+	public function getName(){
+		return $this->name;
 	}
 	
 	public function setLatitude($latitude){
@@ -80,6 +85,14 @@ class TrackPoint{
 			$this->distance = number_format((float) $distance, 3, '.', '');;
 		}else{
 			throw new TracklogPhpException("Invalid distance format");			
+		}
+	}
+
+	public function setName($name){
+		if (($name)) {
+			$this->name = (string) $name;
+		}else{
+			throw new Exception("Invalid trackpoint name format");			
 		}
 	}
 

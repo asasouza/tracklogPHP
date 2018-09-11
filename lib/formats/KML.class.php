@@ -57,8 +57,26 @@ class KML extends Tracklog{
 			}else{
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
 			}
+
 			$this->populateDistance();
-			isset($xml->xpath('//kml:Document/kml:name')[0]) ? $this->trackName = $xml->xpath('//kml:Document/kml:name')[0] : 0;			
+
+			isset($xml->xpath('//kml:Document/kml:name')[0]) ? $this->trackName = $xml->xpath('//kml:Document/kml:name')[0] : 0;
+
+			/** Get the markers of the track */
+			if (!empty($markers = $xml->xpath('//kml:Placemark'))) {
+				foreach ($markers as $marker) {
+					if ($marker->Point) {
+						$pointData = explode(',', $marker->Point->coordinates);	
+						$trackPoint = new TrackPoint();
+						$trackPoint->setLongitude($pointData[0]);
+						$trackPoint->setLatitude($pointData[1]);
+						isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+						isset($marker->name) ? $trackPoint->setName($marker->name) : 0;
+						array_push($this->trackMarkers, $trackPoint);
+					}
+				}
+			}
+
 			return $this;
 		} catch (TracklogPhpException $e) {
 			throw $e;
@@ -98,7 +116,11 @@ class KML extends Tracklog{
 				}
 			}			
 		}else{
-			$placemark = $document->addChild('Placemark');
+			$folder = $document->addChild('Folder');
+			if (isset($this->trackName)) {
+				$folder->addChild('name', $this->trackName);
+			}
+			$placemark = $folder->addChild('Placemark');
 			if (isset($this->trackName)) {
 				$placemark->addChild('name', $this->trackName);
 			}
@@ -116,6 +138,24 @@ class KML extends Tracklog{
 				$coordinates = $linestring->addChild('coordinates', $trackData);	
 			}
 		}
+
+		if (!empty($this->trackMarkers)) {
+			$folder = $document->addChild('Folder');
+			$folder->addChild('name', 'Waypoints');
+			$folder->addChild('open', 'true');
+			foreach ($this->trackMarkers as $marker) {
+				$placemark = $folder->addChild('Placemark');
+				$placemark->addChild('Snippet')->addAttribute('maxLines', '0');
+				$placemark->addChild('name', $marker->getName());
+				$placemark->addChild('description', $marker->getName() . ' Teste');
+				$placemark->addChild('styleUrl', '');
+					$point = $placemark->addChild('Point');
+					$coordinate = $marker->getLongitude().','.$marker->getLatitude();
+					$coordinate .= $this->hasElevation() ? ','.$marker->getElevation() : '';
+					$point->addChild('coordinates', $coordinate);
+			}
+		}
+
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;

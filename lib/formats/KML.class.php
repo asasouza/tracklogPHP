@@ -101,7 +101,7 @@ class KML extends Tracklog{
 		$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
 		$kml->addAttribute('xmlns:xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
 		$kml->addAttribute('xmlns:xmlns:gx','http://www.google.com/kml/ext/2.2');
-		$kml->addAttribute('xsi:xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd">');
+		$kml->addAttribute('xsi:xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd');
 		$document = $kml->addChild('Document');
 
 		/** Write the kml styles */

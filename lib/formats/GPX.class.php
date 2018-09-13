@@ -41,13 +41,13 @@ class GPX extends Tracklog{
 				/** Get the markers of the track */
 				if (!empty($markers = $xml->xpath('//gpx:wpt'))) {
 					foreach ($markers as $marker) {
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($marker['lat']);
-						$trackPoint->setLongitude($marker['lon']);
-						!empty($marker->name) ? $trackPoint->setName($marker->name[0]) : 0;
-						!empty($marker->ele) ? $trackPoint->setElevation($marker->ele) : 0;
-						!empty($marker->time) ? $trackPoint->setTime($marker->time) : 0;
-						array_push($this->trackMarkers, $trackPoint);
+						$trackMarker = new TrackMarker();
+						$trackMarker->setLatitude($marker['lat']);
+						$trackMarker->setLongitude($marker['lon']);
+						!empty($marker->name) ? $trackMarker->setName($marker->name[0]) : 0;
+						!empty($marker->ele) ? $trackMarker->setElevation($marker->ele) : 0;
+						!empty($marker->time) ? $trackMarker->setTime($marker->time) : 0;
+						array_push($this->trackMarkers, $trackMarker);
 					}
 				}
 

@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gx="http://www.google.com/kml/ext/2.2" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd&quot;&gt;">
   <Document>
+    <Style id="waypointStyle">
+      <IconStyle>
+        <Icon>
+          <href>https://sc.wklcdn.com/wikiloc/images/pictograms/ge/wpt.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text>$[name]</text>
+      </BalloonStyle>
+    </Style>
+    <Style id="h11921893">
+      <IconStyle>
+        <Icon>
+          <href>https://sc.wklcdn.com/wikiloc/images/pictograms/ge/1.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text>$[name]</text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="m11921893">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#n11921893</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#h11921893</styleUrl>
+      </Pair>
+    </StyleMap>
     <Folder>
       <name>Track TREKKING PORTILLO ARGENTINO - MANZANO-ARGENTINA :wikiloc.com</name>
       <Placemark>
@@ -685,8 +715,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>TREKKING PORTILLO ARGENTINO - MANZANO-ARGENTINA</name>
-        <description>TREKKING PORTILLO ARGENTINO - MANZANO-ARGENTINA Teste</description>
-        <styleUrl/>
+        <description>TREKKING PORTILLO ARGENTINO - MANZANO-ARGENTINA</description>
+        <styleUrl>#m11921893</styleUrl>
         <Point>
           <coordinates>-69.3808470,-33.6025670,1682.900000</coordinates>
         </Point>
@@ -694,8 +724,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>AGUA</name>
-        <description>AGUA Teste</description>
-        <styleUrl/>
+        <description>AGUA</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5447650,-33.6094200,3153.500000</coordinates>
         </Point>
@@ -703,8 +733,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>AGUA</name>
-        <description>AGUA Teste</description>
-        <styleUrl/>
+        <description>AGUA</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5559060,-33.6124130,3420.800000</coordinates>
         </Point>
@@ -712,8 +742,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>ACAMPAMENTO 2</name>
-        <description>ACAMPAMENTO 2 Teste</description>
-        <styleUrl/>
+        <description>ACAMPAMENTO 2</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5634440,-33.6198170,3533.100000</coordinates>
         </Point>
@@ -721,8 +751,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>CAMPING MUNICIPAL MANZANO</name>
-        <description>CAMPING MUNICIPAL MANZANO Teste</description>
-        <styleUrl/>
+        <description>CAMPING MUNICIPAL MANZANO</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.3808080,-33.6025180,1686.000000</coordinates>
         </Point>
@@ -730,8 +760,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>ACAMPAMENTO 3</name>
-        <description>ACAMPAMENTO 3 Teste</description>
-        <styleUrl/>
+        <description>ACAMPAMENTO 3</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5778740,-33.6193820,3739.100000</coordinates>
         </Point>
@@ -739,8 +769,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>ACAMPAMENTO 4- FINAL</name>
-        <description>ACAMPAMENTO 4- FINAL Teste</description>
-        <styleUrl/>
+        <description>ACAMPAMENTO 4- FINAL</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.4256980,-33.6005560,1923.300000</coordinates>
         </Point>
@@ -748,8 +778,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>FIM</name>
-        <description>FIM Teste</description>
-        <styleUrl/>
+        <description>FIM</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.3849630,-33.6017250,1698.900000</coordinates>
         </Point>
@@ -757,8 +787,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>LAGO</name>
-        <description>LAGO Teste</description>
-        <styleUrl/>
+        <description>LAGO</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5752070,-33.6194270,3719.500000</coordinates>
         </Point>
@@ -766,8 +796,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>PONTE</name>
-        <description>PONTE Teste</description>
-        <styleUrl/>
+        <description>PONTE</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5376370,-33.6108830,3088.500000</coordinates>
         </Point>
@@ -775,8 +805,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>PONTE</name>
-        <description>PONTE Teste</description>
-        <styleUrl/>
+        <description>PONTE</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5174310,-33.6138790,2798.400000</coordinates>
         </Point>
@@ -784,8 +814,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>PORTILLO ARGENTINO</name>
-        <description>PORTILLO ARGENTINO Teste</description>
-        <styleUrl/>
+        <description>PORTILLO ARGENTINO</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.6076020,-33.6220040,4378.400000</coordinates>
         </Point>
@@ -793,8 +823,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>REFUGIO CAPITÃO LEMOS</name>
-        <description>REFUGIO CAPITÃO LEMOS Teste</description>
-        <styleUrl/>
+        <description>REFUGIO CAPITÃO LEMOS</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.4600520,-33.6062380,2127.600000</coordinates>
         </Point>
@@ -802,8 +832,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>ADUANA - REFUGIO PORTINARI</name>
-        <description>ADUANA - REFUGIO PORTINARI Teste</description>
-        <styleUrl/>
+        <description>ADUANA - REFUGIO PORTINARI</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.4974320,-33.6142070,2497.900000</coordinates>
         </Point>
@@ -811,8 +841,8 @@
       <Placemark>
         <Snippet maxLines="0"/>
         <name>REFUGIO SCARAVELLI - ACAMP 1</name>
-        <description>REFUGIO SCARAVELLI - ACAMP 1 Teste</description>
-        <styleUrl/>
+        <description>REFUGIO SCARAVELLI - ACAMP 1</description>
+        <styleUrl>#waypointStyle</styleUrl>
         <Point>
           <coordinates>-69.5445750,-33.6096190,3139.500000</coordinates>
         </Point>

@@ -12,6 +12,7 @@
 // spl_autoload_register("tracklog_autoloader");
 require_once("lib/tracklog.class.php");
 require_once("lib/trackPoint.class.php");
+require_once("lib/trackMarker.class.php");
 require_once("lib/formats/CSV.class.php");
 require_once("lib/formats/GeoJson.class.php");
 require_once("lib/formats/GPX.class.php");

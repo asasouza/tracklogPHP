@@ -6,12 +6,11 @@
 *@version 1.0 2017/12/05
 */
 class TrackPoint{
-	private $latitude;
-	private $longitude;
-	private $elevation = null;
-	private $time = null;
-	private $distance = null;
-	private $name = null;
+	protected $latitude;
+	protected $longitude;
+	protected $elevation = null;
+	protected $time = null;
+	protected $distance = null;
 
 	/**
 	*Verify if the variable is a float

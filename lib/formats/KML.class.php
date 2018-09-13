@@ -7,6 +7,8 @@
 */
 class KML extends Tracklog{
 
+	protected $mapStyles = array();
+
 	/**
 	*Constructs the object based on a KML file and populates the $trackData array.
 	*
@@ -67,15 +69,19 @@ class KML extends Tracklog{
 				foreach ($markers as $marker) {
 					if ($marker->Point) {
 						$pointData = explode(',', $marker->Point->coordinates);	
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLongitude($pointData[0]);
-						$trackPoint->setLatitude($pointData[1]);
-						isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
-						isset($marker->name) ? $trackPoint->setName($marker->name) : 0;
-						array_push($this->trackMarkers, $trackPoint);
+						$trackMarker = new TrackMarker();
+						$trackMarker->setLongitude($pointData[0]);
+						$trackMarker->setLatitude($pointData[1]);
+						isset($pointData[2]) ? $trackMarker->setElevation($pointData[2]) : 0;
+						isset($marker->name) ? $trackMarker->setName($marker->name) : 0;
+						isset($marker->styleUrl) ? $trackMarker->setStyleUrl($marker->styleUrl) : 0;
+						array_push($this->trackMarkers, $trackMarker);
 					}
 				}
 			}
+
+			/** Get the style of the map */
+			$this->getMapStyle($xml);
 
 			return $this;
 		} catch (TracklogPhpException $e) {
@@ -97,6 +103,34 @@ class KML extends Tracklog{
 		$kml->addAttribute('xmlns:xmlns:gx','http://www.google.com/kml/ext/2.2');
 		$kml->addAttribute('xsi:xsi:schemaLocation','http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://developers.google.com/kml/schema/kml22gx.xsd">');
 		$document = $kml->addChild('Document');
+
+		/** Write the kml styles */
+		if (!empty($this->mapStyles)) {
+			if (!empty($this->mapStyles['style'])) {
+				foreach ($this->mapStyles['style'] as $mapStyle) {
+					$style = $document->addChild('Style');
+					$style->addAttribute('id', $mapStyle['id']);
+						$IconStyle = $style->addChild('IconStyle');
+						$style['scale'] ? $IconStyle->addChild('scale', $mapStyle['scale']) : 0;
+							$Icon = $IconStyle->addChild('Icon');
+							$Icon->addChild('href', $mapStyle['IconHref']);
+						$BalloonStyle = $style->addChild('BalloonStyle');
+						$BalloonStyle->addChild('text', '$[name]');
+				}	
+			}
+			if (!empty($this->mapStyles['styleMap'])) {
+				foreach ($this->mapStyles['styleMap'] as $mapStyle) {
+					$styleMap = $document->addChild('StyleMap');
+					$styleMap->addAttribute('id', $mapStyle['id']);
+					foreach ($mapStyle['pairs'] as $pairs) {
+						$pair = $styleMap->addChild('Pair');
+						$pair->addChild('key', $pairs['key']);
+						$pair->addChild('styleUrl', $pairs['styleUrl']);
+					}
+				}
+			}
+		}
+
 		if ($this->hasTime()) {
 			$folder = $document->addChild('Folder');
 			if (isset($this->trackName)) {
@@ -147,8 +181,8 @@ class KML extends Tracklog{
 				$placemark = $folder->addChild('Placemark');
 				$placemark->addChild('Snippet')->addAttribute('maxLines', '0');
 				$placemark->addChild('name', $marker->getName());
-				$placemark->addChild('description', $marker->getName() . ' Teste');
-				$placemark->addChild('styleUrl', '');
+				$placemark->addChild('description', $marker->getName()); //change to the desired description
+				$placemark->addChild('styleUrl', $marker->getStyleUrl());
 					$point = $placemark->addChild('Point');
 					$coordinate = $marker->getLongitude().','.$marker->getLatitude();
 					$coordinate .= $this->hasElevation() ? ','.$marker->getElevation() : '';
@@ -184,6 +218,36 @@ class KML extends Tracklog{
 			throw $e;
 		}
 		restore_error_handler();
+	}
+
+
+	/**
+	* Get the style of the trackmarkers and populate the $mapStyles attribute;
+	*
+	*@param $xml (required) An SimpleXMLElement created in the __construct function.
+	*
+	*/
+	private function getMapStyle($xml){
+		if (!empty($styles = $xml->xpath('//kml:Style'))) {
+			foreach ($styles as $key => $value) {
+				if(!empty($value->IconStyle)){
+					$markerStyle['id'] = (string) $value['id'];
+					isset($value->IconStyle->Icon->href) ? $markerStyle['IconHref'] = (string) $value->IconStyle->Icon->href : 0;
+					isset($value->IconStyle->scale) ? $markerStyle['scale'] = (string) $value->IconStyle->scale : 0;
+					$this->mapStyles['style'][] = $markerStyle;
+				}
+			}
+		}
+		if (!empty($styleMap = $xml->xpath('//kml:StyleMap'))) {
+			foreach ($styleMap as $style) {
+				$mapStyle['id'] = (string) $style['id'];
+				foreach ($style as $pair) {
+					$mapStyle['pairs'][] = ['key' => (string)$pair->key, 'styleUrl' => (string)$pair->styleUrl];
+				}
+				$this->mapStyles['styleMap'][] = $mapStyle;
+				$mapStyle = [];
+			}
+		}
 	}
 }
 ?>

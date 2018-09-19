@@ -1,9 +1,9 @@
 <?php
 /**
-* An object that represents a trackpoint element
+* An object that represents a marker element in a tracklog
 *
 *@author Alex Sandro de Araujo Souza - @asasouza
-*@version 1.0 2017/12/05
+*@version 2.0 2018/09/09
 */
 class TrackMarker extends TrackPoint {
 

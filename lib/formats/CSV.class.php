@@ -93,14 +93,16 @@ class CSV extends Tracklog{
 		$trackData .= $this->hasElevation() ? ',Elevation' : '';
 		$trackData .= $this->hasTime() ? ',Time' : '';
 		$trackData .= ',Distance'."\r\n";
-		foreach ($this->trackData as $trackSegment) {
-			foreach ($trackSegment as $trackPoint) {
-				$trackData .= $trackPoint->getLatitude().','.$trackPoint->getLongitude();
-				$trackData .= $this->hasElevation() ? ','.$trackPoint->getElevation() : '';
-				$trackData .= $this->hasTime() ? ','.$trackPoint->getTime() : '';
-				$trackData .= ','.$trackPoint->getDistance()."\r\n";
-			}
-			$trackData .= "\r\n";
+		if (!empty($this->trackData)) {
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$trackData .= $trackPoint->getLatitude().','.$trackPoint->getLongitude();
+					$trackData .= $this->hasElevation() ? ','.$trackPoint->getElevation() : '';
+					$trackData .= $this->hasTime() ? ','.$trackPoint->getTime() : '';
+					$trackData .= ','.$trackPoint->getDistance()."\r\n";
+				}
+				$trackData .= "\r\n";
+			}	
 		}
 		if (!empty($file_path)) {
 			$file = fopen($file_path.".csv", 'w');

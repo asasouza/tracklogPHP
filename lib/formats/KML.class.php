@@ -56,8 +56,8 @@ class KML extends Tracklog{
 					}
 					array_push($this->trackData, $trackData);
 				}
-			}else{
-				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");
+			}elseif(empty($markers = $xml->xpath('//kml:Placemark'))){
+				throw new TracklogPhpException("This file doesn't appear to have any tracklog or marker data.");
 			}
 
 			$this->populateDistance();
@@ -72,14 +72,13 @@ class KML extends Tracklog{
 						$trackMarker = new TrackMarker();
 						$trackMarker->setLongitude($pointData[0]);
 						$trackMarker->setLatitude($pointData[1]);
-						isset($pointData[2]) ? $trackMarker->setElevation($pointData[2]) : 0;
+						isset($pointData[2]) ? $trackMarker->setElevation((float)$pointData[2]) : 0;
 						isset($marker->name) ? $trackMarker->setName($marker->name) : 0;
 						isset($marker->styleUrl) ? $trackMarker->setStyleUrl($marker->styleUrl) : 0;
 						array_push($this->trackMarkers, $trackMarker);
 					}
 				}
 			}
-
 			/** Get the style of the map */
 			$this->getMapStyle($xml);
 

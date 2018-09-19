@@ -68,18 +68,22 @@ class TCX extends Tracklog{
 		$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLatitude());
 		$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLongitude());
 		$lap->addChild('Intensity', 'Active');
-		foreach ($this->trackData as $trackSegment) {
-			$track = $course->addChild('Track');
-			foreach ($trackSegment as $trackPoint) {
-				$trackpoint = $track->addChild('Trackpoint');
-				$this->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
-				$position = $trackpoint->addChild('Position');
-				$position->addChild('LatitudeDegrees', $trackPoint->getLatitude());
-				$position->addChild('LongitudeDegrees', $trackPoint->getLongitude());
-				$this->hasElevation() ? $trackpoint->addChild('AltitudeMeters', $trackPoint->getElevation()) : 0;
-				$trackpoint->addChild('DistanceMeters', $trackPoint->getDistance());
-			}
+		
+		if (!empty($this->trackData)) {
+			foreach ($this->trackData as $trackSegment) {
+				$track = $course->addChild('Track');
+				foreach ($trackSegment as $trackPoint) {
+					$trackpoint = $track->addChild('Trackpoint');
+					$this->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
+					$position = $trackpoint->addChild('Position');
+					$position->addChild('LatitudeDegrees', $trackPoint->getLatitude());
+					$position->addChild('LongitudeDegrees', $trackPoint->getLongitude());
+					$this->hasElevation() ? $trackpoint->addChild('AltitudeMeters', $trackPoint->getElevation()) : 0;
+					$trackpoint->addChild('DistanceMeters', $trackPoint->getDistance());
+				}
+			}	
 		}
+		
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;

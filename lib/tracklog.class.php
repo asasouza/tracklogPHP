@@ -29,28 +29,42 @@ abstract class Tracklog {
 	* Populates the distance attribute of the TrackPoints objects in the $trackData array.
 	*/
 	protected function populateDistance(){
-		$distance = 0;
-		foreach ($this->trackData as $key => $trackSegment) {
-			for ($i=0; $i < count($trackSegment)-1; $i++) { 			
-				$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
-					$trackSegment[$i]->getLongitude(), 
-					$trackSegment[$i+1]->getLatitude(), 
-					$trackSegment[$i+1]->getLongitude());			
-				$trackSegment[$i+1]->setDistance((string) $distance);
-			}	
+		if (!empty($this->trackData)) {
+			$distance = 0;
+			foreach ($this->trackData as $key => $trackSegment) {
+				for ($i=0; $i < count($trackSegment)-1; $i++) { 			
+					$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
+						$trackSegment[$i]->getLongitude(), 
+						$trackSegment[$i+1]->getLatitude(), 
+						$trackSegment[$i+1]->getLongitude());			
+					$trackSegment[$i+1]->setDistance((string) $distance);
+				}	
+			}
 		}
 	}
 
 	protected function hasTime(){
-		return !is_null($this->trackData[0][0]->getTime());
+		if (!empty($this->trackData)) {
+			return !is_null($this->trackData[0][0]->getTime());	
+		}else{
+			return false;
+		}		
 	}
 
 	protected function hasElevation(){
-		return !is_null($this->trackData[0][0]->getElevation());
+		if (!empty($this->trackData)) {
+			return !is_null($this->trackData[0][0]->getElevation());
+		}else{
+			return false;
+		}
 	}
 
 	protected function hasDistance(){
-		return !is_null($this->trackData[0][0]->getDistance());
+		if (!empty($this->trackData)) {
+			return !is_null($this->trackData[0][0]->getDistance());
+		}else{
+			return false;
+		}
 	}
 
 	/**
@@ -118,43 +132,55 @@ abstract class Tracklog {
 	*Returns all the trackpoints of $trackData in a array
 	*/
 	public function getPoints(){
-		$points;
-		foreach ($this->trackData as $trackSegment) {
-			foreach ($trackSegment as $key => $trackPoint) {
-				$points[$key]['latitude'] = $trackPoint->getLatitude();
-				$points[$key]['longitude'] = $trackPoint->getLongitude();
-				$points[$key]['elevation'] = $trackPoint->getElevation();
-				$points[$key]['time'] = $trackPoint->getTime();
-				$points[$key]['distance'] = $trackPoint->getDistance();	
+		if (!empty($this->trackData)) {
+			$points;
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $key => $trackPoint) {
+					$points[$key]['latitude'] = $trackPoint->getLatitude();
+					$points[$key]['longitude'] = $trackPoint->getLongitude();
+					$points[$key]['elevation'] = $trackPoint->getElevation();
+					$points[$key]['time'] = $trackPoint->getTime();
+					$points[$key]['distance'] = $trackPoint->getDistance();	
+				}
 			}
+			return $points;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
 		}
-		return $points;
 	}
 
 	/**
 	*Returns all the latitudes data of $trackData in a array
 	*/
 	public function getLatitudes(){
-		$latitudes;
-		foreach ($this->trackData as $trackSegment) {
-			foreach ($trackSegment as $trackPoint) {
-				$latitudes[] = $trackPoint->getLatitude();
-			}			
+		if (!empty($this->trackData)) {
+			$latitudes;
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$latitudes[] = $trackPoint->getLatitude();
+				}			
+			}
+			return $latitudes;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
 		}
-		return $latitudes;
 	}
 
 	/**
 	*Returns all the longitudes data of $trackData in a array
 	*/
 	public function getLongitudes(){
-		$longitudes;
-		foreach ($this->trackData as $trackSegment) {
-			foreach ($trackSegment as $trackPoint) {
-				$longitudes[] = $trackPoint->getLongitude();
-			}			
+		if (!empty($this->trackData)) {
+			$longitudes;
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$longitudes[] = $trackPoint->getLongitude();
+				}			
+			}
+			return $longitudes;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
 		}
-		return $longitudes;
 	}
 
 	/**
@@ -195,13 +221,17 @@ abstract class Tracklog {
 	*Returns all the distances data of $trackData in a array
 	*/
 	public function getDistances(){
-		$distances;
-		foreach ($this->trackData as $trackSegment) {
-			foreach ($trackSegment as $trackPoint) {
-				$distances[] = $trackPoint->getDistance();
-			}			
+		if (!empty($this->trackData)) {
+			$distances;
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					$distances[] = $trackPoint->getDistance();
+				}			
+			}
+			return $distances;	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
 		}
-		return $distances;
 	}
 
 	/**
@@ -319,21 +349,26 @@ abstract class Tracklog {
 	*@return The total distance of the tracklog in float.
 	*/
 	public function getTotalDistance($unit = "meters"){
-		$totalDistance = $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getDistance();
-		switch ($unit) {
-			case 'meters':
-			return number_format($totalDistance, 2, ",", "");
-			break;
-			case 'kilometers':
-			return number_format($totalDistance/1000, 2, ",", "");
-			break;
-			case 'miles':
-			return number_format($totalDistance/1609.34, 2, ",", "");
-			break;
-			default:
-			throw new TracklogPhpException("Unit format not recognized");			
-			break;
+		if (!empty($this->trackData)) {
+			$totalDistance = $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getDistance();
+			switch ($unit) {
+				case 'meters':
+				return number_format($totalDistance, 2, ",", "");
+				break;
+				case 'kilometers':
+				return number_format($totalDistance/1000, 2, ",", "");
+				break;
+				case 'miles':
+				return number_format($totalDistance/1609.34, 2, ",", "");
+				break;
+				default:
+				throw new TracklogPhpException("Unit format not recognized");			
+				break;
+			}	
+		}else{
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
 		}
+		
 	}
 
 	/**

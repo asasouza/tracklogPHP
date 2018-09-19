@@ -32,29 +32,29 @@ class GPX extends Tracklog{
 					}
 					array_push($this->trackData, $trackData);
 				}
-				/** Populate the distance atrribute of the trackpoints */
-				$this->populateDistance();
-
-				/** Get the name of the track. */
-				isset($xml->xpath('//gpx:trk/gpx:name')[0]) ? $this->trackName = $xml->xpath('//gpx:trk/gpx:name')[0] : 0;
-
-				/** Get the markers of the track */
-				if (!empty($markers = $xml->xpath('//gpx:wpt'))) {
-					foreach ($markers as $marker) {
-						$trackMarker = new TrackMarker();
-						$trackMarker->setLatitude($marker['lat']);
-						$trackMarker->setLongitude($marker['lon']);
-						!empty($marker->name) ? $trackMarker->setName($marker->name[0]) : 0;
-						!empty($marker->ele) ? $trackMarker->setElevation($marker->ele) : 0;
-						!empty($marker->time) ? $trackMarker->setTime($marker->time) : 0;
-						array_push($this->trackMarkers, $trackMarker);
-					}
-				}
-
-				return $this;
-			}else{
+			}elseif(empty($markers = $xml->xpath('//gpx:wpt'))){
 				throw new TracklogPhpException("This file doesn't appear to have any tracklog data.");			
 			}
+
+			/** Populate the distance atrribute of the trackpoints */
+			$this->populateDistance();
+
+			/** Get the name of the track. */
+			isset($xml->xpath('//gpx:trk/gpx:name')[0]) ? $this->trackName = $xml->xpath('//gpx:trk/gpx:name')[0] : 0;
+
+			/** Get the markers of the track */
+			if (!empty($markers = $xml->xpath('//gpx:wpt'))) {
+				foreach ($markers as $marker) {
+					$trackMarker = new TrackMarker();
+					$trackMarker->setLatitude($marker['lat']);
+					$trackMarker->setLongitude($marker['lon']);
+					!empty($marker->name) ? $trackMarker->setName($marker->name[0]) : 0;
+					!empty($marker->ele) ? $trackMarker->setElevation($marker->ele) : 0;
+					!empty($marker->time) ? $trackMarker->setTime($marker->time) : 0;
+					array_push($this->trackMarkers, $trackMarker);
+				}
+			}
+			return $this;
 		} catch (TracklogPhpException $e) {
 			throw $e;			
 		}		
@@ -93,16 +93,20 @@ class GPX extends Tracklog{
 		if (isset($this->trackName)) {
 			$trk->addChild('name', $this->trackName);
 		}
-		foreach ($this->trackData as $trackSegment) {
-			$trkseg = $trk->addChild('trkseg');
-			foreach ($trackSegment as $trackPoint) {
-				$trkpt = $trkseg->addChild('trkpt');
-				$trkpt->addAttribute('lat', $trackPoint->getLatitude());
-				$trkpt->addAttribute('lon', $trackPoint->getLongitude());
-				$this->hasElevation() ? $trkpt->addChild('ele', $trackPoint->getElevation()) : 0;
-				$this->hasTime() ? $trkpt->addChild('time', $trackPoint->getTime()) : 0;						
+		
+		if (!empty($this->trackData)) {
+			foreach ($this->trackData as $trackSegment) {
+				$trkseg = $trk->addChild('trkseg');
+				foreach ($trackSegment as $trackPoint) {
+					$trkpt = $trkseg->addChild('trkpt');
+					$trkpt->addAttribute('lat', $trackPoint->getLatitude());
+					$trkpt->addAttribute('lon', $trackPoint->getLongitude());
+					$this->hasElevation() ? $trkpt->addChild('ele', $trackPoint->getElevation()) : 0;
+					$this->hasTime() ? $trkpt->addChild('time', $trackPoint->getTime()) : 0;						
+				}	
 			}	
 		}
+		
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;

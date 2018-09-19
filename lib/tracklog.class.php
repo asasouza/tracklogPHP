@@ -16,6 +16,8 @@ abstract class Tracklog {
 
 	protected $trackMarkers = array();
 
+	private $totalSeconds = 0;
+
 	protected abstract function __construct($file);
 
 	protected abstract function write();
@@ -376,7 +378,6 @@ abstract class Tracklog {
 	*
 	*@return The total time to complete the tracklog according to the $unit parameter.
 	*/
-	private $totalSeconds = 0;
 	public function getTotalTime($unit = null){
 		if($this->hasTime()){
 			if($this->totalSeconds == 0) {

@@ -1,6 +1,7 @@
 <?php
 require_once("tracklog.class.php");
 require_once("trackPoint.class.php");
+require_once("trackMarker.class.php");
 require_once("formats/CSV.class.php");
 require_once("formats/GeoJson.class.php");
 require_once("formats/GPX.class.php");

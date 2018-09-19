@@ -112,7 +112,7 @@ class KML extends Tracklog{
 						$IconStyle = $style->addChild('IconStyle');
 						$style['scale'] ? $IconStyle->addChild('scale', $mapStyle['scale']) : 0;
 							$Icon = $IconStyle->addChild('Icon');
-							$Icon->addChild('href', $mapStyle['IconHref']);
+							$Icon->addChild('href', htmlspecialchars('<![CDATA[' . ($mapStyle['IconHref']) . ']]>'));
 						$BalloonStyle = $style->addChild('BalloonStyle');
 						$BalloonStyle->addChild('text', '$[name]');
 				}	

@@ -214,8 +214,7 @@ abstract class Tracklog {
 	/** Returns the average pace of the track in minutes per kilometer. */
 	public function getPace(){
 		if($this->hasTime()){
-			$time = new DateTime($this->getTotalTime());
-			$totalTime = ($time->format('H') * 60) + $time->format('i') + ($time->format('s') / 60); //time in minutes
+			$totalTime = $this->getTotalTime('minutes');
 			$pace = $totalTime / $this->getTotalDistance('kilometers');
 			//transform the float pace into a valid time unit.
 			$pace = ((($pace - intval($pace)) * 60) / 100) + intval($pace); 
@@ -271,10 +270,9 @@ abstract class Tracklog {
 /** Returns the average speed of the track in kilometers per hour. */
 	public function getAverageSpeed(){
 		if($this->hasTime()){
-			$time = new DateTime($this->getTotalTime());
-					$totalTime = $time->format('H') + ($time->format('i') / 60) + ($time->format('s') /3600); //time in hours
-					$speed = $this->getTotalDistance('kilometers') / $totalTime;
-					return number_format($speed, 2);;
+			$totalTime = $this->getTotalTime('hours');
+			$speed = $this->getTotalDistance('kilometers') / $totalTime;
+			return number_format($speed, 2);
 		}else{
 			throw new TracklogPhpException("This ".get_class($this)." file don't support time manipulations");
 		}
@@ -343,20 +341,21 @@ abstract class Tracklog {
 	*
 	*@return The total time to complete the tracklog according to the $unit parameter.
 	*/
+	private $totalSeconds = 0;
 	public function getTotalTime($unit = null){
 		if($this->hasTime()){
-			$dateDiff = new DateTime('0000-00-00 00:00:00');
-			foreach ($this->trackData as $trackSegment) {
-				for ($i=0; $i < count($trackSegment)-1; $i++) { 
-					$dateB = new DateTime($trackSegment[$i]->getTime());
-					$dateE = new DateTime($trackSegment[$i+1]->getTime());
-					$difference = $dateB->diff($dateE);	
-					$dateDiff->add($difference);
+			if($this->totalSeconds == 0) {
+				foreach ($this->trackData as $trackSegment) {
+					for ($i=0; $i < count($trackSegment)-1; $i++) { 
+						$dateB = new DateTime($trackSegment[$i]->getTime());
+						$dateE = new DateTime($trackSegment[$i+1]->getTime());
+						$this->totalSeconds += $dateE->getTimestamp() - $dateB->getTimestamp();
+					}
 				}
 			}
-			$hours = $dateDiff->format('H');
-			$minutes = $dateDiff->format('i');
-			$seconds = $dateDiff->format('s');
+			$hours = floor($this->totalSeconds / 3600);
++			$minutes = floor(($this->totalSeconds / 60) % 60);
++			$seconds = $this->totalSeconds % 60;
 			switch ($unit) {
 				case 'seconds':
 				return number_format($seconds = $seconds + ($hours*3600) + ($minutes*60), 1, '', '.');
@@ -368,7 +367,7 @@ abstract class Tracklog {
 				return number_format($hours = $hours + ($minutes/60), 1);
 				break;
 				default:
-				return $dateDiff->format('H:i:s');
+				return "$hours:$minutes:$seconds";
 				break;
 			}
 		}else{

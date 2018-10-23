@@ -41,7 +41,7 @@ class KML extends Tracklog{
 			}elseif(!empty($content = $xml->xpath('//gx:Track'))  ){
 				foreach ($content as $trackSegment) {
 					$trackData = array();
-					if (!empty($times = $xml->xpath('//gx:Track/kml:when')) && !empty($points = $xml->xpath('//gx:Track/gx:coord')) && count($times) == count($points)) {
+					if (!empty($times = $trackSegment->when) && !empty($points = $trackSegment->xpath('gx:coord')) && count($times) == count($points)) {
 						foreach ($points as $i => $pointData) {
 							$pointData = explode(' ', $pointData);
 							$trackPoint = new TrackPoint();

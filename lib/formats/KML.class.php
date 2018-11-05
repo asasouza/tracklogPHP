@@ -142,12 +142,14 @@ class KML extends Tracklog{
 				foreach ($trackSegment as $trackPoint) {
 					$gxtrack->addChild('when', $trackPoint->getTime());
 				}
+			}
+			foreach ($this->trackData as $trackSegment) {
 				foreach ($trackSegment as $trackPoint) {
 					$coordinates = $trackPoint->getLongitude().' '.$trackPoint->getLatitude();
 					$coordinates .= $this->hasElevation() ? ' '.$trackPoint->getElevation() : "";
 					$gxtrack->addChild('gx:gx:coord', $coordinates);
 				}
-			}			
+			}
 		}else{
 			$folder = $document->addChild('Folder');
 			if (isset($this->trackName)) {

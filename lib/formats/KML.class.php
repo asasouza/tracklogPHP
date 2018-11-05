@@ -137,8 +137,8 @@ class KML extends Tracklog{
 			}
 			$folder->addChild('open', 1);
 			$placemark = $folder->addChild('Placemark');
-			foreach ($this->trackData as $trackSegment) {
-				$gxtrack = $placemark->addChild('gx:gx:Track');
+			$gxtrack = $placemark->addChild('gx:gx:Track');
+			foreach ($this->trackData as $trackSegment) {				
 				foreach ($trackSegment as $trackPoint) {
 					$gxtrack->addChild('when', $trackPoint->getTime());
 				}

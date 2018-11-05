@@ -136,13 +136,15 @@ abstract class Tracklog {
 	public function getPoints(){
 		if (!empty($this->trackData)) {
 			$points;
+			$i = 0;
 			foreach ($this->trackData as $trackSegment) {
-				foreach ($trackSegment as $key => $trackPoint) {
-					$points[$key]['latitude'] = $trackPoint->getLatitude();
-					$points[$key]['longitude'] = $trackPoint->getLongitude();
-					$points[$key]['elevation'] = $trackPoint->getElevation();
-					$points[$key]['time'] = $trackPoint->getTime();
-					$points[$key]['distance'] = $trackPoint->getDistance();	
+				foreach ($trackSegment as $trackPoint) {
+					$points[$i]['latitude'] = $trackPoint->getLatitude();
+					$points[$i]['longitude'] = $trackPoint->getLongitude();
+					$points[$i]['elevation'] = $trackPoint->getElevation();
+					$points[$i]['time'] = $trackPoint->getTime();
+					$points[$i]['distance'] = $trackPoint->getDistance();
+					$i++;
 				}
 			}
 			return $points;	

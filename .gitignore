@@ -1,10 +1,4 @@
 /converted_files
 /corrida_referencia.docx
 /tmp_files/*
-/test_files/csv
-/test_files/geoJson
-/test_files/gpx
-/test_files/kml
-/test_files/tcx
-/test_files/external_files_avbox
-/test_files/external_files_gpsies
+/test_files/*

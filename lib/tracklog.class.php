@@ -34,13 +34,16 @@ abstract class Tracklog {
 		if (!empty($this->trackData)) {
 			$distance = 0;
 			foreach ($this->trackData as $key => $trackSegment) {
-				for ($i=0; $i < count($trackSegment)-1; $i++) { 			
+				if (count($trackSegment) == 1) {
+					$trackSegment[0]->setDistance((string) $distance);
+				}
+				for ($i=0; $i < count($trackSegment)-1; $i++) {
 					$distance += $this->haversineFormula($trackSegment[$i]->getLatitude(), 
 						$trackSegment[$i]->getLongitude(), 
 						$trackSegment[$i+1]->getLatitude(), 
 						$trackSegment[$i+1]->getLongitude());			
 					$trackSegment[$i+1]->setDistance((string) $distance);
-				}	
+				}
 			}
 		}
 	}

@@ -1,11 +1,11 @@
 <?php
 require_once('lib/tracklogPhp.main.php');
 
-$tracklog = new GPX('test_files/001.gpx');
+$tracklog = new GPX('test_files/teste.gpx');
 
-print_r($tracklog->getPoints());
+print_r(count($tracklog->getPoints()));
 
-$tracklog->out('KML', 'test_files/1-converted');
+// $tracklog->out('KML', 'test_files/1-converted');
 // 
 // $tracklog = new KML('test_files/test_markers/1-converted.kml');
 

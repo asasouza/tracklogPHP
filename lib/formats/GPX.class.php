@@ -23,12 +23,14 @@ class GPX extends Tracklog{
 				foreach ($content as $trackSegment) {
 					$trackData = array();
 					foreach ($trackSegment as $pointData) {
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($pointData['lat']);
-						$trackPoint->setLongitude($pointData['lon']);
-						!empty($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
-						!empty($pointData->time) ? $trackPoint->setTime($pointData->time) : 0;
-						array_push($trackData, $trackPoint);
+						if (!empty($pointData['lat']) && !empty($pointData['lon'])) {
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData['lat']);
+							$trackPoint->setLongitude($pointData['lon']);
+							!empty($pointData->ele) ? $trackPoint->setElevation($pointData->ele) : 0;
+							!empty($pointData->time) ? $trackPoint->setTime($pointData->time) : 0;
+							array_push($trackData, $trackPoint);
+						}
 					}
 					array_push($this->trackData, $trackData);
 				}

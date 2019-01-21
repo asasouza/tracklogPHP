@@ -23,12 +23,15 @@ class TCX extends Tracklog{
 				foreach ($content as $track) {
 					$trackData = array();
 					foreach ($track as $pointData) {
-						$trackPoint = new TrackPoint();
-						$trackPoint->setLatitude($pointData->Position->LatitudeDegrees);
-						$trackPoint->setLongitude($pointData->Position->LongitudeDegrees);
-						$trackPoint->setTime($pointData->Time);
-						!empty($pointData->AltitudeMeters) ? $trackPoint->setElevation($pointData->AltitudeMeters) : 0;
-						array_push($trackData, $trackPoint);
+						if (!empty($pointData->Position)) {
+							$trackPoint = new TrackPoint();
+							$trackPoint->setLatitude($pointData->Position->LatitudeDegrees);
+							$trackPoint->setLongitude($pointData->Position->LongitudeDegrees);
+							$trackPoint->setTime($pointData->Time);
+							!empty($pointData->AltitudeMeters) ? $trackPoint->setElevation($pointData->AltitudeMeters) : 0;
+							array_push($trackData, $trackPoint);
+							
+						}
 					}
 					array_push($this->trackData, $trackData);
 				}				

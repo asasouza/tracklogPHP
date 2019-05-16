@@ -88,8 +88,8 @@ class GeoJson extends Tracklog{
 			foreach ($this->trackData as $trackSegment) {
 				$points = array();
 				foreach ($trackSegment as $trackPoint) {
-					$array = [$trackPoint->getLongitude(), $trackPoint->getLatitude()];
-					$this->hasElevation() ? array_push($array, $trackPoint->getElevation()) : 0;
+					$array = [(double) $trackPoint->getLongitude(), (double) $trackPoint->getLatitude()];
+					$this->hasElevation() ? array_push($array, (double)$trackPoint->getElevation()) : 0;
 					array_push($points, $array);				
 				}
 				array_push($trackData, $points);

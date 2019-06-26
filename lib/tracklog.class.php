@@ -50,10 +50,16 @@ abstract class Tracklog {
 
 	protected function hasTime(){
 		if (!empty($this->trackData)) {
-			return !is_null($this->trackData[0][0]->getTime());	
-		}else{
-			return false;
-		}		
+			foreach ($this->trackData as $trackSegment) {
+				foreach ($trackSegment as $trackPoint) {
+					if (empty($trackPoint->getTime())) {
+						return false;
+						break;
+					}
+				}
+			}
+			return true;
+		}
 	}
 
 	protected function hasElevation(){

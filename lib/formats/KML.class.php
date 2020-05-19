@@ -32,7 +32,7 @@ class KML extends Tracklog{
 							$trackPoint = new TrackPoint();
 							$trackPoint->setLongitude($pointData[0]);
 							$trackPoint->setLatitude($pointData[1]);
-							isset($pointData[2]) ? $trackPoint->setElevation($pointData[2]) : 0;
+							isset($pointData[2]) && !empty(trim($pointData[2])) ? $trackPoint->setElevation($pointData[2]) : 0;
 							array_push($trackData, $trackPoint);
 						}					
 					}
@@ -95,7 +95,7 @@ class KML extends Tracklog{
 	*
 	*@return Returns a string containing the content of the created file.
 	*/
-	protected function write($file_path = null){
+	protected static function write($file_path = null, $tracklog){
 		$kml = new SimpleXMLElement('<kml/>');	
 		$kml->addAttribute('xmlns','http://www.opengis.net/kml/2.2');
 		$kml->addAttribute('xmlns:xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance');
@@ -104,9 +104,9 @@ class KML extends Tracklog{
 		$document = $kml->addChild('Document');
 
 		/** Write the kml styles */
-		if (!empty($this->mapStyles)) {
-			if (!empty($this->mapStyles['style'])) {
-				foreach ($this->mapStyles['style'] as $mapStyle) {
+		if (!empty($tracklog->mapStyles)) {
+			if (!empty($tracklog->mapStyles['style'])) {
+				foreach ($tracklog->mapStyles['style'] as $mapStyle) {
 					$style = $document->addChild('Style');
 					$style->addAttribute('id', $mapStyle['id']);
 						$IconStyle = $style->addChild('IconStyle');
@@ -117,8 +117,8 @@ class KML extends Tracklog{
 						$BalloonStyle->addChild('text', '$[name]');
 				}	
 			}
-			if (!empty($this->mapStyles['styleMap'])) {
-				foreach ($this->mapStyles['styleMap'] as $mapStyle) {
+			if (!empty($tracklog->mapStyles['styleMap'])) {
+				foreach ($tracklog->mapStyles['styleMap'] as $mapStyle) {
 					$styleMap = $document->addChild('StyleMap');
 					$styleMap->addAttribute('id', $mapStyle['id']);
 					foreach ($mapStyle['pairs'] as $pairs) {
@@ -130,55 +130,75 @@ class KML extends Tracklog{
 			}
 		}
 
-		if ($this->hasTime()) {
+		if ($tracklog->hasTime()) {
 			$folder = $document->addChild('Folder');
-			if (isset($this->trackName)) {
-				$folder->addChild('name', $this->trackName);
+			if (isset($tracklog->trackName)) {
+				$folder->addChild('name', $tracklog->trackName);
 			}
 			$folder->addChild('open', 1);
 			$placemark = $folder->addChild('Placemark');
 			$gxtrack = $placemark->addChild('gx:gx:Track');
-			foreach ($this->trackData as $trackSegment) {				
-				foreach ($trackSegment as $trackPoint) {
-					$gxtrack->addChild('when', $trackPoint->getTime());
-				}
+
+			$totalPoints = $tracklog->getPointsTotal() - 1;
+
+			$interval = (is_null($tracklog::$maxLength) || $totalPoints <= $tracklog::$maxLength) ? 1 : $totalPoints / $tracklog::$maxLength;
+
+			$points = $tracklog->getPoints();
+			
+			$maxLength = (is_null($tracklog::$maxLength) || $totalPoints <= $tracklog::$maxLength) ? $totalPoints : $tracklog::$maxLength;
+
+			for ($i = 0; $i <= $maxLength; $i++) { 
+				$gxtrack->addChild('when', $points[$i * $interval]['time']);
 			}
-			foreach ($this->trackData as $trackSegment) {
-				foreach ($trackSegment as $trackPoint) {
-					$coordinates = $trackPoint->getLongitude().' '.$trackPoint->getLatitude();
-					$coordinates .= $this->hasElevation() ? ' '.$trackPoint->getElevation() : "";
-					$gxtrack->addChild('gx:gx:coord', $coordinates);
-				}
+
+			for ($i = 0; $i <= $maxLength; $i++) { 
+				$trackPoint = $points[$i * $interval];
+				$coordinates = $trackPoint['longitude'].' '.$trackPoint['latitude'];
+				$coordinates .= $tracklog->hasElevation() ? ' '.$trackPoint['elevation'] : "";
+				$gxtrack->addChild('gx:gx:coord', $coordinates);
 			}
+
 		}else{
 			$folder = $document->addChild('Folder');
-			if (isset($this->trackName)) {
-				$folder->addChild('name', $this->trackName);
+			if (isset($tracklog->trackName)) {
+				$folder->addChild('name', $tracklog->trackName);
 			}
 			$placemark = $folder->addChild('Placemark');
-			if (isset($this->trackName)) {
-				$placemark->addChild('name', $this->trackName);
+			if (isset($tracklog->trackName)) {
+				$placemark->addChild('name', $tracklog->trackName);
 			}
 			$placemark->addChild('visibility', 1);
 			$placemark->addChild('open', 1);
-			foreach ($this->trackData as $trackSegment) {
-				$linestring = $placemark->addChild('LineString');
-				$linestring->addChild('extrude', 'true');
-				$linestring->addChild('tessellate', 'true');						
+			$multigeometry = $placemark->addChild('MultiGeometry');
+
+			$totalPoints = $tracklog->getPointsTotal();
+			
+			$interval = (is_null($tracklog::$maxLength) || $totalPoints <= $tracklog::$maxLength) ? 1 : $totalPoints / $maxLength;
+
+			foreach ($tracklog->trackData as $trackSegment) {
+									
 				$trackData = '';
-				foreach ($trackSegment as $trackPoint) {
-					$trackData .= $trackPoint->getLongitude().','.$trackPoint->getLatitude();
-					$trackData .= $this->hasElevation() ? ',' . $trackPoint->getElevation().'&#10;' : '&#10;';
+				$totalSegment = count($trackSegment);
+
+				for ($i = 0; $i < ($totalSegment / $interval); $i++) { 
+					$trackData .= $trackSegment[$interval * $i]->getLongitude().','.$trackSegment[$interval * $i]->getLatitude();
+					$trackData .= $tracklog->hasElevation() ? ',' . $trackSegment[$interval * $i]->getElevation().' ' : ' ';
 				}
-				$coordinates = $linestring->addChild('coordinates', $trackData);	
+
+				if ($trackData) {
+					$linestring = $multigeometry->addChild('LineString');
+					$linestring->addChild('extrude', 'true');
+					$linestring->addChild('tessellate', 'true');	
+					$coordinates = $linestring->addChild('coordinates', $trackData);		
+				}
 			}
 		}
 
-		if (!empty($this->trackMarkers)) {
+		if (!empty($tracklog->trackMarkers)) {
 			$folder = $document->addChild('Folder');
 			$folder->addChild('name', 'Waypoints');
 			$folder->addChild('open', 'true');
-			foreach ($this->trackMarkers as $marker) {
+			foreach ($tracklog->trackMarkers as $marker) {
 				$placemark = $folder->addChild('Placemark');
 				$placemark->addChild('Snippet')->addAttribute('maxLines', '0');
 				$placemark->addChild('name', $marker->getName());
@@ -186,7 +206,7 @@ class KML extends Tracklog{
 				$placemark->addChild('styleUrl', $marker->getStyleUrl());
 					$point = $placemark->addChild('Point');
 					$coordinate = $marker->getLongitude().','.$marker->getLatitude();
-					$coordinate .= $this->hasElevation() ? ','.$marker->getElevation() : '';
+					$coordinate .= $tracklog->hasElevation() ? ','.$marker->getElevation() : '';
 					$point->addChild('coordinates', $coordinate);
 			}
 		}

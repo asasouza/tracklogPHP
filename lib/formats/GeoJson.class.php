@@ -82,14 +82,14 @@ class GeoJson extends Tracklog{
 	*
 	*@return Returns a string containing the content of the created file.
 	*/
-	protected function write($file_path = null){
+	protected static function write($file_path = null, $tracklog){
 		$trackData = array();
-		if (!empty($this->trackData)) {
-			foreach ($this->trackData as $trackSegment) {
+		if (!empty($tracklog->trackData)) {
+			foreach ($tracklog->trackData as $trackSegment) {
 				$points = array();
 				foreach ($trackSegment as $trackPoint) {
 					$array = [(double) $trackPoint->getLongitude(), (double) $trackPoint->getLatitude()];
-					$this->hasElevation() ? array_push($array, (double)$trackPoint->getElevation()) : 0;
+					$tracklog->hasElevation() ? array_push($array, (double)$trackPoint->getElevation()) : 0;
 					array_push($points, $array);				
 				}
 				array_push($trackData, $points);

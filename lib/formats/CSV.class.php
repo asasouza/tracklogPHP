@@ -88,17 +88,17 @@ class CSV extends Tracklog{
 	*
 	*@return Returns a string containing the content of the created file.
 	*/
-	protected function write($file_path = null){
+	protected static function write($file_path = null, $tracklog){
 		$trackData = 'Latitude,Longitude';
-		$trackData .= $this->hasElevation() ? ',Elevation' : '';
-		$trackData .= $this->hasTime() ? ',Time' : '';
+		$trackData .= $tracklog->hasElevation() ? ',Elevation' : '';
+		$trackData .= $tracklog->hasTime() ? ',Time' : '';
 		$trackData .= ',Distance'."\r\n";
-		if (!empty($this->trackData)) {
-			foreach ($this->trackData as $trackSegment) {
+		if (!empty($tracklog->trackData)) {
+			foreach ($tracklog->trackData as $trackSegment) {
 				foreach ($trackSegment as $trackPoint) {
 					$trackData .= $trackPoint->getLatitude().','.$trackPoint->getLongitude();
-					$trackData .= $this->hasElevation() ? ','.$trackPoint->getElevation() : '';
-					$trackData .= $this->hasTime() ? ','.$trackPoint->getTime() : '';
+					$trackData .= $tracklog->hasElevation() ? ','.$trackPoint->getElevation() : '';
+					$trackData .= $tracklog->hasTime() ? ','.$trackPoint->getTime() : '';
 					$trackData .= ','.$trackPoint->getDistance()."\r\n";
 				}
 				$trackData .= "\r\n";

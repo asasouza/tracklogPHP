@@ -53,35 +53,35 @@ class TCX extends Tracklog{
 	*
 	*@return Returns a string containing the content of the created file.
 	*/
-	protected function write($file_path = null){
+	protected static function write($file_path = null, $tracklog){
 		$tcx = new SimpleXMLElement('<TrainingCenterDatabase/>');
 		$tcx->addAttribute('xmlns', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
 		$tcx->addAttribute('xmlns:xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		$tcx->addAttribute('xsi:xsi:schemaLocation', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd');
 		$courses = $tcx->addChild('Courses');
 		$course = $courses->addChild('Course');
-		$course->addChild('Name', isset($this->trackName) ? $this->trackName : 'TrackLogPHPConv');
+		$course->addChild('Name', isset($tracklog->trackName) ? $tracklog->trackName : 'TrackLogPHPConv');
 		$lap = $course->addChild('Lap');
-		$lap->addChild('TotalTimeSeconds', ($this->hasTime()) ? $this->getTotalTime('seconds') : 0.0);
-		$lap->addChild('DistanceMeters', $this->getTotalDistance('meters'));
+		$lap->addChild('TotalTimeSeconds', ($tracklog->hasTime()) ? $tracklog->getTotalTime('seconds') : 0.0);
+		$lap->addChild('DistanceMeters', $tracklog->getTotalDistance('meters'));
 		$begginPosition = $lap->addChild('BeginPosition');
-		$begginPosition->addChild('LatitudeDegrees', $this->trackData[0][0]->getLatitude());
-		$begginPosition->addChild('LongitudeDegrees', $this->trackData[0][0]->getLongitude());
+		$begginPosition->addChild('LatitudeDegrees', $tracklog->trackData[0][0]->getLatitude());
+		$begginPosition->addChild('LongitudeDegrees', $tracklog->trackData[0][0]->getLongitude());
 		$endPosition = $lap->addChild('EndPosition');
-		$endPosition->addChild('LatitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLatitude());
-		$endPosition->addChild('LongitudeDegrees', $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getLongitude());
+		$endPosition->addChild('LatitudeDegrees', $tracklog->trackData[count($tracklog->trackData)-1][count($tracklog->trackData[count($tracklog->trackData)-1])-1]->getLatitude());
+		$endPosition->addChild('LongitudeDegrees', $tracklog->trackData[count($tracklog->trackData)-1][count($tracklog->trackData[count($tracklog->trackData)-1])-1]->getLongitude());
 		$lap->addChild('Intensity', 'Active');
 		
-		if (!empty($this->trackData)) {
-			foreach ($this->trackData as $trackSegment) {
+		if (!empty($tracklog->trackData)) {
+			foreach ($tracklog->trackData as $trackSegment) {
 				$track = $course->addChild('Track');
 				foreach ($trackSegment as $trackPoint) {
 					$trackpoint = $track->addChild('Trackpoint');
-					$this->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
+					$tracklog->hasTime() ? $trackpoint->addChild('Time', $trackPoint->getTime()) : $trackpoint->addChild('Time', date('Y-m-d\T00:00:00\Z'));
 					$position = $trackpoint->addChild('Position');
 					$position->addChild('LatitudeDegrees', $trackPoint->getLatitude());
 					$position->addChild('LongitudeDegrees', $trackPoint->getLongitude());
-					$this->hasElevation() ? $trackpoint->addChild('AltitudeMeters', $trackPoint->getElevation()) : 0;
+					$tracklog->hasElevation() ? $trackpoint->addChild('AltitudeMeters', $trackPoint->getElevation()) : 0;
 					$trackpoint->addChild('DistanceMeters', $trackPoint->getDistance());
 				}
 			}	

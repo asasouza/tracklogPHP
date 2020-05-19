@@ -12,6 +12,10 @@ abstract class Tracklog {
 	*/
 	protected $trackData = array();
 
+	public $maxResponseLength = null;
+
+	public static $maxLength = null;
+
 	protected $trackName;
 
 	protected $trackMarkers = array();
@@ -20,7 +24,7 @@ abstract class Tracklog {
 
 	protected abstract function __construct($file);
 
-	protected abstract function write();
+	protected abstract static function write($file_path, $tracklog);
 
 	protected abstract function validate($file);
 
@@ -139,6 +143,32 @@ abstract class Tracklog {
 		return $smoothedArray;	
 	}
 
+	protected function getPointsTotal() {
+		if (!empty($this->trackData)) {
+			$total = 0;
+			foreach ($this->trackData as $trackSegment) {
+				$total += count($trackSegment);
+			}
+			return $total;
+		} else {
+			throw new TracklogPhpException("This ".get_class($this)." file don't have track data");
+		}
+	}
+
+	/* Limit the length of the response array of a method */
+	public function reduceResponseLength($array) {
+		$lenght = count($array) - 1;
+		if ($lenght <= $this->maxResponseLength) {
+			return $array;
+		}
+		$interval = $lenght / $this->maxResponseLength;
+		$responseArray = array();
+		for ($i = 0; $i < $this->maxResponseLength + 1; $i++) { 
+			array_push($responseArray, $array[$i * $interval]);
+		}
+		return $responseArray;
+	}
+
 	/**
 	*Returns all the trackpoints of $trackData in a array
 	*/
@@ -199,7 +229,7 @@ abstract class Tracklog {
 	/**
 	*Returns all the elevations data of $trackData in a array
 	*/
-	public function getElevations(){
+	public function getElevations($useMaxLength = true){
 		if($this->hasElevation()){
 			$elevations;
 			foreach ($this->trackData as $trackSegment) {
@@ -361,7 +391,8 @@ abstract class Tracklog {
 	*/
 	public function getTotalDistance($unit = "meters"){
 		if (!empty($this->trackData)) {
-			$totalDistance = $this->trackData[count($this->trackData)-1][count($this->trackData[count($this->trackData)-1])-1]->getDistance();
+			// get the last point in the last trackdata to get the calculated distance;
+			$totalDistance = end(end($this->trackData))->getDistance();
 			switch ($unit) {
 				case 'meters':
 				return number_format($totalDistance, 2, ",", "");
@@ -508,19 +539,19 @@ abstract class Tracklog {
 		$output = strtoupper($output);
 		switch ($output) {
 			case 'KML':
-			return KML::write($file_path);
+			return KML::write($file_path, $this);
 			break;
 			case 'GPX':
-			return GPX::write($file_path);
+			return GPX::write($file_path, $this);
 			break;
 			case 'TCX':
-			return TCX::write($file_path);
+			return TCX::write($file_path, $this);
 			break;
 			case 'GEOJSON':
-			return GeoJson::write($file_path);
+			return GeoJson::write($file_path, $this);
 			break;
 			case 'CSV':
-			return CSV::write($file_path);
+			return CSV::write($file_path, $this);
 			break;
 			default:
 			throw new TracklogPhpException("Output type invalid!", 1);				

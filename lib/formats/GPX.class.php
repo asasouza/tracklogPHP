@@ -21,6 +21,9 @@ class GPX extends Tracklog{
 			$xml->registerXPathNamespace('gpx', 'http://www.topografix.com/GPX/1/1');
 			if(!empty($content = $xml->xpath('//gpx:trkseg')) && !empty($content[0])){
 				foreach ($content as $trackSegment) {
+					if (count($trackSegment) == 0) {
+						continue;
+					}
 					$trackData = array();
 					foreach ($trackSegment as $pointData) {
 						if (!empty($pointData['lat']) && !empty($pointData['lon'])) {
@@ -69,42 +72,42 @@ class GPX extends Tracklog{
 	*
 	*@return Returns a string containing the content of the created file.
 	*/
-	protected function write($file_path = null){
+	protected static function write($file_path = null, $tracklog){
 		$gpx = new SimpleXMLElement('<gpx />');
 		$gpx->addAttribute('creator', 'TracklogPHP');
 		$gpx->addAttribute('version', '1.1');
 		$gpx->addAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
 		$gpx->addAttribute('xmlns:xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		$gpx->addAttribute('xsi:xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd');
-		if($this->hasTime()){
+		if($tracklog->hasTime()){
 			$metadata = $gpx->addChild('metadata');				
-			$time = $metadata->addChild('time', $this->trackData[0][0]->getTime());				
+			$time = $metadata->addChild('time', $tracklog->trackData[0][0]->getTime());				
 		}
-		if (!empty($this->trackMarkers)) {
-			foreach ($this->trackMarkers as $marker) {
+		if (!empty($tracklog->trackMarkers)) {
+			foreach ($tracklog->trackMarkers as $marker) {
 				$wpt = $gpx->addChild('wpt');
 				$wpt->addAttribute('lat', $marker->getLatitude());
 				$wpt->addAttribute('lon', $marker->getLongitude());
-				$this->hasElevation() ? $wpt->addChild('ele', $marker->getElevation()) : 0;
-				$this->hasTime() ? $wpt->addChild('time', $marker->getTime()) : 0;
+				$tracklog->hasElevation() ? $wpt->addChild('ele', $marker->getElevation()) : 0;
+				$tracklog->hasTime() ? $wpt->addChild('time', $marker->getTime()) : 0;
 				!is_null($marker) ? $wpt->addChild('name', $marker->getName()) : 0;
 			}
 		}
 
 		$trk = $gpx->addChild('trk');
-		if (isset($this->trackName)) {
-			$trk->addChild('name', $this->trackName);
+		if (isset($tracklog->trackName)) {
+			$trk->addChild('name', $tracklog->trackName);
 		}
 		
-		if (!empty($this->trackData)) {
-			foreach ($this->trackData as $trackSegment) {
+		if (!empty($tracklog->trackData)) {
+			foreach ($tracklog->trackData as $trackSegment) {
 				$trkseg = $trk->addChild('trkseg');
 				foreach ($trackSegment as $trackPoint) {
 					$trkpt = $trkseg->addChild('trkpt');
 					$trkpt->addAttribute('lat', $trackPoint->getLatitude());
 					$trkpt->addAttribute('lon', $trackPoint->getLongitude());
-					$this->hasElevation() ? $trkpt->addChild('ele', $trackPoint->getElevation()) : 0;
-					$this->hasTime() ? $trkpt->addChild('time', $trackPoint->getTime()) : 0;						
+					$tracklog->hasElevation() ? $trkpt->addChild('ele', $trackPoint->getElevation()) : 0;
+					$tracklog->hasTime() ? $trkpt->addChild('time', $trackPoint->getTime()) : 0;						
 				}	
 			}	
 		}

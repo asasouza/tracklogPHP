@@ -139,8 +139,12 @@ class KML extends Tracklog{
 			$placemark = $folder->addChild('Placemark');
 			$gxtrack = $placemark->addChild('gx:gx:Track');
 
-			$totalPoints = $tracklog->getPointsTotal() - 1;
-
+			try {
+				$totalPoints = $tracklog->getPointsTotal() - 1;	
+			} catch (TracklogPhpException $e) {
+				$totalPoints = 0;
+			}
+			
 			$interval = (is_null($tracklog::$maxLength) || $totalPoints <= $tracklog::$maxLength) ? 1 : $totalPoints / $tracklog::$maxLength;
 
 			$points = $tracklog->getPoints();
@@ -171,7 +175,11 @@ class KML extends Tracklog{
 			$placemark->addChild('open', 1);
 			$multigeometry = $placemark->addChild('MultiGeometry');
 
-			$totalPoints = $tracklog->getPointsTotal();
+			try {
+				$totalPoints = $tracklog->getPointsTotal();	
+			} catch (TracklogPhpException $e) {
+				$totalPoints = 0;
+			}
 			
 			$interval = (is_null($tracklog::$maxLength) || $totalPoints <= $tracklog::$maxLength) ? 1 : $totalPoints / $maxLength;
 

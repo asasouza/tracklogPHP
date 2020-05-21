@@ -63,16 +63,18 @@ class TCX extends Tracklog{
 		$course->addChild('Name', isset($tracklog->trackName) ? $tracklog->trackName : 'TrackLogPHPConv');
 		$lap = $course->addChild('Lap');
 		$lap->addChild('TotalTimeSeconds', ($tracklog->hasTime()) ? $tracklog->getTotalTime('seconds') : 0.0);
-		$lap->addChild('DistanceMeters', $tracklog->getTotalDistance('meters'));
-		$begginPosition = $lap->addChild('BeginPosition');
-		$begginPosition->addChild('LatitudeDegrees', $tracklog->trackData[0][0]->getLatitude());
-		$begginPosition->addChild('LongitudeDegrees', $tracklog->trackData[0][0]->getLongitude());
-		$endPosition = $lap->addChild('EndPosition');
-		$endPosition->addChild('LatitudeDegrees', $tracklog->trackData[count($tracklog->trackData)-1][count($tracklog->trackData[count($tracklog->trackData)-1])-1]->getLatitude());
-		$endPosition->addChild('LongitudeDegrees', $tracklog->trackData[count($tracklog->trackData)-1][count($tracklog->trackData[count($tracklog->trackData)-1])-1]->getLongitude());
+		
 		$lap->addChild('Intensity', 'Active');
 		
 		if (!empty($tracklog->trackData)) {
+			$lap->addChild('DistanceMeters', $tracklog->getTotalDistance('meters'));
+			$begginPosition = $lap->addChild('BeginPosition');
+			$begginPosition->addChild('LatitudeDegrees', $tracklog->trackData[0][0]->getLatitude());
+			$begginPosition->addChild('LongitudeDegrees', $tracklog->trackData[0][0]->getLongitude());
+			$endPosition = $lap->addChild('EndPosition');
+			$endPosition->addChild('LatitudeDegrees', end(end($tracklog->trackData))->getLatitude());
+			$endPosition->addChild('LongitudeDegrees', end(end($tracklog->trackData))->getLongitude());
+			
 			foreach ($tracklog->trackData as $trackSegment) {
 				$track = $course->addChild('Track');
 				foreach ($trackSegment as $trackPoint) {

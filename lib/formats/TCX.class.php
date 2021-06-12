@@ -72,8 +72,9 @@ class TCX extends Tracklog{
 			$begginPosition->addChild('LatitudeDegrees', $tracklog->trackData[0][0]->getLatitude());
 			$begginPosition->addChild('LongitudeDegrees', $tracklog->trackData[0][0]->getLongitude());
 			$endPosition = $lap->addChild('EndPosition');
-			$endPosition->addChild('LatitudeDegrees', end(end($tracklog->trackData))->getLatitude());
-			$endPosition->addChild('LongitudeDegrees', end(end($tracklog->trackData))->getLongitude());
+			$lastTrackData = end($tracklog->trackData);
+			$endPosition->addChild('LatitudeDegrees', end($lastTrackData)->getLatitude());
+			$endPosition->addChild('LongitudeDegrees', end($lastTrackData)->getLongitude());
 			
 			foreach ($tracklog->trackData as $trackSegment) {
 				$track = $course->addChild('Track');

@@ -392,7 +392,8 @@ abstract class Tracklog {
 	public function getTotalDistance($unit = "meters"){
 		if (!empty($this->trackData)) {
 			// get the last point in the last trackdata to get the calculated distance;
-			$totalDistance = end(end($this->trackData))->getDistance();
+			$lastTrackData = end($this->trackData);
+			$totalDistance = end($lastTrackData)->getDistance();
 			switch ($unit) {
 				case 'meters':
 				return number_format($totalDistance, 2, ",", "");

@@ -19,7 +19,7 @@ class TrackPoint{
 	*@return boolean
 	*/
 	private function isFloat($float){
-		if (strlen($float) > 14) $float = substr($float, 0, 14);
+		if (strlen(trim($float)) > 14) $float = substr(trim($float), 0, 14);
 		return ($float == (string)(float)$float || (is_numeric($float) && (string)(float)$float != 0));
 	}
 
